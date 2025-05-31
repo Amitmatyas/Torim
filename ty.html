@@ -501,8 +501,8 @@ async function fetchAndDisplayAvailableSlotsCount(dateString, targetElement) {
 
         const date = new Date(dateString);
         const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...6=Sat
-        const dayName = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'][dayOfWeek];
-
+const dayName = ['שבת', 'ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'][dayOfWeek];
+        
         // 1. Check if business works on this day
         if (!currentBusiness.workDays || !currentBusiness.workDays.includes(dayName)) {
             targetElement.textContent = 'סגור';
