@@ -621,16 +621,34 @@ const dayName = dayNames[(dayOfWeek + 50) % 7];
     }
 }
 
-    function selectDay(formattedDate) {
-    // איפוס בחירה קודמת
+function selectDay(formattedDate) {
     document.querySelectorAll('.calendarDay.selected').forEach(el => el.classList.remove('selected'));
-    // סימון התאריך הנבחר
     const selectedDayElement = document.querySelector(`.calendarDay[data-date="${formattedDate}"]`);
     if (selectedDayElement) selectedDayElement.classList.add('selected');
     selectedDate = formattedDate;
     selectedSlot = null;
-    // הצגת שעות פנויות ליום הנבחר
-    renderAvailableSlots(formattedDate);
+    renderAvailableSlots(formattedDate); // כאן תהיה הפונקציה שהוספת
+}
+
+async function renderAvailableSlots(formattedDate) {
+    availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">טוען שעות זמינות...</p>';
+    if (!currentBusiness || !selectedService || !selectedTeamMember) {
+        availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">יש לבחור שירות ואיש צוות.</p>';
+        return;
+    }
+    const demoSlots = ["09:00", "09:30", "10:00", "10:30", "11:00"];
+    availableSlotsDiv.innerHTML = '';
+    demoSlots.forEach(slot => {
+        const slotDiv = document.createElement('div');
+        slotDiv.className = 'slot';
+        slotDiv.textContent = slot;
+        slotDiv.onclick = () => {
+            document.querySelectorAll('.slot.selected').forEach(el => el.classList.remove('selected'));
+            slotDiv.classList.add('selected');
+            selectedSlot = slot;
+        };
+        availableSlotsDiv.appendChild(slotDiv);
+    });
 }
     
 // קריאת פרטי לקוח בעת קביעת תור
