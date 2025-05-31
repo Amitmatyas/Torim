@@ -325,9 +325,8 @@
     <input type="text" id="newServiceName" placeholder="שם שירות חדש">
     <input type="number" id="newServicePrice" placeholder="מחיר" step="0.01">
     <input type="number" id="newServiceDuration" placeholder="משך (דקות)" value="30">
-    <label for="newServiceTeamMembers">שייך לאנשי צוות (בחר מספר עם Ctrl/Cmd):</label>
-    <select id="newServiceTeamMembers" multiple>
-        </select>
+<label>שייך לאנשי צוות:</label>
+<div id="teamMembersCheckboxes"></div>
     <button id="addServiceButton">הוסף שירות</button>
     <div id="servicesList" class="servicesList">
         <p>לא הוגדרו שירותים עדיין.</p>
@@ -857,8 +856,7 @@ const addTmUnavailableHoursButton = document.getElementById('addTmUnavailableHou
         const name = newServiceNameInput.value.trim();
         const price = parseFloat(newServicePriceInput.value);
         const duration = parseInt(newServiceDurationInput.value);
-        const selectedTeamMembers = Array.from(newServiceTeamMembersSelect.selectedOptions).map(option => option.value);
-
+const selectedTeamMembers = Array.from(document.querySelectorAll('input[name="serviceTeamMember"]:checked')).map(cb => cb.value);
         if (!name || isNaN(price) || isNaN(duration)) {
             alert("אנא מלא שם שירות, מחיר ומשך תקינים.");
             return;
@@ -883,7 +881,7 @@ const addTmUnavailableHoursButton = document.getElementById('addTmUnavailableHou
             newServiceNameInput.value = '';
             newServicePriceInput.value = '';
             newServiceDurationInput.value = '30';
-            Array.from(newServiceTeamMembersSelect.options).forEach(option => option.selected = false);
+Array.from(document.querySelectorAll('input[name="serviceTeamMember"]')).forEach(cb => cb.checked = false);
             loadServicesForAdmin();
             alert("שירות נוסף בהצלחה!");
         } catch (e) {
