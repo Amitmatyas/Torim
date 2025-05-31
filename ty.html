@@ -621,6 +621,18 @@ const dayName = dayNames[(dayOfWeek + 50) % 7];
     }
 }
 
+    function selectDay(formattedDate) {
+    // איפוס בחירה קודמת
+    document.querySelectorAll('.calendarDay.selected').forEach(el => el.classList.remove('selected'));
+    // סימון התאריך הנבחר
+    const selectedDayElement = document.querySelector(`.calendarDay[data-date="${formattedDate}"]`);
+    if (selectedDayElement) selectedDayElement.classList.add('selected');
+    selectedDate = formattedDate;
+    selectedSlot = null;
+    // הצגת שעות פנויות ליום הנבחר
+    renderAvailableSlots(formattedDate);
+}
+    
 // קריאת פרטי לקוח בעת קביעת תור
 async function saveCustomerDetails() {
     if (customerUser) {
