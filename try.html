@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torim</title>
+    <link rel="icon" href="https://i.postimg.cc/FK1mjxYZ/8.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --dark-text: #343a40;
+            --border-color: #e9ecef;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Loading Screen */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+            opacity: 1;
+        }
+
+        #loading img {
+            max-width: 250px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        #loading p {
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Header */
+        header {
+            background-color: var(--white);
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header img {
+            max-height: 60px;
+            vertical-align: middle;
+        }
+
+        /* Containers */
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-top: 30px;
+        }
+
+        /* Form Elements */
+        input[type="text"], input[type="email"], input[type="tel"], select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H18.6c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2069.4c0%204.6%201.7%208.5%205.2%2011.8L130.6%20220a17.6%2017.6%200%200%200%2025.2%200L287.2%2081.2c3.5-3.3%205.2-7.2%205.2-11.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: left 15px center;
+            background-size: 12px;
+            padding-left: 35px; /* Adjust based on icon size */
+        }
+
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: auto;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #searchButton {
+            width: 100%;
+        }
+
+        /* Search Results */
+        #searchResults {
+            margin-top: 25px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .businessItem {
+            background-color: var(--light-bg);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .businessItem:hover {
+            background-color: #e2f0ff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        .businessItem h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        .businessItem p {
+            margin: 0;
+            font-size: 0.95em;
+            color: var(--secondary-color);
+        }
+
+        /* Calendar */
+        #calendarHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+        #calendarHeader button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+            margin: 0 5px;
+            transition: color 0.3s ease;
+        }
+        #calendarHeader button:hover {
+            color: #0056b3;
+        }
+
+        #calendarDaysGrid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .day-name {
+            font-weight: bold;
+            color: var(--primary-color);
+            padding: 10px 0;
+            background-color: #e0f0ff;
+            border-radius: 6px;
+        }
+
+        .calendarDay {
+            background-color: var(--light-bg);
+            padding: 15px 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            min-height: 80px; /* Adjust as needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .calendarDay:hover:not(.selected):not(.disabled) {
+            background-color: #e2f0ff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        .calendarDay.selected {
+            background-color: var(--primary-color);
+            color: var(--white);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        .calendarDay.disabled {
+            background-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .calendarDay .date-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .calendarDay .day-available-slots {
+            font-size: 0.8em;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        .calendarDay.selected .day-available-slots {
+             color: var(--white); /* For contrast when selected */
+        }
+        .calendarDay.disabled .day-available-slots {
+            color: var(--secondary-color);
+        }
+
+
+        #availableSlots {
+            margin-top: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .slot {
+            background-color: var(--light-bg);
+            padding: 12px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .slot:hover:not(.selected) {
+            background-color: #e2f0ff;
+            transform: translateY(-2px);
+        }
+        .slot.selected {
+            background-color: var(--success-color);
+            color: var(--white);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        .slot.booked {
+            background-color: var(--danger-color);
+            color: var(--white);
+            cursor: not-allowed;
+            opacity: 0.8;
+            box-shadow: none;
+        }
+
+        .service-selection, .team-member-selection {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        /* Customer Profile Section */
+        #customerProfile {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            text-align: center;
+        }
+        #customerProfile p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        #customerProfile button {
+            background-color: var(--secondary-color);
+            margin-right: 10px;
+        }
+        #customerProfile button:hover {
+            background-color: #5a6268;
+        }
+
+        /* Login/Register Forms */
+        #authSection {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: var(--light-bg);
+        }
+        #authSection h2 {
+            margin-bottom: 15px;
+            color: var(--dark-text);
+        }
+        #authSection button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        #toggleAuthMode {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        #toggleAuthMode:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading">
+    <img src="https://i.postimg.cc/FK1mjxYZ/8.png" alt="לוגו Torim">
+    <p>טוען מערכת תורים...</p>
+</div>
+
+<header>
+    <img src="https://i.postimg.cc/FK1mjxYZ/8.png" alt="לוגו Torim">
+</header>
+
+<div class="container" id="mainContent" style="display: none;">
+    <div id="customerAuthSection">
+        <div id="customerProfile" style="display: none;">
+            <p>שלום, <strong id="customerDisplayName"></strong>!</p>
+            <button id="logoutCustomerButton">התנתק</button>
+        </div>
+
+        <div id="authSection" style="display: block;">
+            <h2>התחבר/הירשם כלקוח</h2>
+            <input type="email" id="customerAuthEmail" placeholder="אימייל">
+            <input type="password" id="customerAuthPassword" placeholder="סיסמה">
+            <button id="customerLoginButton">התחבר</button>
+            <button id="customerRegisterButton" style="background-color: var(--success-color);">הירשם</button>
+            <button id="toggleAuthMode">עדיין לא רוצה להירשם? המשך כאורח</button>
+        </div>
+    </div>
+    <hr>
+
+    <h1>מצא עסק לקביעת תור</h1>
+    <input type="text" id="businessSearch" placeholder="חפש עסק לפי שם...">
+    <button id="searchButton">חפש</button>
+
+    <div id="searchResults">
+        <p style="text-align: center; color: var(--secondary-color);">התחל בחיפוש עסק...</p>
+    </div>
+</div>
+
+<div class="container" id="businessDetailsContainer" style="display: none;">
+    <button id="backToSearch" style="background-color: var(--secondary-color); margin-bottom: 20px;">
+        <i class="fas fa-arrow-right"></i> חזור לחיפוש עסקים
+    </button>
+    <h1 id="businessName"></h1>
+    <p style="text-align: center;"><a id="businessAddressLink" href="#" target="_blank" style="color: var(--primary-color); text-decoration: none;"></a></p>
+
+    <div class="service-selection">
+        <h2>בחר שירות</h2>
+        <select id="serviceSelect">
+            <option value="">בחר שירות...</option>
+        </select>
+    </div>
+
+    <div class="team-member-selection" style="display: none;">
+        <h2>בחר איש צוות</h2>
+        <select id="teamMemberSelect">
+            <option value="">בחר איש צוות...</option>
+        </select>
+    </div>
+
+    <h2>בחר תאריך ושעה</h2>
+    <div id="calendarHeader">
+        <button id="prevMonth"><i class="fas fa-chevron-right"></i></button>
+        <span id="currentMonthYear">יוני 2025</span>
+        <button id="nextMonth"><i class="fas fa-chevron-left"></i></button>
+    </div>
+    <div id="calendarDaysGrid">
+        <div class="day-name">א׳</div>
+        <div class="day-name">ב׳</div>
+        <div class="day-name">ג׳</div>
+        <div class="day-name">ד׳</div>
+        <div class="day-name">ה׳</div>
+        <div class="day-name">ו׳</div>
+        <div class="day-name">ש׳</div>
+        </div>
+
+    <div id="availableSlots">
+        <p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>
+    </div>
+
+    <h2>פרטי הזמנה</h2>
+    <input type="text" id="customerName" placeholder="שם מלא" required>
+    <input type="email" id="customerEmail" placeholder="כתובת אימייל" required>
+    <input type="tel" id="customerPhone" placeholder="מספר טלפון" required>
+    <button id="bookAppointmentButton">קבע תור</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9Yx45QdVZpk6qfscw-buJYnXxEYziQII",
+        authDomain: "torim-titus.firebaseapp.com",
+        projectId: "torim-titus",
+        storageBucket: "torim-titus.firebasestorage.app",
+        messagingSenderId: "38963060106",
+        appId: "1:38963060106:web:b27223980b52d925be7c73",
+        measurementId: "G-ZKYQS4CF6N"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // DOM Elements
+    const loadingScreen = document.getElementById('loading');
+    const mainContent = document.getElementById('mainContent');
+    const customerAuthSection = document.getElementById('customerAuthSection');
+    const customerProfileDiv = document.getElementById('customerProfile');
+    const customerDisplayNameSpan = document.getElementById('customerDisplayName');
+    const logoutCustomerButton = document.getElementById('logoutCustomerButton');
+    const authSection = document.getElementById('authSection');
+    const customerAuthEmailInput = document.getElementById('customerAuthEmail');
+    const customerAuthPasswordInput = document.getElementById('customerAuthPassword');
+    const customerLoginButton = document.getElementById('customerLoginButton');
+    const customerRegisterButton = document.getElementById('customerRegisterButton');
+    const toggleAuthModeButton = document.getElementById('toggleAuthMode');
+
+    const businessSearchInput = document.getElementById('businessSearch');
+    const searchButton = document.getElementById('searchButton');
+    const searchResultsDiv = document.getElementById('searchResults');
+    const businessDetailsContainer = document.getElementById('businessDetailsContainer');
+    const backToSearchButton = document.getElementById('backToSearch');
+    const businessNameH1 = document.getElementById('businessName');
+    const businessAddressLink = document.getElementById('businessAddressLink');
+    const serviceSelect = document.getElementById('serviceSelect');
+    const teamMemberSelect = document.getElementById('teamMemberSelect');
+    const calendarHeader = document.getElementById('calendarHeader');
+    const currentMonthYearSpan = document.getElementById('currentMonthYear');
+    const prevMonthButton = document.getElementById('prevMonth');
+    const nextMonthButton = document.getElementById('nextMonth');
+    const calendarDaysGrid = document.getElementById('calendarDaysGrid');
+    const availableSlotsDiv = document.getElementById('availableSlots');
+    const customerNameInput = document.getElementById('customerName');
+    const customerEmailInput = document.getElementById('customerEmail');
+    const customerPhoneInput = document.getElementById('customerPhone');
+    const bookAppointmentButton = document.getElementById('bookAppointmentButton');
+
+    let currentBusiness = null;
+    let selectedDate = null;
+    let selectedSlot = null;
+    let selectedService = null;
+    let selectedTeamMember = null;
+    let currentMonth = new Date(); // Stores the currently displayed month in the calendar
+    let customerUser = null; // Stores the Firebase Auth user object for the customer
+
+    // --- Loading Screen Logic ---
+    const MIN_LOADING_TIME = 2000; // 2 seconds
+    let startTime = Date.now();
+
+    window.addEventListener('load', () => {
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = MIN_LOADING_TIME - elapsedTime;
+
+        setTimeout(() => {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.addEventListener('transitionend', () => {
+                loadingScreen.style.display = 'none';
+                mainContent.style.display = 'block'; // Show main content
+            });
+        }, Math.max(0, remainingTime));
+    });
+
+    // --- Customer Authentication Logic ---
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            customerUser = user;
+            // Load customer profile if exists
+            const customerDocRef = doc(db, "customers", user.uid);
+            const customerDocSnap = await getDoc(customerDocRef);
+            if (customerDocSnap.exists()) {
+                const customerData = customerDocSnap.data();
+                customerDisplayNameSpan.textContent = customerData.name || user.email;
+                customerNameInput.value = customerData.name || '';
+                customerEmailInput.value = customerData.email || user.email;
+                customerPhoneInput.value = customerData.phone || '';
+            } else {
+                customerDisplayNameSpan.textContent = user.email;
+                customerEmailInput.value = user.email;
+            }
+            customerProfileDiv.style.display = 'block';
+            authSection.style.display = 'none';
+        } else {
+            customerUser = null;
+            customerProfileDiv.style.display = 'none';
+            authSection.style.display = 'block';
+            customerNameInput.value = '';
+            customerEmailInput.value = '';
+            customerPhoneInput.value = '';
+        }
+    });
+
+    customerRegisterButton.addEventListener('click', async () => {
+        const email = customerAuthEmailInput.value;
+        const password = customerAuthPasswordInput.value;
+        if (!email || !password) {
+            alert("אנא הזן אימייל וסיסמה להרשמה.");
+            return;
+        }
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            await setDoc(doc(db, "customers", user.uid), {
+                email: user.email,
+                name: "", // Will be updated when they book an appointment
+                phone: ""
+            });
+            alert("נרשמת בהצלחה! הפרטים שלך ישמרו אוטומטית בקביעת תור.");
+        } catch (error) {
+            alert(`שגיאת הרשמה: ${error.message}`);
+        }
+    });
+
+    customerLoginButton.addEventListener('click', async () => {
+        const email = customerAuthEmailInput.value;
+        const password = customerAuthPasswordInput.value;
+        if (!email || !password) {
+            alert("אנא הזן אימייל וסיסמה להתחברות.");
+            return;
+        }
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            alert("התחברת בהצלחה!");
+        } catch (error) {
+            alert(`שגיאת התחברות: ${error.message}`);
+        }
+    });
+
+    logoutCustomerButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            alert("התנתקת בהצלחה.");
+        } catch (error) {
+            console.error("Error signing out:", error);
+            alert("אירעה שגיאה בהתנתקות.");
+        }
+    });
+
+    toggleAuthMode.addEventListener('click', () => {
+        if (authSection.style.display === 'block') {
+            authSection.style.display = 'none';
+            toggleAuthMode.textContent = 'התחבר/הירשם';
+        } else {
+            authSection.style.display = 'block';
+            toggleAuthMode.textContent = 'עדיין לא רוצה להירשם? המשך כאורח';
+        }
+    });
+
+
+    // --- Business Search Logic ---
+    searchButton.addEventListener('click', async () => {
+        const searchTerm = businessSearchInput.value.trim();
+        if (searchTerm === "") {
+            searchResultsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">אנא הזן שם עסק לחיפוש.</p>';
+            return;
+        }
+
+        searchResultsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">מחפש עסקים...</p>';
+        try {
+            // Firestore doesn't directly support 'contains' for strings.
+            // For simple "starts with" or partial matching, you can use range queries if sorted:
+            // Query for businesses starting with searchTerm
+            const startQuery = query(
+                collection(db, "businesses"),
+                where("name", ">=", searchTerm),
+                where("name", "<=", searchTerm + '\uf8ff') // \uf8ff is a high-value Unicode character
+            );
+
+            // You might need to combine results from multiple queries or use a server-side search solution for more robust partial matching.
+            const querySnapshot = await getDocs(startQuery);
+
+            if (querySnapshot.empty) {
+                searchResultsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">לא נמצאו עסקים תואמים.</p>';
+                return;
+            }
+
+            searchResultsDiv.innerHTML = '';
+            querySnapshot.forEach((docSnap) => {
+                const business = docSnap.data();
+                const businessId = docSnap.id;
+                // Filter by a more general match if needed (case-insensitive, contains)
+                if (business.name && business.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                    const businessItem = document.createElement('div');
+                    businessItem.className = 'businessItem';
+                    businessItem.dataset.businessId = businessId;
+                    businessItem.innerHTML = `<h3>${business.name}</h3><p>${business.address}</p>`;
+                    businessItem.addEventListener('click', () => selectBusiness(businessId, business));
+                    searchResultsDiv.appendChild(businessItem);
+                }
+            });
+
+            if (searchResultsDiv.innerHTML === '') {
+                 searchResultsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">לא נמצאו עסקים תואמים לשם שהוזן.</p>';
+            }
+
+        } catch (e) {
+            console.error("Error searching businesses: ", e);
+            searchResultsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">אירעה שגיאה בחיפוש עסקים.</p>';
+        }
+    });
+
+    // --- Select Business and Load Details ---
+    async function selectBusiness(businessId, businessData) {
+        currentBusiness = { id: businessId, ...businessData };
+        businessNameH1.textContent = currentBusiness.name;
+        businessAddressLink.textContent = currentBusiness.address;
+        businessAddressLink.href = currentBusiness.addressLink;
+
+        // Load Services
+        serviceSelect.innerHTML = '<option value="">בחר שירות...</option>';
+        if (currentBusiness.services && currentBusiness.services.length > 0) {
+            currentBusiness.services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.id;
+                option.textContent = `${service.name} (${service.price} ש"ח, ${service.duration} דק)`;
+                serviceSelect.appendChild(option);
+            });
+        } else {
+            serviceSelect.innerHTML += '<option value="" disabled>אין שירותים זמינים לעסק זה.</option>';
+        }
+
+        // Hide search, show business details
+        mainContent.style.display = 'none';
+        businessDetailsContainer.style.display = 'block';
+
+        // Reset selections
+        serviceSelect.value = '';
+        teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>';
+        teamMemberSelect.parentElement.style.display = 'none';
+        calendarDaysGrid.innerHTML = '<div class="day-name">א׳</div><div class="day-name">ב׳</div><div class="day-name">ג׳</div><div class="day-name">ד׳</div><div class="day-name">ה׳</div><div class="day-name">ו׳</div><div class="day-name">ש׳</div>';
+        availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>';
+        selectedDate = null;
+        selectedSlot = null;
+        selectedService = null;
+        selectedTeamMember = null;
+        customerNameInput.value = customerUser ? (await getDoc(doc(db, "customers", customerUser.uid))).data().name || '' : '';
+        customerEmailInput.value = customerUser ? customerUser.email : '';
+        customerPhoneInput.value = customerUser ? (await getDoc(doc(db, "customers", customerUser.uid))).data().phone || '' : '';
+    }
+
+    backToSearchButton.addEventListener('click', () => {
+        businessDetailsContainer.style.display = 'none';
+        mainContent.style.display = 'block';
+        businessSearchInput.value = ''; // Clear search
+        searchResultsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">התחל בחיפוש עסק...</p>';
+    });
+
+
+    // --- Service Selection & Team Member Filtering ---
+    serviceSelect.addEventListener('change', () => {
+        selectedService = serviceSelect.value;
+        teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>'; // Clear previous
+        teamMemberSelect.parentElement.style.display = 'none'; // Hide by default
+
+        if (!selectedService || !currentBusiness || !currentBusiness.teamMembers || !currentBusiness.services) {
+            calendarDaysGrid.innerHTML = '<div class="day-name">א׳</div><div class="day-name">ב׳</div><div class="day-name">ג׳</div><div class="day-name">ד׳</div><div class="day-name">ה׳</div><div class="day-name">ו׳</div><div class="day-name">ש׳</div>';
+            availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>';
+            selectedTeamMember = null; // Reset
+            return;
+        }
+
+        const chosenService = currentBusiness.services.find(s => s.id === selectedService);
+        if (chosenService && chosenService.assignedTeamMembers && chosenService.assignedTeamMembers.length > 0) {
+            const filteredTeamMembers = currentBusiness.teamMembers.filter(member =>
+                chosenService.assignedTeamMembers.includes(member.id)
+            );
+            if (filteredTeamMembers.length > 0) {
+                filteredTeamMembers.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member.id;
+                    option.textContent = member.name;
+                    teamMemberSelect.appendChild(option);
+                });
+                teamMemberSelect.parentElement.style.display = 'block'; // Show
+            } else {
+                teamMemberSelect.innerHTML += '<option value="" disabled>אין אנשי צוות זמינים לשירות זה.</option>';
+            }
+        } else if (currentBusiness.teamMembers.length > 0) {
+            // If service has no assigned team members, show all (or adapt logic)
+            currentBusiness.teamMembers.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = member.name;
+                teamMemberSelect.appendChild(option);
+            });
+            teamMemberSelect.parentElement.style.display = 'block'; // Show
+        }
+
+        // Reset calendar and slots on service change
+        selectedTeamMember = null;
+        calendarDaysGrid.innerHTML = '<div class="day-name">א׳</div><div class="day-name">ב׳</div><div class="day-name">ג׳</div><div class="day-name">ד׳</div><div class="day-name">ה׳</div><div class="day-name">ו׳</div><div class="day-name">ש׳</div>';
+        availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>';
+    });
+
+    // --- Team Member Selection & Calendar Generation ---
+    teamMemberSelect.addEventListener('change', () => {
+        selectedTeamMember = teamMemberSelect.value;
+        if (selectedService && selectedTeamMember) {
+            renderCalendar(currentMonth);
+        } else {
+            calendarDaysGrid.innerHTML = '<div class="day-name">א׳</div><div class="day-name">ב׳</div><div class="day-name">ג׳</div><div class="day-name">ד׳</div><div class="day-name">ה׳</div><div class="day-name">ו׳</div><div class="day-name">ש׳</div>';
+            availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>';
+            selectedDate = null; // Reset
+            selectedSlot = null; // Reset
+        }
+    });
+
+    // --- Calendar Rendering Logic ---
+    function renderCalendar(date) {
+        currentMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        currentMonthYearSpan.textContent = currentMonth.toLocaleDateString('he-IL', { year: 'numeric', month: 'long' });
+        calendarDaysGrid.innerHTML = '<div class="day-name">א׳</div><div class="day-name">ב׳</div><div class="day-name">ג׳</div><div class="day-name">ד׳</div><div class="day-name">ה׳</div><div class="day-name">ו׳</div><div class="day-name">ש׳</div>'; // Reset grid
+
+        const firstDayOfMonth = currentMonth.getDay(); // 0 for Sunday, 1 for Monday...
+        const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        // Fill leading empty days
+        // Adjust for Hebrew calendar: Sunday is 0, but often displayed first.
+        // If your week starts on Sunday, firstDayOfMonth is correct.
+        // If your week starts on Monday, you might need (firstDayOfMonth + 6) % 7
+        // For Hebrew/RTL, often Sunday (0) is on the right, Saturday (6) on the left.
+        // Let's assume standard JS day indexing (0=Sun, 1=Mon...6=Sat) and render from right to left as per RTL.
+        // The grid setup itself (א,ב,ג...) assumes a visual RTL flow.
+        // So, if firstDayOfMonth is 0 (Sunday), there are 0 empty cells before it.
+        // If firstDayOfMonth is 1 (Monday), there is 1 empty cell before it (Sunday).
+        // To push Monday to the second visual column, we need 1 empty cell.
+        // For RTL layout with Sun-Sat:
+        //  Sun Mon Tue Wed Thu Fri Sat
+        //    ^
+        //    firstDayOfMonth is 0 (Sunday)
+        // We need (firstDayOfMonth) empty cells at the start for visual alignment.
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            const emptyDiv = document.createElement('div');
+            calendarDaysGrid.appendChild(emptyDiv);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const currentDate = new Date(date.getFullYear(), date.getMonth(), day);
+            currentDate.setHours(0,0,0,0);
+            const formattedDate = currentDate.toISOString().split('T')[0];
+
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendarDay';
+            dayElement.dataset.date = formattedDate;
+            dayElement.innerHTML = `<span class="date-number">${day}</span><span class="day-available-slots"></span>`;
+
+            if (currentDate < today) { // Disable past days
+                dayElement.classList.add('disabled');
+            } else {
+                // Attach click listener for future days
+                dayElement.addEventListener('click', () => selectDay(formattedDate));
+                // Immediately check and display slot count for this day
+                // This call should be debounced or optimized for performance
+                // For now, calling it directly for up to 30 days.
+                // For a full month, this might be too many queries.
+                // A better approach is to fetch all daily data for the month once.
+                fetchAndDisplayAvailableSlotsCount(formattedDate, dayElement.querySelector('.day-available-slots'));
+            }
+            calendarDaysGrid.appendChild(dayElement);
+        }
+        availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>';
+    }
+
+    prevMonthButton.addEventListener('click', () => {
+        currentMonth.setMonth(currentMonth.getMonth() - 1);
+        renderCalendar(currentMonth);
+    });
+
+    nextMonthButton.addEventListener('click', () => {
+        currentMonth.setMonth(currentMonth.getMonth() + 1);
+        renderCalendar(currentMonth);
+    });
+
+    // --- Fetch and Display Available Slots Count for each Day ---
+    async function fetchAndDisplayAvailableSlotsCount(dateString, targetElement) {
+        if (!currentBusiness || !selectedService || !selectedTeamMember) {
+            targetElement.textContent = ''; // Clear if prerequisites not met
+            return;
+        }
+
+        try {
+            const businessId = currentBusiness.id;
+            const teamMemberId = selectedTeamMember;
+            const serviceId = selectedService;
+
+            const chosenService = currentBusiness.services.find(s => s.id === serviceId);
+            const appointmentDuration = chosenService ? chosenService.duration : (currentBusiness.appointmentDuration || 30);
+            const breakDuration = currentBusiness.breakDuration || 0;
+
+            const date = new Date(dateString);
+            const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...6=Sat
+            const dayName = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'][dayOfWeek];
+
+            // 1. Check if business works on this day
+            if (!currentBusiness.workDays || !currentBusiness.workDays.includes(dayName)) {
+                targetElement.textContent = 'סגור';
+                const dayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+                if (dayElement) dayElement.classList.add('disabled');
+                return 0;
+            }
+
+            // 2. Check general business unavailable dates
+            const isBusinessDateBlocked = (currentBusiness.unavailableDates || []).some(range => {
+                const start = new Date(range.startDate);
+                const end = new Date(range.endDate);
+                start.setHours(0,0,0,0); end.setHours(0,0,0,0);
+                return date >= start && date <= end;
+            });
+            if (isBusinessDateBlocked) {
+                targetElement.textContent = 'חסום';
+                const dayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+                if (dayElement) dayElement.classList.add('disabled');
+                return 0;
+            }
+
+            // 3. Check team member specific unavailable dates (if implemented in admin for team members)
+            // This would require fetching team member's specific unavailable data from Firestore
+            // For now, assume it's part of currentBusiness.teamMembers data if you expanded it.
+            const currentTeamMemberObj = currentBusiness.teamMembers.find(tm => tm.id === teamMemberId);
+            const isTeamMemberDateBlocked = (currentTeamMemberObj?.unavailableDates || []).some(range => {
+                const start = new Date(range.startDate);
+                const end = new Date(range.endDate);
+                start.setHours(0,0,0,0); end.setHours(0,0,0,0);
+                return date >= start && date <= end;
+            });
+            if (isTeamMemberDateBlocked) {
+                targetElement.textContent = 'תפוס';
+                const dayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+                if (dayElement) dayElement.classList.add('disabled');
+                return 0;
+            }
+
+
+            // 4. Get existing appointments for this day and team member
+            const appointmentsQuery = query(
+                collection(db, "appointments"),
+                where("businessId", "==", businessId),
+                where("teamMemberId", "==", teamMemberId),
+                where("date", "==", dateString)
+            );
+            const appointmentsSnapshot = await getDocs(appointmentsQuery);
+            const existingAppointments = appointmentsSnapshot.docs.map(docSnap => docSnap.data());
+
+            // 5. Get general business unavailable hours for this day
+            const businessUnavailableHoursForDate = (currentBusiness.unavailableHours || []).filter(uh => uh.date === dateString);
+
+            // 6. Get team member specific unavailable hours for this day (if implemented)
+            const teamMemberUnavailableHoursForDate = (currentTeamMemberObj?.unavailableHours || []).filter(uh => uh.date === dateString);
+
+
+            let availableSlotsCount = 0;
+            let currentTime = new Date(`${dateString}T${currentBusiness.openTime}`);
+            const endTime = new Date(`${dateString}T${currentBusiness.closeTime}`);
+
+            while (currentTime < endTime) {
+                const slotEndTime = new Date(currentTime.getTime() + appointmentDuration * 60 * 1000);
+
+                if (slotEndTime > endTime) {
+                    break;
+                }
+
+                let isSlotAvailable = true;
+
+                // Check collision with existing appointments
+                for (const app of existingAppointments) {
+                    const appStart = new Date(`${app.date}T${app.time}`);
+                    // Use actual appointment duration if stored, otherwise default or service duration
+                    const appDuration = app.duration || currentBusiness.appointmentDuration || 30;
+                    const appEnd = new Date(appStart.getTime() + appDuration * 60 * 1000);
+
+                    if (currentTime < appEnd && slotEndTime > appStart) { // Overlap condition
+                        isSlotAvailable = false;
+                        break;
+                    }
+                }
+
+                // Check collision with business unavailable hours
+                if (isSlotAvailable) {
+                    for (const blocked of businessUnavailableHoursForDate) {
+                        const blockedStart = new Date(`${dateString}T${blocked.startTime}`);
+                        const blockedEnd = new Date(`${dateString}T${blocked.endTime}`);
+                        if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+                            isSlotAvailable = false;
+                            break;
+                        }
+                    }
+                }
+
+                // Check collision with team member unavailable hours
+                if (isSlotAvailable) {
+                    for (const blocked of teamMemberUnavailableHoursForDate) {
+                        const blockedStart = new Date(`${dateString}T${blocked.startTime}`);
+                        const blockedEnd = new Date(`${dateString}T${blocked.endTime}`);
+                        if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+                            isSlotAvailable = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (isSlotAvailable) {
+                    availableSlotsCount++;
+                }
+
+                currentTime = new Date(slotEndTime.getTime() + breakDuration * 60 * 1000);
+            }
+            targetElement.textContent = availableSlotsCount > 0 ? `${availableSlotsCount} תורים` : 'אין תורים';
+            if (availableSlotsCount === 0) {
+                 const dayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+                 if (dayElement) dayElement.classList.add('disabled');
+            }
+            return availableSlotsCount;
+
+        } catch (e) {
+            console.error("Error fetching available slots count:", e);
+            targetElement.textContent = 'שגיאה';
+            return 0;
+        }
+    }
+
+    // --- Select Day and Display Detailed Slots ---
+    async function selectDay(dateString) {
+        // Clear previous selection
+        document.querySelectorAll('.calendarDay').forEach(day => day.classList.remove('selected'));
+        // Add current selection
+        const selectedDayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+        if (selectedDayElement) {
+            selectedDayElement.classList.add('selected');
+        }
+
+        selectedDate = dateString;
+        selectedSlot = null; // Reset selected slot
+
+        availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">טוען שעות זמינות...</p>';
+
+        if (!currentBusiness || !selectedService || !selectedTeamMember) {
+            availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">אנא בחר שירות ואיש צוות תחילה.</p>';
+            return;
+        }
+
+        try {
+            const businessId = currentBusiness.id;
+            const teamMemberId = selectedTeamMember;
+            const serviceId = selectedService;
+
+            const chosenService = currentBusiness.services.find(s => s.id === serviceId);
+            const appointmentDuration = chosenService ? chosenService.duration : (currentBusiness.appointmentDuration || 30);
+            const breakDuration = currentBusiness.breakDuration || 0;
+
+            const date = new Date(dateString);
+            const dayOfWeek = date.getDay();
+            const dayName = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'][dayOfWeek];
+
+            // Re-check general availability (should be covered by count check, but good for robustness)
+            if (!currentBusiness.workDays || !currentBusiness.workDays.includes(dayName) ||
+                (currentBusiness.unavailableDates || []).some(range => {
+                    const start = new Date(range.startDate);
+                    const end = new Date(range.endDate);
+                    start.setHours(0,0,0,0); end.setHours(0,0,0,0);
+                    return date >= start && date <= end;
+                })) {
+                availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">העסק/התאריך אינו זמין ביום זה.</p>';
+                return;
+            }
+
+            const currentTeamMemberObj = currentBusiness.teamMembers.find(tm => tm.id === teamMemberId);
+            // Check team member specific date block (already handled by count, but important here too)
+            const isTeamMemberDateBlocked = (currentTeamMemberObj?.unavailableDates || []).some(range => {
+                const start = new Date(range.startDate);
+                const end = new Date(range.endDate);
+                start.setHours(0,0,0,0); end.setHours(0,0,0,0);
+                return date >= start && date <= end;
+            });
+            if (isTeamMemberDateBlocked) {
+                availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">איש הצוות אינו זמין בתאריך זה.</p>';
+                return;
+            }
+
+            // Get existing appointments for this day and team member
+            const appointmentsQuery = query(
+                collection(db, "appointments"),
+                where("businessId", "==", businessId),
+                where("teamMemberId", "==", teamMemberId),
+                where("date", "==", dateString)
+            );
+            const appointmentsSnapshot = await getDocs(appointmentsQuery);
+            const existingAppointments = appointmentsSnapshot.docs.map(docSnap => docSnap.data());
+
+            // Get general business unavailable hours for this day
+            const businessUnavailableHoursForDate = (currentBusiness.unavailableHours || []).filter(uh => uh.date === dateString);
+
+            // Get team member specific unavailable hours for this day
+            const teamMemberUnavailableHoursForDate = (currentTeamMemberObj?.unavailableHours || []).filter(uh => uh.date === dateString);
+
+
+            availableSlotsDiv.innerHTML = '';
+            let currentTime = new Date(`${dateString}T${currentBusiness.openTime}`);
+            const endTime = new Date(`${dateString}T${currentBusiness.closeTime}`);
+
+            while (currentTime < endTime) {
+                const slotEndTime = new Date(currentTime.getTime() + appointmentDuration * 60 * 1000);
+
+                if (slotEndTime > endTime) {
+                    break;
+                }
+
+                const formattedSlot = currentTime.toTimeString().substring(0, 5); // HH:MM
+
+                let isSlotAvailable = true;
+
+                // Check collision with existing appointments
+                for (const app of existingAppointments) {
+                    const appStart = new Date(`${app.date}T${app.time}`);
+                    const appDuration = app.duration || currentBusiness.appointmentDuration || 30;
+                    const appEnd = new Date(appStart.getTime() + appDuration * 60 * 1000);
+
+                    if (currentTime < appEnd && slotEndTime > appStart) {
+                        isSlotAvailable = false;
+                        break;
+                    }
+                }
+
+                // Check collision with business unavailable hours
+                if (isSlotAvailable) {
+                    for (const blocked of businessUnavailableHoursForDate) {
+                        const blockedStart = new Date(`${dateString}T${blocked.startTime}`);
+                        const blockedEnd = new Date(`${dateString}T${blocked.endTime}`);
+                        if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+                            isSlotAvailable = false;
+                            break;
+                        }
+                    }
+                }
+
+                // Check collision with team member unavailable hours
+                if (isSlotAvailable) {
+                    for (const blocked of teamMemberUnavailableHoursForDate) {
+                        const blockedStart = new Date(`${dateString}T${blocked.startTime}`);
+                        const blockedEnd = new Date(`${dateString}T${blocked.endTime}`);
+                        if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+                            isSlotAvailable = false;
+                            break;
+                        }
+                    }
+                }
+
+
+                const slotElement = document.createElement('div');
+                slotElement.className = 'slot';
+                slotElement.dataset.time = formattedSlot;
+                slotElement.textContent = formattedSlot;
+
+                if (isSlotAvailable) {
+                    slotElement.addEventListener('click', () => {
+                        document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+                        slotElement.classList.add('selected');
+                        selectedSlot = formattedSlot;
+                    });
+                } else {
+                    slotElement.classList.add('booked');
+                    slotElement.title = "תור תפוס או חסום";
+                }
+                availableSlotsDiv.appendChild(slotElement);
+
+                currentTime = new Date(slotEndTime.getTime() + breakDuration * 60 * 1000);
+            }
+
+            if (availableSlotsDiv.innerHTML === '') {
+                availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">אין שעות זמינות בתאריך זה.</p>';
+            }
+
+        } catch (e) {
+            console.error("Error selecting day and loading slots:", e);
+            availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">אירעה שגיאה בטעינת שעות זמינות.</p>';
+        }
+    }
+
+
+    // --- Book Appointment ---
+    bookAppointmentButton.addEventListener('click', async () => {
+        if (!currentBusiness || !selectedDate || !selectedSlot || !selectedService || !selectedTeamMember) {
+            alert("אנא בחר עסק, שירות, איש צוות, תאריך ושעה לפני קביעת התור.");
+            return;
+        }
+
+        const customerName = customerNameInput.value.trim();
+        const customerEmail = customerEmailInput.value.trim();
+        const customerPhone = customerPhoneInput.value.trim();
+
+        if (!customerName || !customerEmail || !customerPhone) {
+            alert("אנא מלא את כל פרטי הלקוח.");
+            return;
+        }
+
+        const serviceDetails = currentBusiness.services.find(s => s.id === selectedService);
+        const appointmentDuration = serviceDetails ? serviceDetails.duration : (currentBusiness.appointmentDuration || 30);
+
+        try {
+            // Update customer profile if logged in
+            if (customerUser) {
+                const customerDocRef = doc(db, "customers", customerUser.uid);
+                await updateDoc(customerDocRef, {
+                    name: customerName,
+                    email: customerEmail,
+                    phone: customerPhone
+                }, { merge: true }); // Use merge to only update specified fields
+            }
+
+            // Add appointment
+            await addDoc(collection(db, "appointments"), {
+                businessId: currentBusiness.id,
+                businessName: currentBusiness.name,
+                serviceId: selectedService,
+                serviceName: serviceDetails ? serviceDetails.name : 'שירות לא ידוע',
+                teamMemberId: selectedTeamMember,
+                teamMemberName: teamMemberSelect.options[teamMemberSelect.selectedIndex].text,
+                date: selectedDate,
+                time: selectedSlot,
+                duration: appointmentDuration,
+                customerName: customerName,
+                customerEmail: customerEmail,
+                customerPhone: customerPhone,
+                timestamp: new Date().toISOString()
+            });
+
+            alert("התור נקבע בהצלחה!");
+            // Reset fields
+            customerNameInput.value = customerUser ? (await getDoc(doc(db, "customers", customerUser.uid))).data().name || '' : '';
+            customerEmailInput.value = customerUser ? customerUser.email : '';
+            customerPhoneInput.value = customerUser ? (await getDoc(doc(db, "customers", customerUser.uid))).data().phone || '' : '';
+            serviceSelect.value = '';
+            teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>';
+            teamMemberSelect.parentElement.style.display = 'none';
+            calendarDaysGrid.innerHTML = '<div class="day-name">א׳</div><div class="day-name">ב׳</div><div class="day-name">ג׳</div><div class="day-name">ד׳</div><div class="day-name">ה׳</div><div class="day-name">ו׳</div><div class="day-name">ש׳</div>';
+            availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>';
+            selectedDate = null;
+            selectedSlot = null;
+            selectedService = null;
+            selectedTeamMember = null;
+            renderCalendar(currentMonth); // Re-render calendar to show updated availability
+        } catch (e) {
+            console.error("Error booking appointment: ", e);
+            alert("אירעה שגיאה בקביעת התור. אנא נסה שוב.");
+        }
+    });
+
+</script>
+</body>
+</html>
