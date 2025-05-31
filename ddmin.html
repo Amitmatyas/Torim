@@ -838,19 +838,26 @@ const addTmUnavailableHoursButton = document.getElementById('addTmUnavailableHou
     };
 
     // Services (Business Owner side)
-    function populateTeamMembersForServices() {
-        newServiceTeamMembersSelect.innerHTML = '';
-        if (businessData.teamMembers && businessData.teamMembers.length > 0) {
-            businessData.teamMembers.forEach(member => {
-                const option = document.createElement('option');
-                option.value = member.id;
-                option.textContent = member.name;
-                newServiceTeamMembersSelect.appendChild(option);
-            });
-        } else {
-            newServiceTeamMembersSelect.innerHTML = '<option disabled>הוסף אנשי צוות קודם</option>';
-        }
+function populateTeamMembersForServices() {
+    const container = document.getElementById('teamMembersCheckboxes');
+    if (!container) return; // הגנה במקרה שה-div לא נטען
+    container.innerHTML = '';
+    if (businessData.teamMembers && businessData.teamMembers.length > 0) {
+        businessData.teamMembers.forEach(member => {
+            const label = document.createElement('label');
+            label.style.marginLeft = '15px';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = member.id;
+            checkbox.name = 'serviceTeamMember';
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(' ' + member.name));
+            container.appendChild(label);
+        });
+    } else {
+        container.innerHTML = '<p>הוסף אנשי צוות קודם</p>';
     }
+}
 
     addServiceButton.addEventListener('click', async () => {
         const name = newServiceNameInput.value.trim();
