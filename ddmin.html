@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torim</title>
+    <link rel="icon" href="https://i.postimg.cc/FK1mjxYZ/8.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --dark-text: #343a40;
+            --border-color: #e9ecef;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Loading Screen */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+            opacity: 1;
+        }
+
+        #loading img {
+            max-width: 250px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        #loading p {
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Header */
+        header {
+            background-color: var(--white);
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header img {
+            max-height: 60px;
+            vertical-align: middle;
+        }
+
+        /* Containers */
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: var(--dark-text);
+        }
+
+        /* Form Elements */
+        input[type="text"], input[type="email"], input[type="password"], input[type="time"], select, input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        select[multiple] {
+            min-height: 120px; /* Make multiple select clearly visible */
+        }
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H18.6c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2069.4c0%204.6%201.7%208.5%205.2%2011.8L130.6%20220a17.6%2017.6%200%200%200%2025.2%200L287.2%2081.2c3.5-3.3%205.2-7.2%205.2-11.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: left 15px center;
+            background-size: 12px;
+            padding-left: 35px; /* Adjust based on icon size */
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: auto;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        button.danger {
+            background-color: var(--danger-color);
+        }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+        button.secondary {
+            background-color: var(--secondary-color);
+        }
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* List Items */
+        .appointmentsList, .membersList, .servicesList, .unavailableList {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .appointmentItem, .memberItem, .serviceItem, .unavailableItem {
+            background-color: var(--light-bg);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .memberItem button, .serviceItem button, .unavailableItem button {
+            margin-right: 8px; /* For RTL */
+            padding: 8px 15px;
+            font-size: 0.9em;
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .form-group:last-of-type {
+            border-bottom: none;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark-text);
+        }
+
+        .day-checkboxes label {
+            display: inline-block;
+            margin-left: 20px; /* For RTL spacing */
+            margin-bottom: 10px;
+        }
+
+        /* Authentication form specific styles */
+        #authContainer {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        #authContainer button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        #authContainer p {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        #authContainer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        #authContainer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading">
+    <img src="https://i.postimg.cc/FK1mjxYZ/8.png" alt="לוגו Torim">
+    <p>טוען מערכת תורים...</p>
+</div>
+
+<header>
+    <img src="https://i.postimg.cc/FK1mjxYZ/8.png" alt="לוגו Torim">
+</header>
+
+<div id="authContainer" class="container" style="display: none;">
+    <h1 id="authTitle">התחברות</h1>
+    <input type="email" id="authEmail" placeholder="אימייל" required>
+    <input type="password" id="authPassword" placeholder="סיסמה" required>
+    <button id="authButton">התחבר</button>
+    <p id="toggleAuthMessage">אין לך חשבון? <a href="#" id="toggleAuthLink">הירשם כאן</a></p>
+</div>
+
+<div class="container" id="businessDashboard" style="display: none;">
+    <h1 id="welcomeMessage"></h1>
+    <button id="logoutButton" class="danger" style="float: left;">התנתק</button>
+    <button id="switchToTeamMember" class="secondary" style="float: right;">מעבר לאיש צוות</button>
+    <div style="clear: both;"></div>
+    <hr style="margin-top: 20px;">
+
+    <h2>ניהול הגדרות עסק</h2>
+    <div class="form-group">
+        <label for="businessName">שם העסק:</label>
+        <input type="text" id="businessName" placeholder="שם העסק">
+    </div>
+    <div class="form-group">
+        <label for="businessAddress">כתובת:</label>
+        <input type="text" id="businessAddress" placeholder="כתובת">
+    </div>
+    <div class="form-group">
+        <label for="businessAddressLink">קישור לכתובת (מפה, לדוגמה גוגל מפות):</label>
+        <input type="text" id="businessAddressLink" placeholder="קישור לכתובת">
+    </div>
+
+    <div class="form-group">
+        <h2>ימי עבודה</h2>
+        <div class="day-checkboxes">
+            <label><input type="checkbox" name="workDay" value="ראשון"> ראשון</label>
+            <label><input type="checkbox" name="workDay" value="שני"> שני</label>
+            <label><input type="checkbox" name="workDay" value="שלישי"> שלישי</label>
+            <label><input type="checkbox" name="workDay" value="רביעי"> רביעי</label>
+            <label><input type="checkbox" name="workDay" value="חמישי"> חמישי</label>
+            <label><input type="checkbox" name="workDay" value="שישי"> שישי</label>
+            <label><input type="checkbox" name="workDay" value="שבת"> שבת</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <h2>שעות עבודה כלליות</h2>
+        <label for="openTime">שעת פתיחה:</label>
+        <input type="time" id="openTime">
+        <label for="closeTime">שעת סגירה:</label>
+        <input type="time" id="closeTime">
+    </div>
+
+    <div class="form-group">
+        <h2>זמן תור והפסקה ברירת מחדל</h2>
+        <label for="appointmentDuration">משך זמן תור ברירת מחדל (דקות):</label>
+        <input type="number" id="appointmentDuration" value="30">
+        <label for="breakDuration">משך זמן הפסקה בין תורים (דקות):</label>
+        <input type="number" id="breakDuration" value="0">
+    </div>
+
+    <button id="saveBusinessSettingsButton">שמור הגדרות עסק</button>
+
+    <hr>
+
+    <h2>ניהול אנשי צוות</h2>
+    <input type="text" id="newTeamMemberName" placeholder="שם איש צוות חדש">
+    <input type="email" id="newTeamMemberEmail" placeholder="אימייל לאיש צוות (כניסה)">
+    <button id="addTeamMemberButton">הוסף איש צוות</button>
+    <div id="teamMembersList" class="membersList">
+        <p>לא הוגדרו אנשי צוות עדיין.</p>
+    </div>
+
+    <hr>
+
+    <h2>ניהול שירותים</h2>
+    <input type="text" id="newServiceName" placeholder="שם שירות חדש">
+    <input type="number" id="newServicePrice" placeholder="מחיר" step="0.01">
+    <input type="number" id="newServiceDuration" placeholder="משך (דקות)" value="30">
+    <label for="newServiceTeamMembers">שייך לאנשי צוות (בחר מספר עם Ctrl/Cmd):</label>
+    <select id="newServiceTeamMembers" multiple>
+        </select>
+    <button id="addServiceButton">הוסף שירות</button>
+    <div id="servicesList" class="servicesList">
+        <p>לא הוגדרו שירותים עדיין.</p>
+    </div>
+
+    <hr>
+
+    <h2>תורים קרובים</h2>
+    <div id="appointmentsList" class="appointmentsList">
+        <p>טוען תורים...</p>
+    </div>
+
+    <hr>
+
+    <h2>חסימות כלליות לעסק</h2>
+    <p>חסימות אלה ישפיעו על כלל העסק וכל אנשי הצוות.</p>
+    <div class="form-group">
+        <label for="unavailableDatesStart">טווח תאריכים לא זמין:</label>
+        <input type="date" id="unavailableDatesStart"> עד
+        <input type="date" id="unavailableDatesEnd">
+        <button id="addUnavailableDatesButton">הוסף חסימת תאריכים</button>
+    </div>
+
+    <div class="form-group">
+        <label for="unavailableHoursDate">טווח שעות לא זמין ביום מסוים:</label>
+        <input type="date" id="unavailableHoursDate">
+        <input type="time" id="unavailableHoursStart"> עד
+        <input type="time" id="unavailableHoursEnd">
+        <button id="addUnavailableHoursButton">הוסף חסימת שעות</button>
+    </div>
+
+    <h3>חסימות קיימות:</h3>
+    <div id="existingUnavailableList" class="unavailableList">
+        <p>אין חסימות מוגדרות.</p>
+    </div>
+</div>
+
+<div class="container" id="teamMemberDashboard" style="display: none;">
+    <h1 id="teamMemberWelcomeMessage"></h1>
+    <button id="logoutTeamMemberButton" class="danger" style="float: left;">התנתק</button>
+    <button id="switchToBusinessOwner" class="secondary" style="float: right;">מעבר לניהול עסק</button>
+    <div style="clear: both;"></div>
+    <hr style="margin-top: 20px;">
+
+    <h2>ניהול חסימות אישיות</h2>
+    <p>חסימות אלה ישפיעו רק על הזמינות שלך.</p>
+    <div class="form-group">
+        <label for="tmUnavailableDatesStart">טווח תאריכים לא זמין:</label>
+        <input type="date" id="tmUnavailableDatesStart"> עד
+        <input type="date" id="tmUnavailableDatesEnd">
+        <button id="addTmUnavailableDatesButton">הוסף חסימת תאריכים</button>
+    </div>
+
+    <div class="form-group">
+        <label for="tmUnavailableHoursDate">טווח שעות לא זמין ביום מסוים:</label>
+        <input type="date" id="tmUnavailableHoursDate">
+        <input type="time" id="tmUnavailableHoursStart"> עד
+        <input type="time" id="tmUnavailableHoursEnd">
+        <button id="addTmUnavailableHoursButton">הוסף חסימת שעות</button>
+    </div>
+
+    <h3>חסימות קיימות:</h3>
+    <div id="existingTmUnavailableList" class="unavailableList">
+        <p>אין חסימות מוגדרות.</p>
+    </div>
+
+    <hr>
+
+    <h2>התורים שלי</h2>
+    <div id="teamMemberAppointmentsList" class="appointmentsList">
+        <p>טוען תורים...</p>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9Yx45QdVZpk6qfscw-buJYnXxEYziQII",
+        authDomain: "torim-titus.firebaseapp.com",
+        projectId: "torim-titus",
+        storageBucket: "torim-titus.firebasestorage.app",
+        messagingSenderId: "38963060106",
+        appId: "1:38963060106:web:b27223980b52d925be7c73",
+        measurementId: "G-ZKYQS4CF6N"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // DOM Elements - Authentication
+    const loadingScreen = document.getElementById('loading');
+    const authContainer = document.getElementById('authContainer');
+    const authTitle = document.getElementById('authTitle');
+    const authEmailInput = document.getElementById('authEmail');
+    const authPasswordInput = document.getElementById('authPassword');
+    const authButton = document.getElementById('authButton');
+    const toggleAuthMessage = document.getElementById('toggleAuthMessage');
+    const toggleAuthLink = document.getElementById('toggleAuthLink');
+
+    // DOM Elements - Business Owner Dashboard
+    const businessDashboard = document.getElementById('businessDashboard');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    const logoutButton = document.getElementById('logoutButton');
+    const switchToTeamMemberButton = document.getElementById('switchToTeamMember');
+    const businessNameInput = document.getElementById('businessName');
+    const businessAddressInput = document.getElementById('businessAddress');
+    const businessAddressLinkInput = document.getElementById('businessAddressLink');
+    const workDayCheckboxes = document.querySelectorAll('input[name="workDay"]');
+    const openTimeInput = document.getElementById('openTime');
+    const closeTimeInput = document.getElementById('closeTime');
+    const appointmentDurationInput = document.getElementById('appointmentDuration');
+    const breakDurationInput = document.getElementById('breakDuration');
+    const saveBusinessSettingsButton = document.getElementById('saveBusinessSettingsButton');
+
+    const newTeamMemberNameInput = document.getElementById('newTeamMemberName');
+    const newTeamMemberEmailInput = document.getElementById('newTeamMemberEmail');
+    const addTeamMemberButton = document.getElementById('addTeamMemberButton');
+    const teamMembersListDiv = document.getElementById('teamMembersList');
+
+    const newServiceNameInput = document.getElementById('newServiceName');
+    const newServicePriceInput = document.getElementById('newServicePrice');
+    const newServiceDurationInput = document.getElementById('newServiceDuration');
+    const newServiceTeamMembersSelect = document.getElementById('newServiceTeamMembers');
+    const addServiceButton = document.getElementById('addServiceButton');
+    const servicesListDiv = document.getElementById('servicesList');
+
+    const appointmentsListDiv = document.getElementById('appointmentsList');
+    const unavailableDatesStartInput = document.getElementById('unavailableDatesStart');
+    const unavailableDatesEndInput = document.getElementById('unavailableDatesEnd');
+    const addUnavailableDatesButton = document.getElementById('addUnavailableDatesButton');
+    const unavailableHoursDateInput = document.getElementById('unavailableHoursDate');
+    const unavailableHoursStartInput = document.getElementById('unavailableHoursStart');
+    const unavailableHoursEndInput = document.getElementById('unavailableHoursEnd');
+    const addUnavailableHoursButton = document.getElementById('addUnavailableHoursButton');
+    const existingUnavailableListDiv = document.getElementById('existingUnavailableList');
+
+    // DOM Elements - Team Member Dashboard
+    const teamMemberDashboard = document.getElementById('teamMemberDashboard');
+    const teamMemberWelcomeMessage = document.getElementById('teamMemberWelcomeMessage');
+    const logoutTeamMemberButton = document.getElementById('logoutTeamMemberButton');
+    const switchToBusinessOwnerButton = document.getElementById('switchToBusinessOwner');
+    const tmUnavailableDatesStartInput = document.getElementById('tmUnavailableDatesStart');
+    const tmUnavailableDatesEndInput = document.getElementById('tmUnavailableDatesEnd');
+    const addTmUnavailableDatesButton = document.getElementById('addTmUnavailableDatesButton');
+    const tmUnavailableHoursDateInput = document.getElementById('tmUnavailableHoursDate');
+    const tmUnavailableHoursStartInput = document.getElementById('tmUnavailableHoursStart');
+    const tmUnavailableHoursEndInput = document.getElementById('tmUnavailableHoursEnd');
+    const addTmUnavailableHoursButton = document = document.getElementById('addTmUnavailableHoursButton');
+    const existingTmUnavailableListDiv = document.getElementById('existingTmUnavailableList');
+    const teamMemberAppointmentsListDiv = document.getElementById('teamMemberAppointmentsList');
+
+    let currentAuthMode = 'login'; // 'login' or 'register'
+    let currentAuthUser = null; // Firebase Auth user object
+    let currentBusinessId = null; // ID of the business the user manages
+    let currentTeamMemberId = null; // ID of the team member if the user is one
+
+    let businessData = {}; // Stores all business-level data
+    let teamMemberData = {}; // Stores specific team member data if the user is a team member
+
+    // --- Loading Screen Logic ---
+    const MIN_LOADING_TIME = 2000; // 2 seconds
+    let startTime = Date.now();
+
+    window.addEventListener('load', () => {
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = MIN_LOADING_TIME - elapsedTime;
+
+        setTimeout(() => {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.addEventListener('transitionend', () => {
+                loadingScreen.style.display = 'none';
+                authContainer.style.display = 'block'; // Show auth form initially
+            });
+        }, Math.max(0, remainingTime));
+    });
+
+    // --- Authentication Logic ---
+    onAuthStateChanged(auth, async (user) => {
+        currentAuthUser = user;
+        if (user) {
+            // Check if user is a business owner
+            const ownerDocRef = doc(db, "businessOwners", user.uid);
+            const ownerDocSnap = await getDoc(ownerDocRef);
+
+            if (ownerDocSnap.exists()) {
+                const ownerData = ownerDocSnap.data();
+                currentBusinessId = ownerData.businessId;
+                await loadBusinessData(currentBusinessId);
+                welcomeMessage.textContent = `שלום, ${ownerData.name || user.email}!`;
+                businessDashboard.style.display = 'block';
+                authContainer.style.display = 'none';
+            } else {
+                // Check if user is a team member
+                const teamMemberQuery = query(collection(db, "teamMembers"), where("email", "==", user.email));
+                const teamMemberSnapshot = await getDocs(teamMemberQuery);
+
+                if (!teamMemberSnapshot.empty) {
+                    const teamMemberDoc = teamMemberSnapshot.docs[0];
+                    const tmData = teamMemberDoc.data();
+                    currentTeamMemberId = teamMemberDoc.id;
+                    currentBusinessId = tmData.businessId; // Store business ID for context
+                    teamMemberData = tmData; // Store team member's specific data
+                    teamMemberWelcomeMessage.textContent = `שלום, ${tmData.name || user.email}!`;
+                    await loadTeamMemberDashboard();
+                    teamMemberDashboard.style.display = 'block';
+                    authContainer.style.display = 'none';
+                } else {
+                    // User is authenticated but not a business owner or known team member
+                    alert("אין לך גישה למערכת ניהול זו. אנא צור קשר עם מנהל המערכת.");
+                    await signOut(auth); // Log them out
+                    authContainer.style.display = 'block';
+                }
+            }
+        } else {
+            // No user is logged in
+            businessDashboard.style.display = 'none';
+            teamMemberDashboard.style.display = 'none';
+            authContainer.style.display = 'block';
+            currentBusinessId = null;
+            currentTeamMemberId = null;
+            businessData = {};
+            teamMemberData = {};
+        }
+    });
+
+    authButton.addEventListener('click', async () => {
+        const email = authEmailInput.value;
+        const password = authPasswordInput.value;
+        if (!email || !password) {
+            alert("אנא הזן אימייל וסיסמה.");
+            return;
+        }
+
+        try {
+            if (currentAuthMode === 'login') {
+                await signInWithEmailAndPassword(auth, email, password);
+                alert("התחברת בהצלחה!");
+            } else { // register mode
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                // For new business owners:
+                // Create a new business document and link it to the user's UID
+                const newBusinessRef = doc(collection(db, "businesses")); // New doc with auto-generated ID
+                await setDoc(newBusinessRef, {
+                    ownerUid: user.uid,
+                    name: "", // Will be filled in by business owner
+                    address: "",
+                    addressLink: "",
+                    workDays: [],
+                    openTime: "09:00",
+                    closeTime: "17:00",
+                    appointmentDuration: 30,
+                    breakDuration: 0,
+                    teamMembers: [],
+                    services: [],
+                    unavailableDates: [],
+                    unavailableHours: []
+                });
+                await setDoc(doc(db, "businessOwners", user.uid), {
+                    email: user.email,
+                    businessId: newBusinessRef.id,
+                    name: "" // Will be filled in
+                });
+                alert("נרשמת והעסק שלך נוצר בהצלחה! אנא מלא את פרטי העסק.");
+            }
+            authEmailInput.value = '';
+            authPasswordInput.value = '';
+        } catch (error) {
+            alert(`שגיאה: ${error.message}`);
+            console.error("Auth error:", error);
+        }
+    });
+
+    toggleAuthLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentAuthMode === 'login') {
+            currentAuthMode = 'register';
+            authTitle.textContent = 'הרשמת עסק חדש';
+            authButton.textContent = 'הירשם';
+            toggleAuthMessage.innerHTML = 'יש לך כבר חשבון? <a href="#" id="toggleAuthLink">התחבר כאן</a>';
+        } else {
+            currentAuthMode = 'login';
+            authTitle.textContent = 'התחברות';
+            authButton.textContent = 'התחבר';
+            toggleAuthMessage.innerHTML = 'אין לך חשבון? <a href="#" id="toggleAuthLink">הירשם כאן</a>';
+        }
+        document.getElementById('toggleAuthLink').addEventListener('click', toggleAuthLink.onclick); // Re-attach listener
+    });
+
+
+    // --- Business Owner Dashboard Logic ---
+    async function loadBusinessData(businessId) {
+        if (!businessId) return;
+        try {
+            const docRef = doc(db, "businesses", businessId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                businessData = docSnap.data();
+                // Populate forms
+                businessNameInput.value = businessData.name || '';
+                businessAddressInput.value = businessData.address || '';
+                businessAddressLinkInput.value = businessData.addressLink || '';
+                openTimeInput.value = businessData.openTime || '';
+                closeTimeInput.value = businessData.closeTime || '';
+                appointmentDurationInput.value = businessData.appointmentDuration || 30;
+                breakDurationInput.value = businessData.breakDuration || 0;
+
+                workDayCheckboxes.forEach(checkbox => {
+                    checkbox.checked = businessData.workDays && businessData.workDays.includes(checkbox.value);
+                });
+
+                loadTeamMembersForAdmin();
+                loadServicesForAdmin();
+                loadUnavailableTimesForBusiness();
+                loadAppointmentsForBusiness();
+            } else {
+                console.log("Business document not found for owner. This should not happen if registered correctly.");
+                alert("אין נתוני עסק משויכים. אנא צור קשר עם התמיכה.");
+                await signOut(auth);
+            }
+        } catch (e) {
+            console.error("Error loading business data: ", e);
+            alert("אירעה שגיאה בטעינת נתוני העסק.");
+            await signOut(auth);
+        }
+    }
+
+    saveBusinessSettingsButton.addEventListener('click', async () => {
+        if (!currentBusinessId) { alert("אין עסק משויך. אנא התחבר מחדש."); return; }
+        const name = businessNameInput.value.trim();
+        const address = businessAddressInput.value.trim();
+        const addressLink = businessAddressLinkInput.value.trim();
+        const workDays = Array.from(workDayCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+        const openTime = openTimeInput.value;
+        const closeTime = closeTimeInput.value;
+        const appointmentDuration = parseInt(appointmentDurationInput.value);
+        const breakDuration = parseInt(breakDurationInput.value);
+
+        if (!name || !address || workDays.length === 0 || !openTime || !closeTime) {
+            alert("אנא מלא את כל פרטי העסק הנדרשים.");
+            return;
+        }
+
+        try {
+            const newBusinessData = {
+                ...businessData, // Keep existing data
+                name, address, addressLink, workDays, openTime, closeTime, appointmentDuration, breakDuration
+            };
+            await updateDoc(doc(db, "businesses", currentBusinessId), newBusinessData);
+            businessData = newBusinessData; // Update local state
+            alert("הגדרות העסק עודכנו בהצלחה!");
+        } catch (e) {
+            console.error("Error saving business settings: ", e);
+            alert("אירעה שגיאה בשמירת הגדרות העסק.");
+        }
+    });
+
+    // Team Members (Business Owner side)
+    addTeamMemberButton.addEventListener('click', async () => {
+        const name = newTeamMemberNameInput.value.trim();
+        const email = newTeamMemberEmailInput.value.trim();
+        if (!name || !email) { alert("אנא הזן שם ואימייל לאיש הצוות."); return; }
+        if (!currentBusinessId) { alert("אנא שמור הגדרות עסק קודם."); return; }
+
+        try {
+            // First, create a Firebase Auth user for the team member
+            // This is sensitive: In a real app, you'd use Cloud Functions to create users without exposing admin SDK to client
+            // For this example, we'll assume the owner can do this directly for simplicity, but it's not ideal for production.
+            // A better way: owner sets email, Cloud Function creates user and sends password reset link.
+            // For now, let's create a dummy password and user can reset it.
+            const dummyPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            let teamMemberUserCredential;
+            try {
+                teamMemberUserCredential = await createUserWithEmailAndPassword(auth, email, dummyPassword);
+            } catch (error) {
+                if (error.code === 'auth/email-already-in-use') {
+                    // If email already exists, just use that user ID
+                    console.log("Email already in use, associating existing user.");
+                    teamMemberUserCredential = await signInWithEmailAndPassword(auth, email, dummyPassword).catch(() => {
+                         // If signIn fails with dummy pass, just get the user by email if possible.
+                         // This is complex. Better to use Admin SDK via Cloud Functions.
+                         return null; // Handle this case properly in production
+                    });
+                    if(!teamMemberUserCredential) throw new Error("Could not associate existing user.");
+                } else {
+                    throw error;
+                }
+            }
+
+
+            const newMember = {
+                id: teamMemberUserCredential.user.uid, // Use Firebase Auth UID as team member ID
+                name: name,
+                email: email,
+                businessId: currentBusinessId,
+                unavailableDates: [], // Personal unavailability
+                unavailableHours: []
+            };
+
+            // Add team member to their own collection
+            await setDoc(doc(db, "teamMembers", newMember.id), newMember);
+
+            // Add team member reference to business's teamMembers array
+            businessData.teamMembers = businessData.teamMembers || [];
+            businessData.teamMembers.push({ id: newMember.id, name: newMember.name }); // Only store ID and name in business doc
+
+            await updateDoc(doc(db, "businesses", currentBusinessId), {
+                teamMembers: businessData.teamMembers
+            });
+
+            newTeamMemberNameInput.value = '';
+            newTeamMemberEmailInput.value = '';
+            loadTeamMembersForAdmin();
+            loadServicesForAdmin(); // Refresh team member selection for services
+            alert(`איש צוות ${name} נוסף בהצלחה! הסיסמה ההתחלתית היא: ${dummyPassword} (בקש ממנו לאפס סיסמה).`); // Inform about dummy password
+        } catch (e) {
+            console.error("Error adding team member: ", e);
+            alert(`אירעה שגיאה בהוספת איש צוות: ${e.message}`);
+        }
+    });
+
+    function loadTeamMembersForAdmin() {
+        teamMembersListDiv.innerHTML = '';
+        if (businessData.teamMembers && businessData.teamMembers.length > 0) {
+            businessData.teamMembers.forEach(member => {
+                const item = document.createElement('div');
+                item.className = 'memberItem';
+                item.innerHTML = `<span>${member.name} (${member.id})</span>
+                                  <div>
+                                      <button onclick="editTeamMember('${member.id}', '${member.name}')" class="secondary">ערוך</button>
+                                      <button class="danger" onclick="deleteTeamMember('${member.id}')">מחק</button>
+                                  </div>`;
+                teamMembersListDiv.appendChild(item);
+            });
+        } else {
+            teamMembersListDiv.innerHTML = '<p>לא הוגדרו אנשי צוות עדיין.</p>';
+        }
+        populateTeamMembersForServices();
+    }
+
+    window.editTeamMember = async (memberId, currentName) => {
+        const newName = prompt("ערוך שם איש צוות:", currentName);
+        if (newName && newName.trim() !== "") {
+            // Update in business's teamMembers array
+            const businessMemberIndex = businessData.teamMembers.findIndex(m => m.id === memberId);
+            if (businessMemberIndex > -1) {
+                businessData.teamMembers[businessMemberIndex].name = newName.trim();
+            }
+
+            // Update in teamMembers collection
+            const teamMemberDocRef = doc(db, "teamMembers", memberId);
+            await updateDoc(teamMemberDocRef, { name: newName.trim() });
+
+            try {
+                await updateDoc(doc(db, "businesses", currentBusinessId), {
+                    teamMembers: businessData.teamMembers
+                });
+                loadTeamMembersForAdmin();
+                loadServicesForAdmin(); // Refresh names in services if changed
+                alert("שם איש צוות עודכן בהצלחה!");
+            } catch (e) {
+                console.error("Error editing team member: ", e);
+                alert("אירעה שגיאה בעדכון איש צוות.");
+            }
+        }
+    };
+
+    window.deleteTeamMember = async (memberId) => {
+        if (!confirm("האם אתה בטוח שברצונך למחוק איש צוות זה? פעולה זו בלתי הפיכה ותמחק את כל הקשרים שלו!")) return;
+        try {
+            // Remove from business's teamMembers array
+            businessData.teamMembers = businessData.teamMembers.filter(m => m.id !== memberId);
+            // Remove team member from services they were assigned to
+            businessData.services.forEach(service => {
+                if (service.assignedTeamMembers) {
+                    service.assignedTeamMembers = service.assignedTeamMembers.filter(id => id !== memberId);
+                }
+            });
+
+            await updateDoc(doc(db, "businesses", currentBusinessId), {
+                teamMembers: businessData.teamMembers,
+                services: businessData.services
+            });
+
+            // Delete team member document from teamMembers collection
+            await deleteDoc(doc(db, "teamMembers", memberId));
+
+            // Optional: Delete user from Firebase Auth (highly recommended, but needs Cloud Function for security)
+            // For client-side, owner can't delete other users directly.
+            // If you want owner to delete auth user, implement via Cloud Function.
+
+            loadTeamMembersForAdmin();
+            loadServicesForAdmin();
+            loadAppointmentsForBusiness(); // Refresh appointments as some might be gone
+            alert("איש צוות נמחק בהצלחה!");
+        } catch (e) {
+            console.error("Error deleting team member: ", e);
+            alert(`אירעה שגיאה במחיקת איש צוות: ${e.message}.`);
+        }
+    };
+
+    // Services (Business Owner side)
+    function populateTeamMembersForServices() {
+        newServiceTeamMembersSelect.innerHTML = '';
+        if (businessData.teamMembers && businessData.teamMembers.length > 0) {
+            businessData.teamMembers.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = member.name;
+                newServiceTeamMembersSelect.appendChild(option);
+            });
+        } else {
+            newServiceTeamMembersSelect.innerHTML = '<option disabled>הוסף אנשי צוות קודם</option>';
+        }
+    }
+
+    addServiceButton.addEventListener('click', async () => {
+        const name = newServiceNameInput.value.trim();
+        const price = parseFloat(newServicePriceInput.value);
+        const duration = parseInt(newServiceDurationInput.value);
+        const selectedTeamMembers = Array.from(newServiceTeamMembersSelect.selectedOptions).map(option => option.value);
+
+        if (!name || isNaN(price) || isNaN(duration)) {
+            alert("אנא מלא שם שירות, מחיר ומשך תקינים.");
+            return;
+        }
+        if (!currentBusinessId) { alert("אנא שמור הגדרות עסק קודם."); return; }
+
+        const newService = {
+            id: Date.now().toString(), // Simple unique ID
+            name: name,
+            price: price,
+            duration: duration,
+            assignedTeamMembers: selectedTeamMembers
+        };
+
+        businessData.services = businessData.services || [];
+        businessData.services.push(newService);
+
+        try {
+            await updateDoc(doc(db, "businesses", currentBusinessId), {
+                services: businessData.services
+            });
+            newServiceNameInput.value = '';
+            newServicePriceInput.value = '';
+            newServiceDurationInput.value = '30';
+            Array.from(newServiceTeamMembersSelect.options).forEach(option => option.selected = false);
+            loadServicesForAdmin();
+            alert("שירות נוסף בהצלחה!");
+        } catch (e) {
+            console.error("Error adding service: ", e);
+            alert("אירעה שגיאה בהוספת שירות.");
+        }
+    });
+
+    function loadServicesForAdmin() {
+        servicesListDiv.innerHTML = '';
+        if (businessData.services && businessData.services.length > 0) {
+            businessData.services.forEach(service => {
+                const assignedNames = (service.assignedTeamMembers || [])
+                    .map(memberId => {
+                        const member = businessData.teamMembers.find(m => m.id === memberId);
+                        return member ? member.name : '';
+                    })
+                    .filter(name => name !== '')
+                    .join(', ');
+
+                const item = document.createElement('div');
+                item.className = 'serviceItem';
+                item.innerHTML = `<span>${service.name} (${service.price} ש"ח, ${service.duration} דק) - משויך: ${assignedNames || 'לא שויך'}</span>
+                                  <div>
+                                      <button onclick="editService('${service.id}')" class="secondary">ערוך</button>
+                                      <button class="danger" onclick="deleteService('${service.id}')">מחק</button>
+                                  </div>`;
+                servicesListDiv.appendChild(item);
+            });
+        } else {
+            servicesListDiv.innerHTML = '<p>לא הוגדרו שירותים עדיין.</p>';
+        }
+    }
+
+    window.editService = async (serviceId) => {
+        const service = businessData.services.find(s => s.id === serviceId);
+        if (!service) return;
+
+        const newName = prompt("ערוך שם שירות:", service.name);
+        if (newName === null) return;
+        const newPrice = prompt("ערוך מחיר שירות:", service.price);
+        if (newPrice === null || isNaN(parseFloat(newPrice))) return;
+        const newDuration = prompt("ערוך משך שירות (דקות):", service.duration);
+        if (newDuration === null || isNaN(parseInt(newDuration))) return;
+
+        const allTeamMemberNames = businessData.teamMembers.map(m => m.name);
+        const currentAssignedNames = (service.assignedTeamMembers || []).map(id => {
+            const member = businessData.teamMembers.find(m => m.id === id);
+            return member ? member.name : '';
+        }).filter(name => name !== '').join(', ');
+
+        const newAssignedPrompt = prompt(`הזן שמות אנשי צוות משויכים (מופרדים בפסיקים, קיימים: ${currentAssignedNames || 'אין'}, אפשריים: ${allTeamMemberNames.join(', ')}):`);
+        let newAssignedTeamMembersIds = service.assignedTeamMembers || []; // Default to current if dialog cancelled or invalid
+        if (newAssignedPrompt !== null) {
+            const assignedNames = newAssignedPrompt.split(',').map(name => name.trim()).filter(n => n !== '');
+            newAssignedTeamMembersIds = assignedNames.map(name => {
+                const member = businessData.teamMembers.find(m => m.name === name);
+                return member ? member.id : null;
+            }).filter(id => id !== null);
+        }
+
+        const serviceIndex = businessData.services.findIndex(s => s.id === serviceId);
+        if (serviceIndex > -1) {
+            businessData.services[serviceIndex] = {
+                ...service,
+                name: newName.trim(),
+                price: parseFloat(newPrice),
+                duration: parseInt(newDuration),
+                assignedTeamMembers: newAssignedTeamMembersIds
+            };
+            try {
+                await updateDoc(doc(db, "businesses", currentBusinessId), {
+                    services: businessData.services
+                });
+                loadServicesForAdmin();
+                alert("שירות עודכן בהצלחה!");
+            } catch (e) {
+                console.error("Error editing service: ", e);
+                alert("אירעה שגיאה בעדכון שירות.");
+            }
+        }
+    };
+
+    window.deleteService = async (serviceId) => {
+        if (!confirm("האם אתה בטוח שברצונך למחוק שירות זה?")) return;
+
+        businessData.services = businessData.services.filter(s => s.id !== serviceId);
+        try {
+            await updateDoc(doc(db, "businesses", currentBusinessId), {
+                services: businessData.services
+            });
+            loadServicesForAdmin();
+            alert("שירות נמחק בהצלחה!");
+        } catch (e) {
+            console.error("Error deleting service: ", e);
+            alert("אירעה שגיאה במחיקת שירות.");
+        }
+    };
+
+    // Business-level Unavailable Times
+    addUnavailableDatesButton.addEventListener('click', async () => {
+        const startDate = unavailableDatesStartInput.value;
+        const endDate = unavailableDatesEndInput.value;
+        if (!startDate || !endDate) { alert("אנא בחר תאריכי התחלה וסיום."); return; }
+        if (!currentBusinessId) return;
+
+        businessData.unavailableDates = businessData.unavailableDates || [];
+        businessData.unavailableDates.push({ startDate, endDate });
+
+        try {
+            await updateDoc(doc(db, "businesses", currentBusinessId), {
+                unavailableDates: businessData.unavailableDates
+            });
+            alert("חסימת תאריכים נוספה בהצלחה!");
+            unavailableDatesStartInput.value = '';
+            unavailableDatesEndInput.value = '';
+            loadUnavailableTimesForBusiness();
+        } catch (e) {
+            console.error("Error adding unavailable dates: ", e);
+            alert("אירעה שגיאה בהוספת חסימת תאריכים.");
+        }
+    });
+
+    addUnavailableHoursButton.addEventListener('click', async () => {
+        const date = unavailableHoursDateInput.value;
+        const startTime = unavailableHoursStartInput.value;
+        const endTime = unavailableHoursEndInput.value;
+        if (!date || !startTime || !endTime) { alert("אנא בחר תאריך, שעת התחלה וסיום."); return; }
+        if (!currentBusinessId) return;
+
+        businessData.unavailableHours = businessData.unavailableHours || [];
+        businessData.unavailableHours.push({ date, startTime, endTime });
+
+        try {
+            await updateDoc(doc(db, "businesses", currentBusinessId), {
+                unavailableHours: businessData.unavailableHours
+            });
+            alert("חסימת שעות נוספה בהצלחה!");
+            unavailableHoursDateInput.value = '';
+            unavailableHoursStartInput.value = '';
+            unavailableHoursEndInput.value = '';
+            loadUnavailableTimesForBusiness();
+        } catch (e) {
+            console.error("Error adding unavailable hours: ", e);
+            alert("אירעה שגיאה בהוספת חסימת שעות.");
+        }
+    });
+
+    function loadUnavailableTimesForBusiness() {
+        existingUnavailableListDiv.innerHTML = '';
+        const allUnavailable = [
+            ...(businessData.unavailableDates || []).map((range, idx) => ({ type: 'date', ...range, index: idx })),
+            ...(businessData.unavailableHours || []).map((hourBlock, idx) => ({ type: 'hour', ...hourBlock, index: idx }))
+        ];
+
+        if (allUnavailable.length > 0) {
+            allUnavailable.forEach(item => {
+                const element = document.createElement('div');
+                element.className = 'unavailableItem';
+                if (item.type === 'date') {
+                    element.innerHTML = `<span><strong>חופשה:</strong> ${item.startDate} - ${item.endDate}</span>
+                                         <button class="danger" onclick="deleteBusinessUnavailableDate(${item.index})">מחק</button>`;
+                } else {
+                    element.innerHTML = `<span><strong>חסום:</strong> ${item.date} ${item.startTime} - ${item.endTime}</span>
+                                         <button class="danger" onclick="deleteBusinessUnavailableHour(${item.index})">מחק</button>`;
+                }
+                existingUnavailableListDiv.appendChild(element);
+            });
+        } else {
+            existingUnavailableListDiv.innerHTML = '<p>אין חסימות מוגדרות לעסק.</p>';
+        }
+    }
+
+    window.deleteBusinessUnavailableDate = async (index) => {
+        if (!confirm("האם אתה בטוח שברצונך למחוק חסימת תאריכים זו?")) return;
+        businessData.unavailableDates.splice(index, 1);
+        try {
+            await updateDoc(doc(db, "businesses", currentBusinessId), {
+                unavailableDates: businessData.unavailableDates
+            });
+            loadUnavailableTimesForBusiness();
+            alert("חסימת תאריכים נמחקה.");
+        } catch (e) {
+            console.error("Error deleting unavailable date: ", e);
+            alert("אירעה שגיאה במחיקת חסימת תאריכים.");
+        }
+    };
+
+    window.deleteBusinessUnavailableHour = async (index) => {
+        if (!confirm("האם אתה בטוח שברצונך למחוק חסימת שעות זו?")) return;
+        businessData.unavailableHours.splice(index, 1);
+        try {
+            await updateDoc(doc(db, "businesses", currentBusinessId), {
+                unavailableHours: businessData.unavailableHours
+            });
+            loadUnavailableTimesForBusiness();
+            alert("חסימת שעות נמחקה.");
+        } catch (e) {
+            console.error("Error deleting unavailable hour: ", e);
+            alert("אירעה שגיאה במחיקת חסימת שעות.");
+        }
+    };
+
+
+    // Appointments (Business Owner side)
+    async function loadAppointmentsForBusiness() {
+        if (!currentBusinessId) return;
+
+        appointmentsListDiv.innerHTML = '<p>טוען תורים...</p>';
+        try {
+            const q = query(
+                collection(db, "appointments"),
+                where("businessId", "==", currentBusinessId),
+                where("date", ">=", new Date().toISOString().split('T')[0]) // Only future appointments
+            );
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                appointmentsListDiv.innerHTML = '<p>אין תורים קרובים.</p>';
+                return;
+            }
+
+            appointmentsListDiv.innerHTML = '';
+            querySnapshot.docs
+                .map(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
+                .sort((a, b) => {
+                    const dateA = new Date(`${a.date}T${a.time}`);
+                    const dateB = new Date(`${b.date}T${b.time}`);
+                    return dateA - dateB;
+                })
+                .forEach((appt) => {
+                    const item = document.createElement('div');
+                    item.className = 'appointmentItem';
+                    item.innerHTML = `
+                        <span>
+                            <strong>מתי:</strong> ${appt.date} ${appt.time},
+                            <strong>שירות:</strong> ${appt.serviceName} (${appt.teamMemberName}),
+                            <strong>לקוח:</strong> ${appt.customerName},
+                            <strong>מייל:</strong> ${appt.customerEmail},
+                            <strong>טלפון:</strong> ${appt.customerPhone}
+                        </span>
+                        <button class="danger" onclick="cancelAppointment('${appt.id}')">בטל תור</button>
+                    `;
+                    appointmentsListDiv.appendChild(item);
+                });
+        } catch (e) {
+            console.error("Error loading appointments for business: ", e);
+            appointmentsListDiv.innerHTML = '<p>אירעה שגיאה בטעינת תורים.</p>';
+        }
+    }
+
+    window.cancelAppointment = async (appointmentId) => {
+        if (!confirm("האם אתה בטוח שברצונך לבטל תור זה?")) return;
+        try {
+            await deleteDoc(doc(db, "appointments", appointmentId));
+            alert("התור בוטל בהצלחה!");
+            loadAppointmentsForBusiness();
+            loadAppointmentsForTeamMember(); // Refresh team member's list too if applicable
+        } catch (e) {
+            console.error("Error canceling appointment: ", e);
+            alert("אירעה שגיאה בביטול התור.");
+        }
+    };
+
+    // --- Team Member Dashboard Logic ---
+    async function loadTeamMemberDashboard() {
+        if (!currentTeamMemberId) return;
+        teamMemberWelcomeMessage.textContent = `שלום, ${teamMemberData.name || currentAuthUser.email}!`;
+        loadUnavailableTimesForTeamMember();
+        loadAppointmentsForTeamMember();
+    }
+
+    // Team Member's Personal Unavailable Times
+    addTmUnavailableDatesButton.addEventListener('click', async () => {
+        const startDate = tmUnavailableDatesStartInput.value;
+        const endDate = tmUnavailableDatesEndInput.value;
+        if (!startDate || !endDate) { alert("אנא בחר תאריכי התחלה וסיום."); return; }
+        if (!currentTeamMemberId) return;
+
+        teamMemberData.unavailableDates = teamMemberData.unavailableDates || [];
+        teamMemberData.unavailableDates.push({ startDate, endDate });
+
+        try {
+            await updateDoc(doc(db, "teamMembers", currentTeamMemberId), {
+                unavailableDates: teamMemberData.unavailableDates
+            });
+            alert("חסימת תאריכים אישית נוספה בהצלחה!");
+            tmUnavailableDatesStartInput.value = '';
+            tmUnavailableDatesEndInput.value = '';
+            loadUnavailableTimesForTeamMember();
+        } catch (e) {
+            console.error("Error adding team member unavailable dates: ", e);
+            alert("אירעה שגיאה בהוספת חסימת תאריכים אישית.");
+        }
+    });
+
+    addTmUnavailableHoursButton.addEventListener('click', async () => {
+        const date = tmUnavailableHoursDateInput.value;
+        const startTime = tmUnavailableHoursStartInput.value;
+        const endTime = tmUnavailableHoursEndInput.value;
+        if (!date || !startTime || !endTime) { alert("אנא בחר תאריך, שעת התחלה וסיום."); return; }
+        if (!currentTeamMemberId) return;
+
+        teamMemberData.unavailableHours = teamMemberData.unavailableHours || [];
+        teamMemberData.unavailableHours.push({ date, startTime, endTime });
+
+        try {
+            await updateDoc(doc(db, "teamMembers", currentTeamMemberId), {
+                unavailableHours: teamMemberData.unavailableHours
+            });
+            alert("חסימת שעות אישית נוספה בהצלחה!");
+            tmUnavailableHoursDateInput.value = '';
+            tmUnavailableHoursStartInput.value = '';
+            tmUnavailableHoursEndInput.value = '';
+            loadUnavailableTimesForTeamMember();
+        } catch (e) {
+            console.error("Error adding team member unavailable hours: ", e);
+            alert("אירעה שגיאה בהוספת חסימת שעות אישית.");
+        }
+    });
+
+    function loadUnavailableTimesForTeamMember() {
+        existingTmUnavailableListDiv.innerHTML = '';
+        const allUnavailable = [
+            ...(teamMemberData.unavailableDates || []).map((range, idx) => ({ type: 'date', ...range, index: idx })),
+            ...(teamMemberData.unavailableHours || []).map((hourBlock, idx) => ({ type: 'hour', ...hourBlock, index: idx }))
+        ];
+
+        if (allUnavailable.length > 0) {
+            allUnavailable.forEach(item => {
+                const element = document.createElement('div');
+                element.className = 'unavailableItem';
+                if (item.type === 'date') {
+                    element.innerHTML = `<span><strong>חופשה:</strong> ${item.startDate} - ${item.endDate}</span>
+                                         <button class="danger" onclick="deleteTmUnavailableDate(${item.index})">מחק</button>`;
+                } else {
+                    element.innerHTML = `<span><strong>חסום:</strong> ${item.date} ${item.startTime} - ${item.endTime}</span>
+                                         <button class="danger" onclick="deleteTmUnavailableHour(${item.index})">מחק</button>`;
+                }
+                existingTmUnavailableListDiv.appendChild(element);
+            });
+        } else {
+            existingTmUnavailableListDiv.innerHTML = '<p>אין חסימות אישיות מוגדרות.</p>';
+        }
+    }
+
+    window.deleteTmUnavailableDate = async (index) => {
+        if (!confirm("האם אתה בטוח שברצונך למחוק חסימת תאריכים זו?")) return;
+        teamMemberData.unavailableDates.splice(index, 1);
+        try {
+            await updateDoc(doc(db, "teamMembers", currentTeamMemberId), {
+                unavailableDates: teamMemberData.unavailableDates
+            });
+            loadUnavailableTimesForTeamMember();
+            alert("חסימת תאריכים אישית נמחקה.");
+        } catch (e) {
+            console.error("Error deleting team member unavailable date: ", e);
+            alert("אירעה שגיאה במחיקת חסימת תאריכים אישית.");
+        }
+    };
+
+    window.deleteTmUnavailableHour = async (index) => {
+        if (!confirm("האם אתה בטוח שברצונך למחוק חסימת שעות זו?")) return;
+        teamMemberData.unavailableHours.splice(index, 1);
+        try {
+            await updateDoc(doc(db, "teamMembers", currentTeamMemberId), {
+                unavailableHours: teamMemberData.unavailableHours
+            });
+            loadUnavailableTimesForTeamMember();
+            alert("חסימת שעות אישית נמחקה.");
+        } catch (e) {
+            console.error("Error deleting team member unavailable hour: ", e);
+            alert("אירעה שגיאה במחיקת חסימת שעות אישית.");
+        }
+    };
+
+    // Appointments (Team Member side)
+    async function loadAppointmentsForTeamMember() {
+        if (!currentTeamMemberId) return;
+
+        teamMemberAppointmentsListDiv.innerHTML = '<p>טוען תורים...</p>';
+        try {
+            const q = query(
+                collection(db, "appointments"),
+                where("teamMemberId", "==", currentTeamMemberId),
+                where("date", ">=", new Date().toISOString().split('T')[0])
+            );
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                teamMemberAppointmentsListDiv.innerHTML = '<p>אין תורים קרובים עבורך.</p>';
+                return;
+            }
+
+            teamMemberAppointmentsListDiv.innerHTML = '';
+            querySnapshot.docs
+                .map(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
+                .sort((a, b) => {
+                    const dateA = new Date(`${a.date}T${a.time}`);
+                    const dateB = new Date(`${b.date}T${b.time}`);
+                    return dateA - dateB;
+                })
+                .forEach((appt) => {
+                    const item = document.createElement('div');
+                    item.className = 'appointmentItem';
+                    item.innerHTML = `
+                        <span>
+                            <strong>מתי:</strong> ${appt.date} ${appt.time},
+                            <strong>שירות:</strong> ${appt.serviceName} (${appt.businessName}),
+                            <strong>לקוח:</strong> ${appt.customerName},
+                            <strong>מייל:</strong> ${appt.customerEmail},
+                            <strong>טלפון:</strong> ${appt.customerPhone}
+                        </span>
+                        <button class="danger" onclick="cancelAppointment('${appt.id}')">בטל תור</button>
+                    `;
+                    teamMemberAppointmentsListDiv.appendChild(item);
+                });
+        } catch (e) {
+            console.error("Error loading appointments for team member: ", e);
+            teamMemberAppointmentsListDiv.innerHTML = '<p>אירעה שגיאה בטעינת תורים.</p>';
+        }
+    }
+
+
+    // --- Switching between dashboards (if user is both owner and team member) ---
+    switchToTeamMemberButton.addEventListener('click', async () => {
+        if (!currentTeamMemberId) {
+            // Find the team member ID associated with this business owner
+            const teamMemberQuery = query(collection(db, "teamMembers"), where("email", "==", currentAuthUser.email), where("businessId", "==", currentBusinessId));
+            const teamMemberSnapshot = await getDocs(teamMemberQuery);
+            if (!teamMemberSnapshot.empty) {
+                const tmDoc = teamMemberSnapshot.docs[0];
+                currentTeamMemberId = tmDoc.id;
+                teamMemberData = tmDoc.data();
+                await loadTeamMemberDashboard();
+                businessDashboard.style.display = 'none';
+                teamMemberDashboard.style.display = 'block';
+            } else {
+                alert("אינך מוגדר כאיש צוות בעסק זה.");
+            }
+        } else {
+             businessDashboard.style.display = 'none';
+             teamMemberDashboard.style.display = 'block';
+        }
+    });
+
+    switchToBusinessOwnerButton.addEventListener('click', () => {
+        teamMemberDashboard.style.display = 'none';
+        businessDashboard.style.display = 'block';
+    });
+
+    // --- Logout ---
+    logoutButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            alert("התנתקת בהצלחה.");
+        } catch (error) {
+            console.error("Error signing out:", error);
+            alert("אירעה שגיאה בהתנתקות.");
+        }
+    });
+
+    logoutTeamMemberButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            alert("התנתקת בהצלחה.");
+        } catch (error) {
+            console.error("Error signing out:", error);
+            alert("אירעה שגיאה בהתנתקות.");
+        }
+    });
+</script>
+</body>
+</html>
