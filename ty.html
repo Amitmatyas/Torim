@@ -449,25 +449,31 @@ function renderCalendar(date) {
         const emptyDiv = document.createElement('div');
         calendarDaysGrid.appendChild(emptyDiv);
     }
-    for (let day = 1; day <= daysInMonth; day++) {
-        const currentDate = new Date(date.getFullYear(), date.getMonth(), day);
-        currentDate.setHours(0,0,0,0);
-        const formattedDate = currentDate.toISOString().split('T')[0];
-        const dayElement = document.createElement('div');
-        dayElement.className = 'calendarDay';
-        dayElement.dataset.date = formattedDate;
-        dayElement.innerHTML = `<span class="date-number">${day}</span><span class="day-available-slots"></span>`;
-        if (currentDate < today) {
-            dayElement.classList.add('disabled');
-        } else if (!(selectedService && selectedTeamMember)) {
-            dayElement.classList.add('disabled');
-        } else {
-            dayElement.addEventListener('click', () => selectDay(formattedDate));
-            fetchAndDisplayAvailableSlotsCount(formattedDate, dayElement.querySelector('.day-available-slots'));
-        }
-        calendarDaysGrid.appendChild(dayElement);
+for (let day = 1; day <= daysInMonth; day++) {
+    const currentDate = new Date(date.getFullYear(), date.getMonth(), day);
+    currentDate.setHours(0,0,0,0);
+    const formattedDate = currentDate.toISOString().split('T')[0];
+
+    const dayElement = document.createElement('div');
+    dayElement.className = 'calendarDay';
+    dayElement.dataset.date = formattedDate;
+    dayElement.innerHTML = `
+        <span class="date-number">${day}</span>
+        <span class="day-available-slots"></span>
+    `;
+
+    if (currentDate < today) {
+        dayElement.classList.add('disabled');
+    } else if (!(selectedService && selectedTeamMember)) {
+        dayElement.classList.add('disabled');
+    } else {
+        dayElement.addEventListener('click', () => selectDay(formattedDate));
+        fetchAndDisplayAvailableSlotsCount(formattedDate, dayElement.querySelector('.day-available-slots'));
     }
-    availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>';
+
+    calendarDaysGrid.appendChild(dayElement);
+}
+availableSlotsDiv.innerHTML = '<p style="text-align: center; color: var(--secondary-color);">בחר תאריך כדי לראות שעות זמינות.</p>';
 }
 prevMonthButton.addEventListener('click', () => {
     currentMonth.setMonth(currentMonth.getMonth() - 1);
@@ -478,10 +484,141 @@ nextMonthButton.addEventListener('click', () => {
     renderCalendar(currentMonth);
 });
 
-// --------------------
-// זמינות לשיבוץ תורים (fetchAndDisplayAvailableSlotsCount) - השאר כמו המקור!
-// --------------------
-// (לא שיניתי את הפונקציה הזו כדי לשמר את הלוגיקת החסימות שלך)
+async function fetchAndDisplayAvailableSlotsCount(dateString, targetElement) {
+    if (!currentBusiness || !selectedService || !selectedTeamMember) {
+        targetElement.textContent = '';
+        return;
+    }
+
+    try {
+        const businessId = currentBusiness.id;
+        const teamMemberId = selectedTeamMember;
+        const serviceId = selectedService;
+
+        const chosenService = currentBusiness.services.find(s => s.id === serviceId);
+        const appointmentDuration = chosenService ? chosenService.duration : (currentBusiness.appointmentDuration || 30);
+        const breakDuration = currentBusiness.breakDuration || 0;
+
+        const date = new Date(dateString);
+        const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...6=Sat
+        const dayName = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'][dayOfWeek];
+
+        // 1. Check if business works on this day
+        if (!currentBusiness.workDays || !currentBusiness.workDays.includes(dayName)) {
+            targetElement.textContent = 'סגור';
+            const dayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+            if (dayElement) dayElement.classList.add('disabled');
+            return 0;
+        }
+
+        // 2. Check general business unavailable dates
+        const isBusinessDateBlocked = (currentBusiness.unavailableDates || []).some(range => {
+            const start = new Date(range.startDate);
+            const end = new Date(range.endDate);
+            start.setHours(0,0,0,0); end.setHours(0,0,0,0);
+            return date >= start && date <= end;
+        });
+        if (isBusinessDateBlocked) {
+            targetElement.textContent = 'חסום';
+            const dayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+            if (dayElement) dayElement.classList.add('disabled');
+            return 0;
+        }
+
+        // 3. Check team member specific unavailable dates
+        const currentTeamMemberObj = currentBusiness.teamMembers.find(tm => tm.id === teamMemberId);
+        const isTeamMemberDateBlocked = (currentTeamMemberObj?.unavailableDates || []).some(range => {
+            const start = new Date(range.startDate);
+            const end = new Date(range.endDate);
+            start.setHours(0,0,0,0); end.setHours(0,0,0,0);
+            return date >= start && date <= end;
+        });
+        if (isTeamMemberDateBlocked) {
+            targetElement.textContent = 'תפוס';
+            const dayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+            if (dayElement) dayElement.classList.add('disabled');
+            return 0;
+        }
+
+        // 4. Get existing appointments for this day and team member
+        const appointmentsQuery = query(
+            collection(db, "appointments"),
+            where("businessId", "==", businessId),
+            where("teamMemberId", "==", teamMemberId),
+            where("date", "==", dateString)
+        );
+        const appointmentsSnapshot = await getDocs(appointmentsQuery);
+        const existingAppointments = appointmentsSnapshot.docs.map(docSnap => docSnap.data());
+
+        // 5. Get general business unavailable hours for this day
+        const businessUnavailableHoursForDate = (currentBusiness.unavailableHours || []).filter(uh => uh.date === dateString);
+
+        // 6. Get team member specific unavailable hours for this day
+        const teamMemberUnavailableHoursForDate = (currentTeamMemberObj?.unavailableHours || []).filter(uh => uh.date === dateString);
+
+        let availableSlotsCount = 0;
+        let currentTime = new Date(`${dateString}T${currentBusiness.openTime}`);
+        const endTime = new Date(`${dateString}T${currentBusiness.closeTime}`);
+
+        while (currentTime < endTime) {
+            const slotEndTime = new Date(currentTime.getTime() + appointmentDuration * 60 * 1000);
+
+            if (slotEndTime > endTime) break;
+
+            let isSlotAvailable = true;
+
+            // Check collision with existing appointments
+            for (const app of existingAppointments) {
+                const appStart = new Date(`${app.date}T${app.time}`);
+                const appDuration = app.duration || currentBusiness.appointmentDuration || 30;
+                const appEnd = new Date(appStart.getTime() + appDuration * 60 * 1000);
+
+                if (currentTime < appEnd && slotEndTime > appStart) {
+                    isSlotAvailable = false;
+                    break;
+                }
+            }
+
+            // Check collision with business unavailable hours
+            if (isSlotAvailable) {
+                for (const blocked of businessUnavailableHoursForDate) {
+                    const blockedStart = new Date(`${dateString}T${blocked.startTime}`);
+                    const blockedEnd = new Date(`${dateString}T${blocked.endTime}`);
+                    if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+                        isSlotAvailable = false;
+                        break;
+                    }
+                }
+            }
+
+            // Check collision with team member unavailable hours
+            if (isSlotAvailable) {
+                for (const blocked of teamMemberUnavailableHoursForDate) {
+                    const blockedStart = new Date(`${dateString}T${blocked.startTime}`);
+                    const blockedEnd = new Date(`${dateString}T${blocked.endTime}`);
+                    if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+                        isSlotAvailable = false;
+                        break;
+                    }
+                }
+            }
+
+            if (isSlotAvailable) availableSlotsCount++;
+
+            currentTime = new Date(slotEndTime.getTime() + breakDuration * 60 * 1000);
+        }
+        targetElement.textContent = availableSlotsCount > 0 ? `${availableSlotsCount} תורים` : 'אין תורים';
+        if (availableSlotsCount === 0) {
+            const dayElement = document.querySelector(`.calendarDay[data-date="${dateString}"]`);
+            if (dayElement) dayElement.classList.add('disabled');
+        }
+        return availableSlotsCount;
+    } catch (e) {
+        console.error("Error fetching available slots count:", e);
+        targetElement.textContent = 'שגיאה';
+        return 0;
+    }
+}
 
 // קריאת פרטי לקוח בעת קביעת תור
 async function saveCustomerDetails() {
