@@ -919,38 +919,40 @@
             calendarContainer.innerHTML = '';
         }
     });
-    function showSlotsModal(dateObj, slotsArr, dayName) {
-        slotsModalOverlay.style.display = "flex";
-        slotsModalList.innerHTML = '';
-        slotsModalNoSlots.style.display = 'none';
-        selectedDate = dateObj.formatted;
-        tempSelectedSlot = null;
-        slotsModalConfirm.style.display = slotsArr.length ? '' : 'none';
-        slotsModalConfirm.disabled = true;
-        slotsModalConfirm.classList.remove('active');
-        slotsModalTitle.textContent = `${dateObj.date.getDate()}.${dateObj.date.getMonth()+1}.${dateObj.date.getFullYear()} - ${dayName || ""}`;
-        if (!slotsArr.length) {
-            slotsModalNoSlots.style.display = '';
-        } else {
-            slotsArr.forEach(slot => {
-                const slotElem = document.createElement('div');
-                slotElem.className = 'slots-modal-slot';
-                slotElem.textContent = slot.time;
-                if (!slot.available) {
-                    slotElem.setAttribute('disabled', 'disabled');
-                    slotElem.style.cursor = "not-allowed";
-                } else {
-                    slotElem.addEventListener('click', () => {
-                        document.querySelectorAll('.slots-modal-slot').forEach(e => e.classList.remove('selected'));
-                        slotElem.classList.add('selected');
-                        tempSelectedSlot = slot.time;
-                        slotsModalConfirm.disabled = false;
-                    });
-                }
-                slotsModalList.appendChild(slotElem);
-            });
-        }
+function showSlotsModal(dateObj, slotsArr, dayName) {
+    slotsModalOverlay.style.display = "flex";
+    slotsModalList.innerHTML = '';
+    slotsModalNoSlots.style.display = 'none';
+    selectedDate = dateObj.formatted;
+    tempSelectedSlot = null;
+    selectedSlot = null;
+    bookAppointmentButton.disabled = true;
+    slotsModalConfirm.style.display = slotsArr.length ? '' : 'none';
+    slotsModalConfirm.disabled = true;
+    slotsModalConfirm.classList.remove('active');
+    slotsModalTitle.textContent = `${dateObj.date.getDate()}.${dateObj.date.getMonth()+1}.${dateObj.date.getFullYear()} - ${dayName || ""}`;
+    if (!slotsArr.length) {
+        slotsModalNoSlots.style.display = '';
+    } else {
+        slotsArr.forEach(slot => {
+            const slotElem = document.createElement('div');
+            slotElem.className = 'slots-modal-slot';
+            slotElem.textContent = slot.time;
+            if (!slot.available) {
+                slotElem.setAttribute('disabled', 'disabled');
+                slotElem.style.cursor = "not-allowed";
+            } else {
+                slotElem.addEventListener('click', () => {
+                    document.querySelectorAll('.slots-modal-slot').forEach(e => e.classList.remove('selected'));
+                    slotElem.classList.add('selected');
+                    tempSelectedSlot = slot.time;
+                    slotsModalConfirm.disabled = false;
+                });
+            }
+            slotsModalList.appendChild(slotElem);
+        });
     }
+}
     function hideSlotsModal() {
         slotsModalOverlay.style.display = "none";
         tempSelectedSlot = null;
@@ -959,15 +961,16 @@
     slotsModalOverlay.addEventListener('click', (e) => {
         if (e.target === slotsModalOverlay) hideSlotsModal();
     });
-    slotsModalConfirm.addEventListener('click', function() {
-        if (!tempSelectedSlot) {
-            alert('יש לבחור שעה מהרשימה');
-            return;
-        }
-        selectedSlot = tempSelectedSlot;
-        showSelectedSummary();
-        hideSlotsModal();
-    });
+slotsModalConfirm.addEventListener('click', function() {
+    if (!tempSelectedSlot) {
+        alert('יש לבחור שעה מהרשימה');
+        return;
+    }
+    selectedSlot = tempSelectedSlot;
+    showSelectedSummary();
+    hideSlotsModal();
+    bookAppointmentButton.disabled = false;
+});
     function showSelectedSummary() {
         let summary = document.getElementById('selectedDateTimeSummary');
         if (!summary) {
