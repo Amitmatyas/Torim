@@ -11,7 +11,7 @@
             --primary: #0093e9;
             --primary-dark: #006bb3;
             --secondary: #f5f7fa;
-            --background: #f3f6fc;
+            --background: #fff;
             --card: #fff;
             --shadow: 0 4px 24px 0 rgba(0,0,0,0.12);
             --radius: 18px;
@@ -20,10 +20,7 @@
         }
         body {
             font-family: 'Heebo', Arial, sans-serif;
-            background: #f5f7fa;
-            background-image: linear-gradient(135deg, rgba(0,147,233,0.10) 77%, rgba(0,147,233,0.55) 120%);
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background: #fff;
             margin: 0;
             padding: 0;
             min-height: 100vh;
@@ -234,7 +231,6 @@
             color: #555;
             font-size: 0.95em;
         }
-        /* יומן */
         #calendarContainer {
             direction: rtl;
             max-width: 390px;
@@ -298,7 +294,6 @@
         .calendarDay .slot-list {
             display: none !important;
         }
-        /* חלונית שעות */
         #slotsModalOverlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -609,7 +604,6 @@
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
     import { getFirestore, collection, query, where, getDocs, doc, getDoc, addDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyB9Yx45QdVZpk6qfscw-buJYnXxEYziQII",
         authDomain: "torim-titus.firebaseapp.com",
@@ -619,12 +613,10 @@
         appId: "1:38963060106:web:b27223980b52d925be7c73",
         measurementId: "G-ZKYQS4CF6N"
     };
-    // Init Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    // DOM Elements
     const loadingDiv = document.getElementById('loading');
     const authModal = document.getElementById('authModal');
     const authBox = document.getElementById('authBox');
@@ -665,7 +657,6 @@
     const slotsModalNoSlots = document.getElementById('slotsModalNoSlots');
     const closeSlotsModal = document.getElementById('closeSlotsModal');
     const slotsModalConfirm = document.getElementById('slotsModalConfirm');
-    // Global state
     let currentBusiness = null;
     let selectedDate = null;
     let selectedSlot = null;
@@ -673,14 +664,12 @@
     let selectedTeamMember = null;
     let userInfo = null;
     let tempSelectedSlot = null;
-    // Loading
     window.addEventListener('load', () => {
         setTimeout(() => {
             loadingDiv.style.opacity = "0";
             setTimeout(() => { loadingDiv.style.display = 'none'; }, 600);
         }, 900);
     });
-    // --- Auth Tabs Switch ---
     loginTab.addEventListener('click', () => {
         loginTab.classList.add('active');
         registerTab.classList.remove('active');
@@ -938,6 +927,7 @@
         tempSelectedSlot = null;
         slotsModalConfirm.style.display = slotsArr.length ? '' : 'none';
         slotsModalConfirm.disabled = true;
+        slotsModalConfirm.classList.remove('active');
         slotsModalTitle.textContent = `${dateObj.date.getDate()}.${dateObj.date.getMonth()+1}.${dateObj.date.getFullYear()} - ${dayName || ""}`;
         if (!slotsArr.length) {
             slotsModalNoSlots.style.display = '';
@@ -1150,7 +1140,6 @@
             return;
         }
         alert(`נקבע תור ב-${selectedDate} בשעה ${selectedSlot}`);
-        // ... המשך הלוגיקה ...
     });
 </script>
 </body>
