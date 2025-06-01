@@ -18,9 +18,6 @@
             --accent: #ffd600;
             --danger: #e74c3c;
         }
-        html, body {
-            height: 100%;
-        }
         body {
             font-family: 'Heebo', Arial, sans-serif;
             background: #fff;
@@ -29,20 +26,6 @@
             min-height: 100vh;
             color: #222;
             letter-spacing: 0.01em;
-            position: relative;
-        }
-        /* גרדיאנט כחול קטן למטה מימין */
-        body::after {
-            content: "";
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            width: 320px;
-            height: 180px;
-            background: linear-gradient(135deg, rgba(0,147,233,0.13) 34%, rgba(0,147,233,0.55) 100%);
-            border-radius: 200px 0 0 0;
-            z-index: 1;
-            pointer-events: none;
         }
         header {
             width: 100%;
@@ -586,7 +569,7 @@
     <h3 id="slotsModalTitle"></h3>
     <div class="slots-modal-list" id="slotsModalList"></div>
     <div class="no-slots-msg" id="slotsModalNoSlots" style="display:none">אין שעות זמינות לתאריך זה</div>
-    <button id="slotsModalConfirm" style="display:none;" type="button">אישור</button>
+    <button id="slotsModalConfirm" style="display:none;">אישור</button>
   </div>
 </div>
 <!-- החלקים הבאים זמינים רק לאחר התחברות -->
@@ -613,244 +596,612 @@
     </div>
     <h2>בחר תאריך ושעה</h2>
     <div id="calendarContainer"></div>
-    <button id="bookAppointmentButton" style="margin-top: 28px;">קבע תור</button>
+    <button id="bookAppointmentButton" style="margin-top: 28px;" disabled>קבע תור</button>
 </div>
 <div id="selectedDateTimeSummary"></div>
 <script type="module">
-/* כל הסקריפט שלך עד פונקציות היומן, כולל כל הלוגיקה, בדיוק כפי שביקשת - אין קיצורים */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, addDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-/* המשך כל קוד ההתחברות/הרשמה/חיפוש/טעינת שירותים/צוות/ועוד - כפי שקיבלת בתשובות הקודמות */
-/* ... */
-/* פונקציות היומן */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc, addDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9Yx45QdVZpk6qfscw-buJYnXxEYziQII",
+        authDomain: "torim-titus.firebaseapp.com",
+        projectId: "torim-titus",
+        storageBucket: "torim-titus.firebasestorage.app",
+        messagingSenderId: "38963060106",
+        appId: "1:38963060106:web:b27223980b52d925be7c73",
+        measurementId: "G-ZKYQS4CF6N"
+    };
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    // ... כל משתני הדום שלך (קיצרתי כאן, תעתיק את כולם מהקוד שלך)
+    const loadingDiv = document.getElementById('loading');
+    const authModal = document.getElementById('authModal');
+    const authBox = document.getElementById('authBox');
+    const closeAuthModal = document.getElementById('closeAuthModal');
+    const openAuthBtn = document.getElementById('openAuthBtn');
+    const editAccountBtn = document.getElementById('editAccountBtn');
+    const accountModal = document.getElementById('accountModal');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const accountForm = document.getElementById('accountForm');
+    const accountFullName = document.getElementById('accountFullName');
+    const accountPhone = document.getElementById('accountPhone');
+    const accountEmail = document.getElementById('accountEmail');
+    const accountError = document.getElementById('accountError');
+    const accountSuccess = document.getElementById('accountSuccess');
+    const mainContainer = document.getElementById('mainContainer');
+    const businessSearchInput = document.getElementById('businessSearch');
+    const searchButton = document.getElementById('searchButton');
+    const searchResultsDiv = document.getElementById('searchResults');
+    const businessDetailsDiv = document.getElementById('businessDetails');
+    const businessNameH1 = document.getElementById('businessName');
+    const businessAddressLink = document.getElementById('businessAddressLink');
+    const serviceSelect = document.getElementById('serviceSelect');
+    const teamMemberSelect = document.getElementById('teamMemberSelect');
+    const calendarContainer = document.getElementById('calendarContainer');
+    const bookAppointmentButton = document.getElementById('bookAppointmentButton');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginError = document.getElementById('loginError');
+    const registerError = document.getElementById('registerError');
+    const registerSuccess = document.getElementById('registerSuccess');
+    const logoImg = document.getElementById('logoImg');
+    const slotsModalOverlay = document.getElementById('slotsModalOverlay');
+    const slotsModal = document.getElementById('slotsModal');
+    const slotsModalList = document.getElementById('slotsModalList');
+    const slotsModalTitle = document.getElementById('slotsModalTitle');
+    const slotsModalNoSlots = document.getElementById('slotsModalNoSlots');
+    const closeSlotsModal = document.getElementById('closeSlotsModal');
+    const slotsModalConfirm = document.getElementById('slotsModalConfirm');
+    let currentBusiness = null;
+    let selectedDate = null;
+    let selectedSlot = null;
+    let selectedService = null;
+    let selectedTeamMember = null;
+    let userInfo = null;
+    let tempSelectedSlot = null;
 
-let tempSelectedSlot = null;
-function showSlotsModal(dateObj, slotsArr, dayName) {
-    slotsModalOverlay.style.display = "flex";
-    slotsModalList.innerHTML = '';
-    slotsModalNoSlots.style.display = 'none';
-    selectedDate = dateObj.formatted;
-    tempSelectedSlot = null;
-    slotsModalConfirm.style.display = slotsArr.length ? '' : 'none';
-    slotsModalConfirm.disabled = true;
-    slotsModalConfirm.classList.remove('active');
-    slotsModalTitle.textContent = `${dateObj.date.getDate()}.${dateObj.date.getMonth()+1}.${dateObj.date.getFullYear()} - ${dayName || ""}`;
-    if (!slotsArr.length) {
-        slotsModalNoSlots.style.display = '';
-    } else {
-        slotsArr.forEach(slot => {
-            const slotElem = document.createElement('div');
-            slotElem.className = 'slots-modal-slot';
-            slotElem.textContent = slot.time;
-            if (!slot.available) {
-                slotElem.setAttribute('disabled', 'disabled');
-                slotElem.style.cursor = "not-allowed";
-            } else {
-                slotElem.addEventListener('click', () => {
-                    document.querySelectorAll('.slots-modal-slot').forEach(e => e.classList.remove('selected'));
-                    slotElem.classList.add('selected');
-                    tempSelectedSlot = slot.time;
-                    slotsModalConfirm.disabled = false;
-                });
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            loadingDiv.style.opacity = "0";
+            setTimeout(() => { loadingDiv.style.display = 'none'; }, 600);
+        }, 900);
+    });
+
+    loginTab.addEventListener('click', () => {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginForm.style.display = '';
+        registerForm.style.display = 'none';
+    });
+    registerTab.addEventListener('click', () => {
+        loginTab.classList.remove('active');
+        registerTab.classList.add('active');
+        loginForm.style.display = 'none';
+        registerForm.style.display = '';
+    });
+    function showAuthModal() { authModal.style.display = "flex"; }
+    function hideAuthModal() { authModal.style.display = "none"; }
+    openAuthBtn.addEventListener('click', showAuthModal);
+    closeAuthModal.addEventListener('click', hideAuthModal);
+    logoImg.addEventListener('click', () => {
+        mainContainer.style.display = '';
+        businessDetailsDiv.style.display = 'none';
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            userInfo = { uid: user.uid, email: user.email, displayName: user.displayName || '' };
+            const docSnap = await getDoc(doc(db, "users", user.uid));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                userInfo.fullName = data.fullName || '';
+                userInfo.phone = data.phone || '';
             }
-            slotsModalList.appendChild(slotElem);
-        });
-    }
-}
-function hideSlotsModal() {
-    slotsModalOverlay.style.display = "none";
-    tempSelectedSlot = null;
-}
-closeSlotsModal.addEventListener('click', hideSlotsModal);
-slotsModalOverlay.addEventListener('click', (e) => {
-    if (e.target === slotsModalOverlay) hideSlotsModal();
-});
-slotsModalConfirm.addEventListener('click', function(e) {
-    e.preventDefault();
-    if (!tempSelectedSlot) {
-        alert('יש לבחור שעה מהרשימה');
-        return;
-    }
-    selectedSlot = tempSelectedSlot;
-    showSelectedSummary();
-    hideSlotsModal();
-});
-function showSelectedSummary() {
-    let summary = document.getElementById('selectedDateTimeSummary');
-    if (!summary) {
-        summary = document.createElement('div');
-        summary.id = 'selectedDateTimeSummary';
-        summary.style.textAlign = 'center';
-        summary.style.margin = '15px 0 0 0';
-        summary.style.color = 'var(--primary-dark)';
-        summary.style.fontWeight = 'bold';
-        calendarContainer.parentNode.insertBefore(summary, calendarContainer.nextSibling);
-    }
-    if (selectedDate && selectedSlot) {
-        const parts = selectedDate.split('-');
-        summary.innerHTML = `נבחר: <span style="color:var(--primary);">${parts[2]}.${parts[1]}.${parts[0]}</span> בשעה <span style="color:var(--primary);">${selectedSlot}</span>`;
-    } else {
-        summary.innerHTML = '';
-    }
-}
-async function generateCalendar(businessId, teamMemberId, serviceId) {
-    calendarContainer.innerHTML = '<p>טוען יומן...</p>';
-    try {
-        const businessDocRef = doc(db, "businesses", businessId);
-        const businessDocSnap = await getDoc(businessDocRef);
-        if (!businessDocSnap.exists()) {
-            calendarContainer.innerHTML = '<p>שגיאה בטעינת נתוני עסק.</p>';
+            authModal.style.display = "none";
+            openAuthBtn.style.display = "none";
+            editAccountBtn.style.display = "";
+            mainContainer.style.display = "";
+        } else {
+            mainContainer.style.display = "none";
+            businessDetailsDiv.style.display = "none";
+            openAuthBtn.style.display = "";
+            editAccountBtn.style.display = "none";
+            userInfo = null;
+        }
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        registerError.style.display = 'none';
+        registerSuccess.style.display = 'none';
+        const fullName = document.getElementById('registerFullName').value.trim();
+        const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+        const phone = document.getElementById('registerPhone').value.trim();
+        const password = document.getElementById('registerPassword').value;
+        if (!fullName || !email || !phone || !password) {
+            registerError.textContent = "אנא מלא את כל השדות";
+            registerError.style.display = '';
             return;
         }
-        const businessData = businessDocSnap.data();
-        const businessWorkDays = businessData.workDays || [];
-        const businessOpenTime = businessData.openTime;
-        const businessCloseTime = businessData.closeTime;
-        const appointmentDuration = parseInt(businessData.appointmentDuration || 30);
-        const breakDuration = parseInt(businessData.breakDuration || 0);
-        const businessUnavailableDates = businessData.unavailableDates || [];
-        const businessUnavailableHours = businessData.unavailableHours || [];
-        const appointmentsQuery = query(
-            collection(db, "appointments"),
-            where("businessId", "==", businessId),
-            where("teamMemberId", "==", teamMemberId)
-        );
-        const appointmentsSnapshot = await getDocs(appointmentsQuery);
-        const existingAppointments = appointmentsSnapshot.docs.map(doc => doc.data());
-        let daysArr = [];
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-        let dayNameToIdx = {};
-        dayNames.forEach((n, i) => { dayNameToIdx[n]=i; });
-        for (let i = 0; daysArr.length < 30 && i < 42; i++) {
-            const date = new Date(today);
-            date.setDate(today.getDate() + i);
-            const dayOfWeek = date.getDay();
-            const dayName = dayNames[dayOfWeek];
-            const isDateBlocked = businessUnavailableDates.some(range => {
-                const start = new Date(range.startDate);
-                const end = new Date(range.endDate);
-                start.setHours(0,0,0,0);
-                end.setHours(0,0,0,0);
-                return date >= start && date <= end;
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, { displayName: fullName });
+            await setDoc(doc(db, "users", userCredential.user.uid), { email, fullName, phone });
+            registerSuccess.textContent = "נרשמת בהצלחה! אפשר להתחבר עכשיו";
+            registerSuccess.style.display = '';
+            registerForm.reset();
+        } catch (err) {
+            registerError.textContent = err.message.replace("Firebase:", "");
+            registerError.style.display = '';
+        }
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.style.display = 'none';
+        const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+        const password = document.getElementById('loginPassword').value;
+        if (!email || !password) {
+            loginError.textContent = "יש למלא את כל השדות";
+            loginError.style.display = '';
+            return;
+        }
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            loginForm.reset();
+        } catch (err) {
+            loginError.textContent = err.message.replace("Firebase:", "");
+            loginError.style.display = '';
+        }
+    });
+
+    editAccountBtn.addEventListener('click', () => {
+        if (!userInfo) return;
+        accountFullName.value = userInfo.fullName || '';
+        accountPhone.value = userInfo.phone || '';
+        accountEmail.value = userInfo.email || '';
+        accountError.style.display = "none";
+        accountSuccess.style.display = "none";
+        accountModal.style.display = "flex";
+    });
+    accountModal.addEventListener('click', (e) => {
+        if (e.target === accountModal) accountModal.style.display = "none";
+    });
+    accountForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        accountError.style.display = "none";
+        accountSuccess.style.display = "none";
+        try {
+            await updateDoc(doc(db, "users", auth.currentUser.uid), {
+                fullName: accountFullName.value.trim(),
+                phone: accountPhone.value.trim()
             });
-            daysArr.push({
-                date,
-                dayName,
-                formatted: date.toISOString().split('T')[0],
-                isOpen: businessWorkDays.includes(dayName) && !isDateBlocked
+            accountSuccess.textContent = "הפרטים עודכנו!";
+            accountSuccess.style.display = '';
+            userInfo.fullName = accountFullName.value.trim();
+            userInfo.phone = accountPhone.value.trim();
+        } catch (err) {
+            accountError.textContent = "שגיאה בעדכון. נסה שוב.";
+            accountError.style.display = '';
+        }
+    });
+    logoutBtn.addEventListener('click', async () => {
+        await signOut(auth);
+        accountModal.style.display = "none";
+        authModal.style.display = "flex";
+    });
+
+    searchButton.addEventListener('click', async () => {
+        const searchTerm = businessSearchInput.value.trim();
+        if (!searchTerm) {
+            searchResultsDiv.innerHTML = '<p>אנא הזן מחרוזת כלשהי לחיפוש.</p>';
+            return;
+        }
+        searchResultsDiv.innerHTML = '<p>מחפש עסקים...</p>';
+        try {
+            const q = query(collection(db, "businesses"));
+            const querySnapshot = await getDocs(q);
+            const results = querySnapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter(b => {
+                    const term = searchTerm.toLowerCase();
+                    return (
+                        (b.name && b.name.toLowerCase().includes(term)) ||
+                        (b.address && b.address.toLowerCase().includes(term)) ||
+                        (b.category && b.category.toLowerCase().includes(term)) ||
+                        (b.services && b.services.some(s => s.name.toLowerCase().includes(term)))
+                    );
+                });
+            if (!results.length) {
+                searchResultsDiv.innerHTML = '<p>לא נמצאו עסקים תואמים.</p>';
+                return;
+            }
+            searchResultsDiv.innerHTML = '';
+            results.forEach(business => {
+                const businessItem = document.createElement('div');
+                businessItem.className = 'businessItem';
+                businessItem.dataset.businessId = business.id;
+                businessItem.innerHTML = `<h3>${business.name}</h3><p>${business.address}</p>`;
+                businessItem.addEventListener('click', () => selectBusiness(business.id, business));
+                searchResultsDiv.appendChild(businessItem);
             });
+        } catch (e) {
+            console.error("Error searching businesses: ", e);
+            searchResultsDiv.innerHTML = '<p>אירעה שגיאה בחיפוש עסקים.</p>';
+        }
+    });
+
+    async function selectBusiness(businessId, businessData) {
+        currentBusiness = { id: businessId, ...businessData };
+        businessNameH1.textContent = currentBusiness.name;
+        businessAddressLink.textContent = currentBusiness.address;
+        businessAddressLink.href = currentBusiness.addressLink || "#";
+        await loadServicesAndTeamMembers(currentBusiness.id);
+        mainContainer.style.display = 'none';
+        businessDetailsDiv.style.display = 'block';
+    }
+
+    async function loadServicesAndTeamMembers(businessId) {
+        try {
+            const businessDocRef = doc(db, "businesses", businessId);
+            const businessDocSnap = await getDoc(businessDocRef);
+            if (businessDocSnap.exists()) {
+                const data = businessDocSnap.data();
+                serviceSelect.innerHTML = '<option value="">בחר שירות...</option>';
+                if (data.services && data.services.length > 0) {
+                    data.services.forEach(service => {
+                        const option = document.createElement('option');
+                        option.value = service.id;
+                        option.textContent = `${service.name} (${service.price} ש"ח)`;
+                        serviceSelect.appendChild(option);
+                    });
+                } else {
+                    serviceSelect.innerHTML += '<option value="" disabled>אין שירותים זמינים</option>';
+                }
+                teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>';
+                if (data.teamMembers && data.teamMembers.length > 0) {
+                    data.teamMembers.forEach(member => {
+                        const option = document.createElement('option');
+                        option.value = member.id;
+                        option.textContent = member.name;
+                        teamMemberSelect.appendChild(option);
+                    });
+                } else {
+                    teamMemberSelect.innerHTML += '<option value="" disabled>אין אנשי צוות זמינים</option>';
+                }
+            }
+        } catch (e) {
+            console.error("Error loading services and team members:", e);
         }
         calendarContainer.innerHTML = '';
-        const table = document.createElement('table');
-        table.className = 'calendar-table';
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        for (let i = 0; i < 7; i++) {
-            const th = document.createElement('th');
-            th.textContent = dayNames[i];
-            headerRow.appendChild(th);
+    }
+
+    serviceSelect.addEventListener('change', async () => {
+        selectedService = serviceSelect.value;
+        if (!selectedService) {
+            teamMemberSelect.value = "";
+            teamMemberSelect.parentElement.style.display = 'none';
+            calendarContainer.innerHTML = '';
+            return;
         }
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-        const tbody = document.createElement('tbody');
-        let row = document.createElement('tr');
-        let gridPos = daysArr[0].date.getDay();
-        for (let i = 0; i < gridPos; i++) {
-            const td = document.createElement('td');
-            row.appendChild(td);
-        }
-        daysArr.forEach((dayObj, idx) => {
-            if ((gridPos + idx) % 7 === 0 && idx !== 0) {
-                tbody.appendChild(row);
-                row = document.createElement('tr');
+        teamMemberSelect.parentElement.style.display = 'block';
+        teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>';
+        const businessDocRef = doc(db, "businesses", currentBusiness.id);
+        const businessDocSnap = await getDoc(businessDocRef);
+        if (businessDocSnap.exists()) {
+            const data = businessDocSnap.data();
+            const selectedServiceObj = data.services.find(s => s.id === selectedService);
+            if (selectedServiceObj && selectedServiceObj.assignedTeamMembers && selectedServiceObj.assignedTeamMembers.length > 0) {
+                const filteredTeamMembers = data.teamMembers.filter(member =>
+                    selectedServiceObj.assignedTeamMembers.includes(member.id)
+                );
+                if (filteredTeamMembers.length > 0) {
+                    filteredTeamMembers.forEach(member => {
+                        const option = document.createElement('option');
+                        option.value = member.id;
+                        option.textContent = member.name;
+                        teamMemberSelect.appendChild(option);
+                    });
+                } else {
+                    teamMemberSelect.innerHTML += '<option value="" disabled>אין אנשי צוות מתאימים לשירות זה</option>';
+                }
+            } else if (data.teamMembers && data.teamMembers.length > 0) {
+                data.teamMembers.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member.id;
+                    option.textContent = member.name;
+                    teamMemberSelect.appendChild(option);
+                });
             }
-            const { date, dayName, formatted, isOpen } = dayObj;
-            const td = document.createElement('td');
-            td.style.verticalAlign = "top";
-            const cell = document.createElement('div');
-            cell.className = 'calendarDay';
-            cell.tabIndex = isOpen ? 0 : -1;
-            if (isOpen) {
-                cell.classList.add('open');
-                cell.title = "לחץ לצפייה בשעות";
-                cell.style.cursor = "pointer";
-                cell.addEventListener('click', async (ev) => {
-                    document.querySelectorAll('.calendarDay').forEach(d => d.classList.remove('selected'));
-                    cell.classList.add('selected');
-                    let slotsArr = [];
-                    let openTime = businessOpenTime, closeTime = businessCloseTime;
-                    let currentTime = new Date(`${formatted}T${openTime}`);
-                    const endTime = new Date(`${formatted}T${closeTime}`);
-                    const businessUnavailableHoursForDate = businessUnavailableHours.filter(uh => uh.date === formatted);
-                    const dailyAppointments = existingAppointments.filter(app => app.date === formatted);
-                    while (currentTime < endTime) {
-                        const slotEndTime = new Date(currentTime.getTime() + appointmentDuration * 60 * 1000);
-                        if (slotEndTime > endTime) break;
-                        const formattedSlot = currentTime.toTimeString().substring(0, 5);
-                        let isSlotAvailable = true;
-                        for (const app of dailyAppointments) {
-                            const appStart = new Date(`${app.date}T${app.time}`);
-                            const appEnd = new Date(appStart.getTime() + (parseInt(app.duration || appointmentDuration)) * 60 * 1000);
-                            if (currentTime < appEnd && slotEndTime > appStart) {
-                                isSlotAvailable = false;
-                                break;
-                            }
-                        }
-                        if (isSlotAvailable) {
-                            for (const blocked of businessUnavailableHoursForDate) {
-                                const blockedStart = new Date(`${formatted}T${blocked.startTime}`);
-                                const blockedEnd = new Date(`${formatted}T${blocked.endTime}`);
-                                if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+        }
+        calendarContainer.innerHTML = '';
+    });
+
+    teamMemberSelect.addEventListener('change', () => {
+        selectedTeamMember = teamMemberSelect.value;
+        if (selectedService && selectedTeamMember) {
+            generateCalendar(currentBusiness.id, selectedTeamMember, selectedService);
+        } else {
+            calendarContainer.innerHTML = '';
+        }
+    });
+
+    function showSlotsModal(dateObj, slotsArr, dayName) {
+        slotsModalOverlay.style.display = "flex";
+        slotsModalList.innerHTML = '';
+        slotsModalNoSlots.style.display = 'none';
+        selectedDate = dateObj.formatted;
+        tempSelectedSlot = null;
+        selectedSlot = null;
+        bookAppointmentButton.disabled = true;
+        slotsModalConfirm.style.display = slotsArr.length ? '' : 'none';
+        slotsModalConfirm.disabled = true;
+        slotsModalConfirm.classList.remove('active');
+        slotsModalTitle.textContent = `${dateObj.date.getDate()}.${dateObj.date.getMonth()+1}.${dateObj.date.getFullYear()} - ${dayName || ""}`;
+        if (!slotsArr.length) {
+            slotsModalNoSlots.style.display = '';
+        } else {
+            slotsArr.forEach(slot => {
+                const slotElem = document.createElement('div');
+                slotElem.className = 'slots-modal-slot';
+                slotElem.textContent = slot.time;
+                if (!slot.available) {
+                    slotElem.setAttribute('disabled', 'disabled');
+                    slotElem.style.cursor = "not-allowed";
+                } else {
+                    slotElem.addEventListener('click', () => {
+                        document.querySelectorAll('.slots-modal-slot').forEach(e => e.classList.remove('selected'));
+                        slotElem.classList.add('selected');
+                        tempSelectedSlot = slot.time;
+                        slotsModalConfirm.disabled = false;
+                        slotsModalConfirm.classList.add('active');
+                    });
+                }
+                slotsModalList.appendChild(slotElem);
+            });
+        }
+    }
+
+    function hideSlotsModal() {
+        slotsModalOverlay.style.display = "none";
+        tempSelectedSlot = null;
+    }
+    closeSlotsModal.addEventListener('click', hideSlotsModal);
+    slotsModalOverlay.addEventListener('click', (e) => {
+        if (e.target === slotsModalOverlay) hideSlotsModal();
+    });
+
+    slotsModalConfirm.addEventListener('click', function() {
+        if (!tempSelectedSlot) {
+            alert('יש לבחור שעה מהרשימה');
+            return;
+        }
+        selectedSlot = tempSelectedSlot;
+        showSelectedSummary();
+        hideSlotsModal();
+        bookAppointmentButton.disabled = false;
+    });
+
+    function showSelectedSummary() {
+        let summary = document.getElementById('selectedDateTimeSummary');
+        if (!summary) {
+            summary = document.createElement('div');
+            summary.id = 'selectedDateTimeSummary';
+            summary.style.textAlign = 'center';
+            summary.style.margin = '15px 0 0 0';
+            summary.style.color = 'var(--primary-dark)';
+            summary.style.fontWeight = 'bold';
+            calendarContainer.parentNode.insertBefore(summary, calendarContainer.nextSibling);
+        }
+        if (selectedDate && selectedSlot) {
+            const parts = selectedDate.split('-');
+            summary.innerHTML = `נבחר: <span style="color:var(--primary);">${parts[2]}.${parts[1]}.${parts[0]}</span> בשעה <span style="color:var(--primary);">${selectedSlot}</span>`;
+        } else {
+            summary.innerHTML = '';
+        }
+    }
+
+    async function generateCalendar(businessId, teamMemberId, serviceId) {
+        calendarContainer.innerHTML = '<p>טוען יומן...</p>';
+        try {
+            const businessDocRef = doc(db, "businesses", businessId);
+            const businessDocSnap = await getDoc(businessDocRef);
+            if (!businessDocSnap.exists()) {
+                calendarContainer.innerHTML = '<p>שגיאה בטעינת נתוני עסק.</p>';
+                return;
+            }
+            const businessData = businessDocSnap.data();
+            const businessWorkDays = businessData.workDays || [];
+            const businessOpenTime = businessData.openTime;
+            const businessCloseTime = businessData.closeTime;
+            const appointmentDuration = parseInt(businessData.appointmentDuration || 30);
+            const breakDuration = parseInt(businessData.breakDuration || 0);
+            const businessUnavailableDates = businessData.unavailableDates || [];
+            const businessUnavailableHours = businessData.unavailableHours || [];
+            const appointmentsQuery = query(
+                collection(db, "appointments"),
+                where("businessId", "==", businessId),
+                where("teamMemberId", "==", teamMemberId)
+            );
+            const appointmentsSnapshot = await getDocs(appointmentsQuery);
+            const existingAppointments = appointmentsSnapshot.docs.map(doc => doc.data());
+            let daysArr = [];
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+            let dayNameToIdx = {};
+            dayNames.forEach((n, i) => { dayNameToIdx[n]=i; });
+            for (let i = 0; daysArr.length < 30 && i < 42; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                const dayOfWeek = date.getDay();
+                const dayName = dayNames[dayOfWeek];
+                const isDateBlocked = businessUnavailableDates.some(range => {
+                    const start = new Date(range.startDate);
+                    const end = new Date(range.endDate);
+                    start.setHours(0,0,0,0);
+                    end.setHours(0,0,0,0);
+                    return date >= start && date <= end;
+                });
+                daysArr.push({
+                    date,
+                    dayName,
+                    formatted: date.toISOString().split('T')[0],
+                    isOpen: businessWorkDays.includes(dayName) && !isDateBlocked
+                });
+            }
+            calendarContainer.innerHTML = '';
+            const table = document.createElement('table');
+            table.className = 'calendar-table';
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            for (let i = 0; i < 7; i++) {
+                const th = document.createElement('th');
+                th.textContent = dayNames[i];
+                headerRow.appendChild(th);
+            }
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            const tbody = document.createElement('tbody');
+            let row = document.createElement('tr');
+            let gridPos = daysArr[0].date.getDay();
+            for (let i = 0; i < gridPos; i++) {
+                const td = document.createElement('td');
+                row.appendChild(td);
+            }
+            daysArr.forEach((dayObj, idx) => {
+                if ((gridPos + idx) % 7 === 0 && idx !== 0) {
+                    tbody.appendChild(row);
+                    row = document.createElement('tr');
+                }
+                const { date, dayName, formatted, isOpen } = dayObj;
+                const td = document.createElement('td');
+                td.style.verticalAlign = "top";
+                const cell = document.createElement('div');
+                cell.className = 'calendarDay';
+                cell.tabIndex = isOpen ? 0 : -1;
+                if (isOpen) {
+                    cell.classList.add('open');
+                    cell.title = "לחץ לצפייה בשעות";
+                    cell.style.cursor = "pointer";
+                    cell.addEventListener('click', async (ev) => {
+                        document.querySelectorAll('.calendarDay').forEach(d => d.classList.remove('selected'));
+                        cell.classList.add('selected');
+                        let slotsArr = [];
+                        let openTime = businessOpenTime, closeTime = businessCloseTime;
+                        let currentTime = new Date(`${formatted}T${openTime}`);
+                        const endTime = new Date(`${formatted}T${closeTime}`);
+                        const businessUnavailableHoursForDate = businessUnavailableHours.filter(uh => uh.date === formatted);
+                        const dailyAppointments = existingAppointments.filter(app => app.date === formatted);
+                        while (currentTime < endTime) {
+                            const slotEndTime = new Date(currentTime.getTime() + appointmentDuration * 60 * 1000);
+                            if (slotEndTime > endTime) break;
+                            const formattedSlot = currentTime.toTimeString().substring(0, 5);
+                            let isSlotAvailable = true;
+                            for (const app of dailyAppointments) {
+                                const appStart = new Date(`${app.date}T${app.time}`);
+                                const appEnd = new Date(appStart.getTime() + (parseInt(app.duration || appointmentDuration)) * 60 * 1000);
+                                if (currentTime < appEnd && slotEndTime > appStart) {
                                     isSlotAvailable = false;
                                     break;
                                 }
                             }
+                            if (isSlotAvailable) {
+                                for (const blocked of businessUnavailableHoursForDate) {
+                                    const blockedStart = new Date(`${formatted}T${blocked.startTime}`);
+                                    const blockedEnd = new Date(`${formatted}T${blocked.endTime}`);
+                                    if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+                                        isSlotAvailable = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            slotsArr.push({
+                                time: formattedSlot,
+                                available: isSlotAvailable
+                            });
+                            currentTime = new Date(slotEndTime.getTime() + breakDuration * 60 * 1000);
                         }
-                        slotsArr.push({
-                            time: formattedSlot,
-                            available: isSlotAvailable
-                        });
-                        currentTime = new Date(slotEndTime.getTime() + breakDuration * 60 * 1000);
-                    }
-                    showSlotsModal(dayObj, slotsArr, dayName);
-                });
-            } else {
-                cell.classList.add('closed');
-                cell.title = "העסק סגור ביום זה";
-                cell.style.cursor = "not-allowed";
-            }
-            cell.innerHTML = `<div style="font-size:1.1em">${date.getDate()}</div>
-                              <div style="font-size:0.98em;color:#888">${dayName}</div>`;
-            td.appendChild(cell);
-            row.appendChild(td);
-        });
-        let lastRowCells = (gridPos + daysArr.length) % 7;
-        if (lastRowCells !== 0) {
-            for (let i = lastRowCells; i < 7; i++) {
-                const td = document.createElement('td');
+                        showSlotsModal(dayObj, slotsArr, dayName);
+                    });
+                } else {
+                    cell.classList.add('closed');
+                    cell.title = "העסק סגור ביום זה";
+                    cell.style.cursor = "not-allowed";
+                }
+                cell.innerHTML = `<div style="font-size:1.1em">${date.getDate()}</div>
+                                  <div style="font-size:0.98em;color:#888">${dayName}</div>`;
+                td.appendChild(cell);
                 row.appendChild(td);
+            });
+            let lastRowCells = (gridPos + daysArr.length) % 7;
+            if (lastRowCells !== 0) {
+                for (let i = lastRowCells; i < 7; i++) {
+                    const td = document.createElement('td');
+                    row.appendChild(td);
+                }
             }
+            tbody.appendChild(row);
+            table.appendChild(tbody);
+            calendarContainer.appendChild(table);
+        } catch (e) {
+            console.error("Error in calendar:", e);
+            calendarContainer.innerHTML = '<p>שגיאה בטעינת יומן.</p>';
         }
-        tbody.appendChild(row);
-        table.appendChild(tbody);
-        calendarContainer.appendChild(table);
-    } catch (e) {
-        console.error("Error in calendar:", e);
-        calendarContainer.innerHTML = '<p>שגיאה בטעינת יומן.</p>';
     }
-}
-bookAppointmentButton.addEventListener('click', async () => {
-    if (!currentBusiness || !selectedService || !selectedTeamMember || !selectedDate || !selectedSlot) {
-        alert('יש לבחור שירות, איש צוות, תאריך ושעה');
-        return;
-    }
-    alert(`נקבע תור ב-${selectedDate} בשעה ${selectedSlot}`);
-});
-/* סוף קוד מלא, ללא שום קיצורים */
+
+    bookAppointmentButton.addEventListener('click', async () => {
+        if (!currentBusiness || !selectedService || !selectedTeamMember || !selectedDate || !selectedSlot) {
+            alert('יש לבחור שירות, איש צוות, תאריך ושעה');
+            return;
+        }
+        try {
+            const businessDocRef = doc(db, "businesses", currentBusiness.id);
+            const businessDocSnap = await getDoc(businessDocRef);
+            let serviceName = "", teamMemberName = "";
+            let serviceDuration = 30;
+            if (businessDocSnap.exists()) {
+                const data = businessDocSnap.data();
+                const serviceObj = data.services.find(s => s.id === selectedService);
+                if(serviceObj){
+                    serviceName = serviceObj.name;
+                    serviceDuration = parseInt(serviceObj.duration || 30);
+                }
+                const teamObj = data.teamMembers.find(t => t.id === selectedTeamMember);
+                if(teamObj){
+                    teamMemberName = teamObj.name;
+                }
+            }
+            await addDoc(collection(db, "appointments"), {
+                businessId: currentBusiness.id,
+                businessName: currentBusiness.name,
+                serviceId: selectedService,
+                serviceName,
+                teamMemberId: selectedTeamMember,
+                teamMemberName,
+                userId: userInfo.uid,
+                userEmail: userInfo.email,
+                userName: userInfo.fullName || '',
+                date: selectedDate,
+                time: selectedSlot,
+                duration: serviceDuration,
+                createdAt: new Date().toISOString()
+            });
+            alert(`תור עודכן בהצלחה ל-${serviceName} אצל ${teamMemberName || ''} בתאריך ${selectedDate} בשעה ${selectedSlot}`);
+            selectedSlot = null;
+            selectedDate = null;
+            showSelectedSummary();
+            bookAppointmentButton.disabled = true;
+        } catch (e) {
+            alert('שגיאה בשמירת התור: ' + (e.message || e));
+        }
+    });
 </script>
 </body>
 </html>
