@@ -617,7 +617,8 @@
     const analytics = getAnalytics(app);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    // ... כל משתני הדום שלך (קיצרתי כאן, תעתיק את כולם מהקוד שלך)
+
+    // ... כל משתני הדום שלך (קיצרתי כאן, תעתיק את כולם מהקוד שלך) ...
     const loadingDiv = document.getElementById('loading');
     const authModal = document.getElementById('authModal');
     const authBox = document.getElementById('authBox');
@@ -665,6 +666,7 @@
     let selectedTeamMember = null;
     let userInfo = null;
     let tempSelectedSlot = null;
+    let slotConfirmed = false;
 
     window.addEventListener('load', () => {
         setTimeout(() => {
@@ -884,6 +886,7 @@
 
     serviceSelect.addEventListener('change', async () => {
         selectedService = serviceSelect.value;
+        slotConfirmed = false;
         if (!selectedService) {
             teamMemberSelect.value = "";
             teamMemberSelect.parentElement.style.display = 'none';
@@ -925,6 +928,7 @@
 
     teamMemberSelect.addEventListener('change', () => {
         selectedTeamMember = teamMemberSelect.value;
+        slotConfirmed = false;
         if (selectedService && selectedTeamMember) {
             generateCalendar(currentBusiness.id, selectedTeamMember, selectedService);
         } else {
@@ -938,6 +942,7 @@
         slotsModalNoSlots.style.display = 'none';
         selectedDate = dateObj.formatted;
         tempSelectedSlot = null;
+        slotConfirmed = false;
         selectedSlot = null;
         bookAppointmentButton.disabled = true;
         slotsModalConfirm.style.display = slotsArr.length ? '' : 'none';
@@ -983,6 +988,7 @@
             return;
         }
         selectedSlot = tempSelectedSlot;
+        slotConfirmed = true;
         showSelectedSummary();
         hideSlotsModal();
         bookAppointmentButton.disabled = false;
@@ -999,7 +1005,7 @@
             summary.style.fontWeight = 'bold';
             calendarContainer.parentNode.insertBefore(summary, calendarContainer.nextSibling);
         }
-        if (selectedDate && selectedSlot) {
+        if (selectedDate && selectedSlot && slotConfirmed) {
             const parts = selectedDate.split('-');
             summary.innerHTML = `נבחר: <span style="color:var(--primary);">${parts[2]}.${parts[1]}.${parts[0]}</span> בשעה <span style="color:var(--primary);">${selectedSlot}</span>`;
         } else {
@@ -1157,8 +1163,8 @@
     }
 
     bookAppointmentButton.addEventListener('click', async () => {
-        if (!currentBusiness || !selectedService || !selectedTeamMember || !selectedDate || !selectedSlot) {
-            alert('יש לבחור שירות, איש צוות, תאריך ושעה');
+        if (!currentBusiness || !selectedService || !selectedTeamMember || !selectedDate || !selectedSlot || !slotConfirmed) {
+            alert('יש לבחור שירות, איש צוות, תאריך ושעה ולאשר שעה');
             return;
         }
         try {
@@ -1194,6 +1200,7 @@
                 createdAt: new Date().toISOString()
             });
             alert(`תור עודכן בהצלחה ל-${serviceName} אצל ${teamMemberName || ''} בתאריך ${selectedDate} בשעה ${selectedSlot}`);
+            slotConfirmed = false;
             selectedSlot = null;
             selectedDate = null;
             showSelectedSummary();
