@@ -618,7 +618,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // ... כל משתני הדום שלך (קיצרתי כאן, תעתיק את כולם מהקוד שלך) ...
+    // DOM elements
     const loadingDiv = document.getElementById('loading');
     const authModal = document.getElementById('authModal');
     const authBox = document.getElementById('authBox');
@@ -945,9 +945,14 @@
         slotConfirmed = false;
         selectedSlot = null;
         bookAppointmentButton.disabled = true;
-        slotsModalConfirm.style.display = slotsArr.length ? '' : 'none';
-        slotsModalConfirm.disabled = true;
-        slotsModalConfirm.classList.remove('active');
+        // הצגת כפתור האישור רק אם יש סלוטים
+        if (slotsArr.length) {
+            slotsModalConfirm.style.display = '';
+            slotsModalConfirm.disabled = true;
+            slotsModalConfirm.classList.remove('active');
+        } else {
+            slotsModalConfirm.style.display = 'none';
+        }
         slotsModalTitle.textContent = `${dateObj.date.getDate()}.${dateObj.date.getMonth()+1}.${dateObj.date.getFullYear()} - ${dayName || ""}`;
         if (!slotsArr.length) {
             slotsModalNoSlots.style.display = '';
