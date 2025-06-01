@@ -20,7 +20,10 @@
         }
         body {
             font-family: 'Heebo', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--secondary) 80%, var(--primary) 130%);
+            background: #f5f7fa;
+            background-image: linear-gradient(135deg, rgba(0,147,233,0.10) 77%, rgba(0,147,233,0.55) 120%);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             margin: 0;
             padding: 0;
             min-height: 100vh;
@@ -153,7 +156,7 @@
             box-shadow: 0 2px 10px 0 rgba(0,147,233,0.09);
         }
         button {
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            background: var(--primary-dark);
             color: #fff;
             font-size: 1.15em;
             font-weight: 600;
@@ -170,7 +173,7 @@
         }
         button:hover, button:focus {
             filter: brightness(1.07);
-            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+            background: var(--primary);
         }
         .link-btn {
             background: none;
@@ -208,7 +211,7 @@
         }
         .businessItem {
             border-radius: 11px;
-            background: linear-gradient(90deg, #ecf5fd 70%, #fafdff 120%);
+            background: #fafdff;
             box-shadow: 0 2px 7px rgba(0,147,233,0.07);
             border: 1.5px solid #eaf1fa;
             padding: 17px 13px;
@@ -256,7 +259,7 @@
             font-size: 1em;
         }
         .calendarDay {
-            background: linear-gradient(120deg, #e7f3ff 70%, #fafdff 140%);
+            background: #e7f3ff;
             border-radius: 8px;
             min-height: 54px;
             color: #007bff;
@@ -287,12 +290,11 @@
         }
         .calendarDay.selected, 
         .calendarDay:focus {
-            background: linear-gradient(90deg, var(--primary) 60%, var(--primary-dark) 120%);
+            background: #0093e9;
             color: #fff;
             border-color: var(--primary-dark);
             z-index: 2;
         }
-        /* Remove slots from calendar grid */
         .calendarDay .slot-list {
             display: none !important;
         }
@@ -365,12 +367,30 @@
             cursor: pointer;
             z-index: 10;
         }
+        #slotsModalConfirm {
+            margin-top: 15px;
+            width: 60%;
+            background: var(--primary-dark);
+            color: #fff;
+            font-size: 1.08em;
+            font-weight: 600;
+            padding: 10px 0;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: none;
+            transition: background 0.2s, filter 0.18s;
+        }
+        #slotsModalConfirm:disabled {
+            filter: grayscale(0.5);
+            opacity: 0.66;
+            cursor: not-allowed;
+        }
         .no-slots-msg {
             color: #bbb;
             font-size: 0.97em;
             margin-top: 10px;
         }
-        /* כתובת עסק ממורכזת */
         #businessAddressLink {
             display: block;
             text-align: center;
@@ -380,7 +400,6 @@
             font-weight: 600;
             direction: ltr;
         }
-        /* טופס התחברות/הרשמה מוקפץ */
         #authModal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -434,7 +453,6 @@
             cursor: pointer;
             z-index: 10;
         }
-        /* עריכת חשבון */
         #accountModal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -475,6 +493,12 @@
         @media (max-width: 430px) {
             #calendarContainer {max-width: 97vw;}
             #slotsModal {min-width: 90vw;}
+        }
+        #selectedDateTimeSummary {
+            text-align: center;
+            margin: 15px 0 0 0;
+            color: var(--primary-dark);
+            font-weight: bold;
         }
     </style>
 </head>
@@ -550,6 +574,7 @@
     <h3 id="slotsModalTitle"></h3>
     <div class="slots-modal-list" id="slotsModalList"></div>
     <div class="no-slots-msg" id="slotsModalNoSlots" style="display:none">אין שעות זמינות לתאריך זה</div>
+    <button id="slotsModalConfirm" style="display:none;">אישור</button>
   </div>
 </div>
 <!-- החלקים הבאים זמינים רק לאחר התחברות -->
@@ -578,6 +603,7 @@
     <div id="calendarContainer"></div>
     <button id="bookAppointmentButton" style="margin-top: 28px;">קבע תור</button>
 </div>
+<div id="selectedDateTimeSummary"></div>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
@@ -624,7 +650,6 @@
     const teamMemberSelect = document.getElementById('teamMemberSelect');
     const calendarContainer = document.getElementById('calendarContainer');
     const bookAppointmentButton = document.getElementById('bookAppointmentButton');
-    // Auth forms
     const loginTab = document.getElementById('loginTab');
     const registerTab = document.getElementById('registerTab');
     const loginForm = document.getElementById('loginForm');
@@ -632,15 +657,14 @@
     const loginError = document.getElementById('loginError');
     const registerError = document.getElementById('registerError');
     const registerSuccess = document.getElementById('registerSuccess');
-    // Logo
     const logoImg = document.getElementById('logoImg');
-    // Calendar slots modal
     const slotsModalOverlay = document.getElementById('slotsModalOverlay');
     const slotsModal = document.getElementById('slotsModal');
     const slotsModalList = document.getElementById('slotsModalList');
     const slotsModalTitle = document.getElementById('slotsModalTitle');
     const slotsModalNoSlots = document.getElementById('slotsModalNoSlots');
     const closeSlotsModal = document.getElementById('closeSlotsModal');
+    const slotsModalConfirm = document.getElementById('slotsModalConfirm');
     // Global state
     let currentBusiness = null;
     let selectedDate = null;
@@ -648,7 +672,7 @@
     let selectedService = null;
     let selectedTeamMember = null;
     let userInfo = null;
-    let lastAvailableSlotsData = null; // לשימוש באירועי בחירת שעה
+    let tempSelectedSlot = null;
     // Loading
     window.addEventListener('load', () => {
         setTimeout(() => {
@@ -669,22 +693,17 @@
         loginForm.style.display = 'none';
         registerForm.style.display = '';
     });
-    // Open/close auth modal
     function showAuthModal() { authModal.style.display = "flex"; }
     function hideAuthModal() { authModal.style.display = "none"; }
     openAuthBtn.addEventListener('click', showAuthModal);
     closeAuthModal.addEventListener('click', hideAuthModal);
-    // Logo click = home
     logoImg.addEventListener('click', () => {
         mainContainer.style.display = '';
         businessDetailsDiv.style.display = 'none';
     });
-    // --- Firebase Auth Logic ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // Load user info
             userInfo = { uid: user.uid, email: user.email, displayName: user.displayName || '' };
-            // Try get details from firestore (for phone & name)
             const docSnap = await getDoc(doc(db, "users", user.uid));
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -703,7 +722,6 @@
             userInfo = null;
         }
     });
-    // רישום
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         registerError.style.display = 'none';
@@ -729,7 +747,6 @@
             registerError.style.display = '';
         }
     });
-    // התחברות
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         loginError.style.display = 'none';
@@ -748,7 +765,6 @@
             loginError.style.display = '';
         }
     });
-    // --- עריכת חשבון ---
     editAccountBtn.addEventListener('click', () => {
         if (!userInfo) return;
         accountFullName.value = userInfo.fullName || '';
@@ -784,7 +800,6 @@
         accountModal.style.display = "none";
         authModal.style.display = "flex";
     });
-    // --- BUSINESS SEARCH (Much more flexible) ---
     searchButton.addEventListener('click', async () => {
         const searchTerm = businessSearchInput.value.trim();
         if (!searchTerm) {
@@ -793,7 +808,6 @@
         }
         searchResultsDiv.innerHTML = '<p>מחפש עסקים...</p>';
         try {
-            // Search any field: name/address/category/services (case-insensitive)
             const q = query(collection(db, "businesses"));
             const querySnapshot = await getDocs(q);
             const results = querySnapshot.docs
@@ -825,7 +839,6 @@
             searchResultsDiv.innerHTML = '<p>אירעה שגיאה בחיפוש עסקים.</p>';
         }
     });
-    // --- בחירת עסק ---
     async function selectBusiness(businessId, businessData) {
         currentBusiness = { id: businessId, ...businessData };
         businessNameH1.textContent = currentBusiness.name;
@@ -835,14 +848,12 @@
         mainContainer.style.display = 'none';
         businessDetailsDiv.style.display = 'block';
     }
-    // --- טעינת שירותים ואנשי צוות ---
     async function loadServicesAndTeamMembers(businessId) {
         try {
             const businessDocRef = doc(db, "businesses", businessId);
             const businessDocSnap = await getDoc(businessDocRef);
             if (businessDocSnap.exists()) {
                 const data = businessDocSnap.data();
-                // Services
                 serviceSelect.innerHTML = '<option value="">בחר שירות...</option>';
                 if (data.services && data.services.length > 0) {
                     data.services.forEach(service => {
@@ -854,7 +865,6 @@
                 } else {
                     serviceSelect.innerHTML += '<option value="" disabled>אין שירותים זמינים</option>';
                 }
-                // Team members
                 teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>';
                 if (data.teamMembers && data.teamMembers.length > 0) {
                     data.teamMembers.forEach(member => {
@@ -912,7 +922,6 @@
         }
         calendarContainer.innerHTML = '';
     });
-    // --- יומן חדש: מציג את כל התאריכים, פתוח/סגור, שעות בחלונית נפרדת ---
     teamMemberSelect.addEventListener('change', () => {
         selectedTeamMember = teamMemberSelect.value;
         if (selectedService && selectedTeamMember) {
@@ -921,15 +930,14 @@
             calendarContainer.innerHTML = '';
         }
     });
-
-    // חלון שעות - הצגה והסתרה
     function showSlotsModal(dateObj, slotsArr, dayName) {
         slotsModalOverlay.style.display = "flex";
         slotsModalList.innerHTML = '';
         slotsModalNoSlots.style.display = 'none';
         selectedDate = dateObj.formatted;
-        selectedSlot = null;
-        // כותרת
+        tempSelectedSlot = null;
+        slotsModalConfirm.style.display = slotsArr.length ? '' : 'none';
+        slotsModalConfirm.disabled = true;
         slotsModalTitle.textContent = `${dateObj.date.getDate()}.${dateObj.date.getMonth()+1}.${dateObj.date.getFullYear()} - ${dayName || ""}`;
         if (!slotsArr.length) {
             slotsModalNoSlots.style.display = '';
@@ -945,7 +953,8 @@
                     slotElem.addEventListener('click', () => {
                         document.querySelectorAll('.slots-modal-slot').forEach(e => e.classList.remove('selected'));
                         slotElem.classList.add('selected');
-                        selectedSlot = slot.time;
+                        tempSelectedSlot = slot.time;
+                        slotsModalConfirm.disabled = false;
                     });
                 }
                 slotsModalList.appendChild(slotElem);
@@ -954,13 +963,39 @@
     }
     function hideSlotsModal() {
         slotsModalOverlay.style.display = "none";
-        selectedSlot = null;
+        tempSelectedSlot = null;
     }
     closeSlotsModal.addEventListener('click', hideSlotsModal);
     slotsModalOverlay.addEventListener('click', (e) => {
         if (e.target === slotsModalOverlay) hideSlotsModal();
     });
-    // --- בניית היומן: כל התאריכים, שעות בחלון נפרד ---
+    slotsModalConfirm.addEventListener('click', function() {
+        if (!tempSelectedSlot) {
+            alert('יש לבחור שעה מהרשימה');
+            return;
+        }
+        selectedSlot = tempSelectedSlot;
+        showSelectedSummary();
+        hideSlotsModal();
+    });
+    function showSelectedSummary() {
+        let summary = document.getElementById('selectedDateTimeSummary');
+        if (!summary) {
+            summary = document.createElement('div');
+            summary.id = 'selectedDateTimeSummary';
+            summary.style.textAlign = 'center';
+            summary.style.margin = '15px 0 0 0';
+            summary.style.color = 'var(--primary-dark)';
+            summary.style.fontWeight = 'bold';
+            calendarContainer.parentNode.insertBefore(summary, calendarContainer.nextSibling);
+        }
+        if (selectedDate && selectedSlot) {
+            const parts = selectedDate.split('-');
+            summary.innerHTML = `נבחר: <span style="color:var(--primary);">${parts[2]}.${parts[1]}.${parts[0]}</span> בשעה <span style="color:var(--primary);">${selectedSlot}</span>`;
+        } else {
+            summary.innerHTML = '';
+        }
+    }
     async function generateCalendar(businessId, teamMemberId, serviceId) {
         calendarContainer.innerHTML = '<p>טוען יומן...</p>';
         try {
@@ -971,14 +1006,13 @@
                 return;
             }
             const businessData = businessDocSnap.data();
-            const businessWorkDays = businessData.workDays || []; // ימים שהעסק עובד בשמות ימים
+            const businessWorkDays = businessData.workDays || [];
             const businessOpenTime = businessData.openTime;
             const businessCloseTime = businessData.closeTime;
             const appointmentDuration = parseInt(businessData.appointmentDuration || 30);
             const breakDuration = parseInt(businessData.breakDuration || 0);
             const businessUnavailableDates = businessData.unavailableDates || [];
             const businessUnavailableHours = businessData.unavailableHours || [];
-            // שליפת תורים קיימים
             const appointmentsQuery = query(
                 collection(db, "appointments"),
                 where("businessId", "==", businessId),
@@ -986,11 +1020,9 @@
             );
             const appointmentsSnapshot = await getDocs(appointmentsQuery);
             const existingAppointments = appointmentsSnapshot.docs.map(doc => doc.data());
-            // בניית מערך תאריכים
             let daysArr = [];
             const today = new Date();
             today.setHours(0,0,0,0);
-            // יום ראשון הוא 0, שבת 6
             const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
             let dayNameToIdx = {};
             dayNames.forEach((n, i) => { dayNameToIdx[n]=i; });
@@ -999,7 +1031,6 @@
                 date.setDate(today.getDate() + i);
                 const dayOfWeek = date.getDay();
                 const dayName = dayNames[dayOfWeek];
-                // חסימות תאריכים
                 const isDateBlocked = businessUnavailableDates.some(range => {
                     const start = new Date(range.startDate);
                     const end = new Date(range.endDate);
@@ -1007,7 +1038,6 @@
                     end.setHours(0,0,0,0);
                     return date >= start && date <= end;
                 });
-                // add ALL dates to the calendar, info if "open" or "closed"
                 daysArr.push({
                     date,
                     dayName,
@@ -1015,11 +1045,9 @@
                     isOpen: businessWorkDays.includes(dayName) && !isDateBlocked
                 });
             }
-            // יומן כטבלה
             calendarContainer.innerHTML = '';
             const table = document.createElement('table');
             table.className = 'calendar-table';
-            // Header
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
             for (let i = 0; i < 7; i++) {
@@ -1029,16 +1057,13 @@
             }
             thead.appendChild(headerRow);
             table.appendChild(thead);
-            // Body
             const tbody = document.createElement('tbody');
             let row = document.createElement('tr');
-            // Placeholders for empty days at start
             let gridPos = daysArr[0].date.getDay();
             for (let i = 0; i < gridPos; i++) {
                 const td = document.createElement('td');
                 row.appendChild(td);
             }
-            // Fill calendar
             daysArr.forEach((dayObj, idx) => {
                 if ((gridPos + idx) % 7 === 0 && idx !== 0) {
                     tbody.appendChild(row);
@@ -1057,8 +1082,6 @@
                     cell.addEventListener('click', async (ev) => {
                         document.querySelectorAll('.calendarDay').forEach(d => d.classList.remove('selected'));
                         cell.classList.add('selected');
-                        // HOURS for this date, in modal
-                        // Build available slots for this date:
                         let slotsArr = [];
                         let openTime = businessOpenTime, closeTime = businessCloseTime;
                         let currentTime = new Date(`${formatted}T${openTime}`);
@@ -1068,9 +1091,8 @@
                         while (currentTime < endTime) {
                             const slotEndTime = new Date(currentTime.getTime() + appointmentDuration * 60 * 1000);
                             if (slotEndTime > endTime) break;
-                            const formattedSlot = currentTime.toTimeString().substring(0, 5); // HH:MM
+                            const formattedSlot = currentTime.toTimeString().substring(0, 5);
                             let isSlotAvailable = true;
-                            // התנגשות עם תורים
                             for (const app of dailyAppointments) {
                                 const appStart = new Date(`${app.date}T${app.time}`);
                                 const appEnd = new Date(appStart.getTime() + (parseInt(app.duration || appointmentDuration)) * 60 * 1000);
@@ -1079,7 +1101,6 @@
                                     break;
                                 }
                             }
-                            // התנגשות עם חסימות שעות
                             if (isSlotAvailable) {
                                 for (const blocked of businessUnavailableHoursForDate) {
                                     const blockedStart = new Date(`${formatted}T${blocked.startTime}`);
@@ -1108,7 +1129,6 @@
                 td.appendChild(cell);
                 row.appendChild(td);
             });
-            // Fill remaining cells in last row
             let lastRowCells = (gridPos + daysArr.length) % 7;
             if (lastRowCells !== 0) {
                 for (let i = lastRowCells; i < 7; i++) {
@@ -1124,16 +1144,13 @@
             calendarContainer.innerHTML = '<p>שגיאה בטעינת יומן.</p>';
         }
     }
-    // END calendar/slots
-
-    // קביעת תור: חייב לבחור תאריך ושעה
     bookAppointmentButton.addEventListener('click', async () => {
         if (!currentBusiness || !selectedService || !selectedTeamMember || !selectedDate || !selectedSlot) {
             alert('יש לבחור שירות, איש צוות, תאריך ושעה');
             return;
         }
-        // ...המשך לוגיקת קביעת תור...
         alert(`נקבע תור ב-${selectedDate} בשעה ${selectedSlot}`);
+        // ... המשך הלוגיקה ...
     });
 </script>
 </body>
