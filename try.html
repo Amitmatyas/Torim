@@ -34,20 +34,51 @@
             padding: 0;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
         }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
         header img {
             max-height: 70px;
             margin: 16px 0;
-            transition: transform 0.2s;
+            cursor: pointer;
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            animation: logoAnim 1.7s infinite alternate;
         }
-        header img:hover {
-            transform: scale(1.08) rotate(-3deg);
+        @keyframes logoAnim {
+            0% { transform: scale(1) rotate(-7deg);}
+            60% { transform: scale(1.04) rotate(6deg);}
+            100% { transform: scale(1) rotate(-7deg);}
         }
-
+        .header-spacer { width: 60px; }
+        .header-actions {
+            flex: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 20px;
+        }
+        .header-btn {
+            background: none;
+            border: none;
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            padding: 8px 15px 8px 15px;
+            border-radius: 7px;
+            transition: background 0.13s;
+        }
+        .header-btn:hover {
+            background: #eaf6fd;
+        }
         #loading {
             position: fixed;
             top: 0; left: 0;
@@ -68,18 +99,16 @@
             0% { transform: rotate(-10deg);}
             100% { transform: rotate(350deg);}
         }
-
         .container {
             background: var(--card);
             margin: 36px auto 0 auto;
             box-shadow: var(--shadow);
             border-radius: var(--radius);
-            width: min(440px, 95vw);
+            width: min(460px, 97vw);
             padding: 32px 28px 28px 28px;
             position: relative;
             animation: fadeIn 1.2s;
         }
-
         @keyframes fadeIn {
             from {opacity: 0;transform: translateY(24px);}
             to {opacity: 1;transform: none;}
@@ -174,7 +203,6 @@
             margin-top: -8px;
             font-size: 0.92em;
         }
-        /* תוצאות חיפוש */
         #searchResults {
             margin-top: 18px;
         }
@@ -193,7 +221,6 @@
             background: #d1eaff;
             box-shadow: 0 4px 18px rgba(0,147,233,0.17);
         }
-
         .businessItem h3 {
             margin: 0 0 4px 0;
             font-size: 1.13em;
@@ -204,7 +231,7 @@
             color: #555;
             font-size: 0.95em;
         }
-        /* יומן חדשני */
+        /* יומן */
         #calendarContainer {
             direction: rtl;
             max-width: 390px;
@@ -212,45 +239,37 @@
             background: #fafdff;
             border-radius: 18px;
             box-shadow: 0 2px 10px rgba(0,147,233,0.08);
-            padding: 20px 10px;
+            padding: 20px 10px 15px 10px;
             border: 1px solid #e0e8f0;
+            overflow-x: auto;
         }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+        .calendar-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 6px;
+            table-layout: fixed;
         }
-        .calendar-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        .calendar-header div {
-            font-weight: 800;
-            color: var(--primary-dark);
+        .calendar-table th, .calendar-table td {
             text-align: center;
+            padding: 0;
             font-size: 1em;
-            padding-bottom: 2px;
-            letter-spacing: 0.01em;
         }
         .calendarDay {
             background: linear-gradient(120deg, #e7f3ff 70%, #fafdff 140%);
             border-radius: 8px;
-            padding: 0;
             min-height: 54px;
-            text-align: center;
-            font-size: 1em;
             color: #007bff;
             border: 1.5px solid #d9e6f4;
             font-weight: 700;
             cursor: pointer;
             position: relative;
+            transition: border-color 0.16s, background 0.17s, color 0.15s;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
             align-items: center;
-            transition: border-color 0.16s, background 0.17s, color 0.15s;
+            justify-content: flex-start;
+            gap: 2px;
+            min-width: 60px;
         }
         .calendarDay.selected, 
         .calendarDay:focus {
@@ -267,13 +286,12 @@
             pointer-events: none;
         }
         .calendarDay .slot-list {
+            margin-top: 3px;
             width: 100%;
-            margin-top: 8px;
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 2px;
             justify-content: center;
-            align-items: center;
         }
         .slot {
             background: #fff;
@@ -282,11 +300,12 @@
             color: var(--primary-dark);
             font-size: 0.96em;
             font-weight: 600;
-            padding: 3px 10px;
+            padding: 2px 7px;
             margin: 1.5px 0;
             cursor: pointer;
             transition: background 0.16s, color 0.15s, border-color 0.13s;
             box-shadow: 0 1px 6px rgba(0,147,233,0.10);
+            white-space: nowrap;
         }
         .slot.selected, .slot:hover, .calendarDay.selected .slot.selected {
             background: var(--primary);
@@ -298,18 +317,35 @@
             color: #aaa;
             cursor: not-allowed;
         }
-        /* טופס התחברות/הרשמה */
-        #authContainer {
-            width: min(420px, 94vw);
+        /* כתובת עסק ממורכזת */
+        #businessAddressLink {
+            display: block;
+            text-align: center;
             margin: 0 auto;
+            font-size: 1.05em;
+            color: var(--primary-dark);
+            font-weight: 600;
+            direction: ltr;
+        }
+        /* טופס התחברות/הרשמה מוקפץ */
+        #authModal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 3000;
+            background: rgba(33, 53, 70, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s;
+        }
+        #authBox {
             background: var(--card);
-            box-shadow: var(--shadow);
-            border-radius: var(--radius);
-            padding: 30px 28px 28px 28px;
-            margin-top: 45px;
-            position: relative;
-            z-index: 10;
-            animation: fadeIn 1.2s;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,147,233,0.16);
+            padding: 32px 28px 28px 28px;
+            min-width: 320px;
+            max-width: 94vw;
+            min-height: 320px;
         }
         #authTabs {
             display: flex;
@@ -334,59 +370,125 @@
             color: var(--primary);
             background: #fafdff;
         }
-        #businessDetails {
-            animation: fadeIn 1.2s;
+        #closeAuthModal {
+            position: absolute;
+            left: 25px;
+            top: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #888;
+            cursor: pointer;
+            z-index: 10;
         }
-        /* רספונסיביות */
-        @media (max-width: 520px) {
-            .container, #authContainer {
-                padding: 17px 4vw 16px 4vw;
+        /* עריכת חשבון */
+        #accountModal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 3200;
+            background: rgba(33, 53, 70, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #accountBox {
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,147,233,0.16);
+            padding: 32px 28px 28px 28px;
+            min-width: 320px;
+            max-width: 94vw;
+        }
+        #logoutBtn {
+            background: #eee;
+            color: var(--danger);
+            font-weight: 800;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            margin-top: 22px;
+            cursor: pointer;
+            transition: background 0.16s;
+        }
+        #logoutBtn:hover { background: #ffeaea;}
+        @media (max-width: 620px) {
+            .container, #authBox, #accountBox {
+                padding: 14px 2vw 14px 2vw;
                 width: 99vw;
             }
-            #calendarContainer {
-                padding: 8px 2vw;
-            }
+            #calendarContainer {padding: 7px 1vw;}
+        }
+        @media (max-width: 430px) {
+            #calendarContainer {max-width: 97vw;}
         }
     </style>
 </head>
 <body>
+<!-- טעינה -->
 <div id="loading">
     <img src="https://i.postimg.cc/mkLjSCzL/9.png" alt="טוען...">
 </div>
-
+<!-- סרגל עליון -->
 <header>
-    <img src="https://i.postimg.cc/mkLjSCzL/9.png" alt="לוגו Torim">
-</header>
-
-<!-- טופס התחברות/הרשמה -->
-<div id="authContainer">
-    <div id="authTabs">
-        <button class="auth-tab active" id="loginTab">התחברות</button>
-        <button class="auth-tab" id="registerTab">הרשמה</button>
+    <span class="header-spacer"></span>
+    <div class="header-logo">
+        <img id="logoImg" src="https://i.postimg.cc/mkLjSCzL/9.png" alt="לוגו Torim">
     </div>
-    <form id="loginForm">
-        <label for="loginEmail">אימייל</label>
-        <input type="email" id="loginEmail" placeholder="כתובת אימייל" autocomplete="username" required>
-        <label for="loginPassword">סיסמה</label>
-        <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password" required>
-        <button type="submit">התחבר</button>
-        <div id="loginError" class="error-message" style="display: none;"></div>
-    </form>
-    <form id="registerForm" style="display: none;">
-        <label for="registerFullName">שם מלא</label>
-        <input type="text" id="registerFullName" placeholder="שם מלא" autocomplete="name" required>
-        <label for="registerEmail">אימייל</label>
-        <input type="email" id="registerEmail" placeholder="כתובת אימייל" autocomplete="email" required>
-        <label for="registerPhone">מספר טלפון</label>
-        <input type="tel" id="registerPhone" placeholder="מספר טלפון" autocomplete="tel" required>
-        <label for="registerPassword">סיסמה</label>
-        <input type="password" id="registerPassword" placeholder="סיסמה" autocomplete="new-password" required>
-        <button type="submit">הרשם</button>
-        <div id="registerError" class="error-message" style="display: none;"></div>
-        <div id="registerSuccess" class="success-message" style="display: none;"></div>
-    </form>
+    <div class="header-actions">
+        <button class="header-btn" id="editAccountBtn" style="display:none">עריכת חשבון</button>
+        <button class="header-btn" id="openAuthBtn" style="display:none">התחברות/הרשמה</button>
+    </div>
+</header>
+<!-- דיאלוג התחברות/הרשמה -->
+<div id="authModal" style="display:none">
+    <div id="authBox">
+        <button id="closeAuthModal" title="סגור">&times;</button>
+        <div id="authTabs">
+            <button class="auth-tab active" id="loginTab">התחברות</button>
+            <button class="auth-tab" id="registerTab">הרשמה</button>
+        </div>
+        <form id="loginForm">
+            <label for="loginEmail">אימייל</label>
+            <input type="email" id="loginEmail" placeholder="כתובת אימייל" autocomplete="username" required>
+            <label for="loginPassword">סיסמה</label>
+            <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password" required>
+            <button type="submit">התחבר</button>
+            <div id="loginError" class="error-message" style="display: none;"></div>
+        </form>
+        <form id="registerForm" style="display: none;">
+            <label for="registerFullName">שם מלא</label>
+            <input type="text" id="registerFullName" placeholder="שם מלא" autocomplete="name" required>
+            <label for="registerEmail">אימייל</label>
+            <input type="email" id="registerEmail" placeholder="כתובת אימייל" autocomplete="email" required>
+            <label for="registerPhone">מספר טלפון</label>
+            <input type="tel" id="registerPhone" placeholder="מספר טלפון" autocomplete="tel" required>
+            <label for="registerPassword">סיסמה</label>
+            <input type="password" id="registerPassword" placeholder="סיסמה" autocomplete="new-password" required>
+            <button type="submit">הרשם</button>
+            <div id="registerError" class="error-message" style="display: none;"></div>
+            <div id="registerSuccess" class="success-message" style="display: none;"></div>
+        </form>
+    </div>
 </div>
-
+<!-- דיאלוג עריכת חשבון -->
+<div id="accountModal" style="display:none">
+    <div id="accountBox">
+        <h2>פרטי חשבון</h2>
+        <form id="accountForm">
+            <label for="accountFullName">שם מלא</label>
+            <input type="text" id="accountFullName" required>
+            <label for="accountPhone">מספר טלפון</label>
+            <input type="tel" id="accountPhone" required>
+            <label for="accountEmail">אימייל</label>
+            <input type="email" id="accountEmail" disabled>
+            <button type="submit">עדכן</button>
+        </form>
+        <button id="logoutBtn">התנתק</button>
+        <div id="accountError" class="error-message" style="display: none;"></div>
+        <div id="accountSuccess" class="success-message" style="display: none;"></div>
+    </div>
+</div>
 <!-- החלקים הבאים זמינים רק לאחר התחברות -->
 <div class="container" id="mainContainer" style="display: none;">
     <h1>חיפוש עסקים</h1>
@@ -394,7 +496,6 @@
     <button id="searchButton">חפש</button>
     <div id="searchResults"></div>
 </div>
-
 <div class="container" style="display: none;" id="businessDetails">
     <h1 id="businessName"></h1>
     <p><a id="businessAddressLink" href="#" target="_blank"></a></p>
@@ -414,13 +515,11 @@
     <div id="calendarContainer"></div>
     <button id="bookAppointmentButton" style="margin-top: 28px;">קבע תור</button>
 </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-    import { getFirestore, collection, query, where, getDocs, doc, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc, addDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
     // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyB9Yx45QdVZpk6qfscw-buJYnXxEYziQII",
@@ -431,16 +530,26 @@
         appId: "1:38963060106:web:b27223980b52d925be7c73",
         measurementId: "G-ZKYQS4CF6N"
     };
-
     // Init Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const db = getFirestore(app);
     const auth = getAuth(app);
-
     // DOM Elements
     const loadingDiv = document.getElementById('loading');
-    const authContainer = document.getElementById('authContainer');
+    const authModal = document.getElementById('authModal');
+    const authBox = document.getElementById('authBox');
+    const closeAuthModal = document.getElementById('closeAuthModal');
+    const openAuthBtn = document.getElementById('openAuthBtn');
+    const editAccountBtn = document.getElementById('editAccountBtn');
+    const accountModal = document.getElementById('accountModal');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const accountForm = document.getElementById('accountForm');
+    const accountFullName = document.getElementById('accountFullName');
+    const accountPhone = document.getElementById('accountPhone');
+    const accountEmail = document.getElementById('accountEmail');
+    const accountError = document.getElementById('accountError');
+    const accountSuccess = document.getElementById('accountSuccess');
     const mainContainer = document.getElementById('mainContainer');
     const businessSearchInput = document.getElementById('businessSearch');
     const searchButton = document.getElementById('searchButton');
@@ -452,7 +561,6 @@
     const teamMemberSelect = document.getElementById('teamMemberSelect');
     const calendarContainer = document.getElementById('calendarContainer');
     const bookAppointmentButton = document.getElementById('bookAppointmentButton');
-
     // Auth forms
     const loginTab = document.getElementById('loginTab');
     const registerTab = document.getElementById('registerTab');
@@ -461,7 +569,8 @@
     const loginError = document.getElementById('loginError');
     const registerError = document.getElementById('registerError');
     const registerSuccess = document.getElementById('registerSuccess');
-
+    // Logo
+    const logoImg = document.getElementById('logoImg');
     // Global state
     let currentBusiness = null;
     let selectedDate = null;
@@ -469,15 +578,13 @@
     let selectedService = null;
     let selectedTeamMember = null;
     let userInfo = null;
-
-    // --- UI Transitions ---
+    // Loading
     window.addEventListener('load', () => {
         setTimeout(() => {
             loadingDiv.style.opacity = "0";
             setTimeout(() => { loadingDiv.style.display = 'none'; }, 600);
         }, 900);
     });
-
     // --- Auth Tabs Switch ---
     loginTab.addEventListener('click', () => {
         loginTab.classList.add('active');
@@ -491,7 +598,16 @@
         loginForm.style.display = 'none';
         registerForm.style.display = '';
     });
-
+    // Open/close auth modal
+    function showAuthModal() { authModal.style.display = "flex"; }
+    function hideAuthModal() { authModal.style.display = "none"; }
+    openAuthBtn.addEventListener('click', showAuthModal);
+    closeAuthModal.addEventListener('click', hideAuthModal);
+    // Logo click = home
+    logoImg.addEventListener('click', () => {
+        mainContainer.style.display = '';
+        businessDetailsDiv.style.display = 'none';
+    });
     // --- Firebase Auth Logic ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -504,15 +620,18 @@
                 userInfo.fullName = data.fullName || '';
                 userInfo.phone = data.phone || '';
             }
-            authContainer.style.display = "none";
+            authModal.style.display = "none";
+            openAuthBtn.style.display = "none";
+            editAccountBtn.style.display = "";
             mainContainer.style.display = "";
         } else {
-            authContainer.style.display = "";
             mainContainer.style.display = "none";
             businessDetailsDiv.style.display = "none";
+            openAuthBtn.style.display = "";
+            editAccountBtn.style.display = "none";
+            userInfo = null;
         }
     });
-
     // רישום
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -522,7 +641,6 @@
         const email = document.getElementById('registerEmail').value.trim().toLowerCase();
         const phone = document.getElementById('registerPhone').value.trim();
         const password = document.getElementById('registerPassword').value;
-
         if (!fullName || !email || !phone || !password) {
             registerError.textContent = "אנא מלא את כל השדות";
             registerError.style.display = '';
@@ -531,13 +649,7 @@
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await updateProfile(userCredential.user, { displayName: fullName });
-            await addDoc(collection(db, "users"), {
-                uid: userCredential.user.uid,
-                email, fullName, phone
-            });
-            // גם נשמור לפי uid (לעדכון מהיר)
             await setDoc(doc(db, "users", userCredential.user.uid), { email, fullName, phone });
-
             registerSuccess.textContent = "נרשמת בהצלחה! אפשר להתחבר עכשיו";
             registerSuccess.style.display = '';
             registerForm.reset();
@@ -546,7 +658,6 @@
             registerError.style.display = '';
         }
     });
-
     // התחברות
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -566,7 +677,42 @@
             loginError.style.display = '';
         }
     });
-
+    // --- עריכת חשבון ---
+    editAccountBtn.addEventListener('click', () => {
+        if (!userInfo) return;
+        accountFullName.value = userInfo.fullName || '';
+        accountPhone.value = userInfo.phone || '';
+        accountEmail.value = userInfo.email || '';
+        accountError.style.display = "none";
+        accountSuccess.style.display = "none";
+        accountModal.style.display = "flex";
+    });
+    accountModal.addEventListener('click', (e) => {
+        if (e.target === accountModal) accountModal.style.display = "none";
+    });
+    accountForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        accountError.style.display = "none";
+        accountSuccess.style.display = "none";
+        try {
+            await updateDoc(doc(db, "users", auth.currentUser.uid), {
+                fullName: accountFullName.value.trim(),
+                phone: accountPhone.value.trim()
+            });
+            accountSuccess.textContent = "הפרטים עודכנו!";
+            accountSuccess.style.display = '';
+            userInfo.fullName = accountFullName.value.trim();
+            userInfo.phone = accountPhone.value.trim();
+        } catch (err) {
+            accountError.textContent = "שגיאה בעדכון. נסה שוב.";
+            accountError.style.display = '';
+        }
+    });
+    logoutBtn.addEventListener('click', async () => {
+        await signOut(auth);
+        accountModal.style.display = "none";
+        authModal.style.display = "flex";
+    });
     // --- BUSINESS SEARCH (Much more flexible) ---
     searchButton.addEventListener('click', async () => {
         const searchTerm = businessSearchInput.value.trim();
@@ -579,8 +725,6 @@
             // Search any field: name/address/category/services (case-insensitive)
             const q = query(collection(db, "businesses"));
             const querySnapshot = await getDocs(q);
-
-            // Filter locally for flexibility (Firestore doesn't support partial/case-insensitive search natively)
             const results = querySnapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() }))
                 .filter(b => {
@@ -592,7 +736,6 @@
                         (b.services && b.services.some(s => s.name.toLowerCase().includes(term)))
                     );
                 });
-
             if (!results.length) {
                 searchResultsDiv.innerHTML = '<p>לא נמצאו עסקים תואמים.</p>';
                 return;
@@ -606,26 +749,21 @@
                 businessItem.addEventListener('click', () => selectBusiness(business.id, business));
                 searchResultsDiv.appendChild(businessItem);
             });
-
         } catch (e) {
             console.error("Error searching businesses: ", e);
             searchResultsDiv.innerHTML = '<p>אירעה שגיאה בחיפוש עסקים.</p>';
         }
     });
-
     // --- בחירת עסק ---
     async function selectBusiness(businessId, businessData) {
         currentBusiness = { id: businessId, ...businessData };
         businessNameH1.textContent = currentBusiness.name;
         businessAddressLink.textContent = currentBusiness.address;
         businessAddressLink.href = currentBusiness.addressLink || "#";
-
         await loadServicesAndTeamMembers(currentBusiness.id);
-
         mainContainer.style.display = 'none';
         businessDetailsDiv.style.display = 'block';
     }
-
     // --- טעינת שירותים ואנשי צוות ---
     async function loadServicesAndTeamMembers(businessId) {
         try {
@@ -663,8 +801,6 @@
         }
         calendarContainer.innerHTML = '';
     }
-
-    // --- סינון אנשי צוות לפי שירות ---
     serviceSelect.addEventListener('change', async () => {
         selectedService = serviceSelect.value;
         if (!selectedService) {
@@ -677,11 +813,9 @@
         teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>';
         const businessDocRef = doc(db, "businesses", currentBusiness.id);
         const businessDocSnap = await getDoc(businessDocRef);
-
         if (businessDocSnap.exists()) {
             const data = businessDocSnap.data();
             const selectedServiceObj = data.services.find(s => s.id === selectedService);
-
             if (selectedServiceObj && selectedServiceObj.assignedTeamMembers && selectedServiceObj.assignedTeamMembers.length > 0) {
                 const filteredTeamMembers = data.teamMembers.filter(member =>
                     selectedServiceObj.assignedTeamMembers.includes(member.id)
@@ -707,8 +841,7 @@
         }
         calendarContainer.innerHTML = '';
     });
-
-    // --- יומן חדש עם שעות בתוך כל תאריך ---
+    // --- יומן חדש עם שעות על גבי היומן (לא בלחיצה) ---
     teamMemberSelect.addEventListener('change', () => {
         selectedTeamMember = teamMemberSelect.value;
         if (selectedService && selectedTeamMember) {
@@ -717,7 +850,6 @@
             calendarContainer.innerHTML = '';
         }
     });
-
     async function generateCalendar(businessId, teamMemberId, serviceId) {
         calendarContainer.innerHTML = '<p>טוען יומן...</p>';
         try {
@@ -733,10 +865,8 @@
             const businessCloseTime = businessData.closeTime;
             const appointmentDuration = parseInt(businessData.appointmentDuration || 30);
             const breakDuration = parseInt(businessData.breakDuration || 0);
-
             const businessUnavailableDates = businessData.unavailableDates || [];
             const businessUnavailableHours = businessData.unavailableHours || [];
-
             // שליפת תורים קיימים
             const appointmentsQuery = query(
                 collection(db, "appointments"),
@@ -745,17 +875,14 @@
             );
             const appointmentsSnapshot = await getDocs(appointmentsQuery);
             const existingAppointments = appointmentsSnapshot.docs.map(doc => doc.data());
-
             // בניית מערך תאריכים
             let daysArr = [];
             const today = new Date();
             today.setHours(0,0,0,0);
-
             // יום ראשון הוא 0, שבת 6
             const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
             let dayNameToIdx = {};
             dayNames.forEach((n, i) => { dayNameToIdx[n]=i; });
-
             for (let i = 0; daysArr.length < 30 && i < 42; i++) {
                 const date = new Date(today);
                 date.setDate(today.getDate() + i);
@@ -774,35 +901,38 @@
                 if (isDateBlocked) continue;
                 daysArr.push({date, dayName, formatted: date.toISOString().split('T')[0]});
             }
-            // בניית היומן
-            // מחשבים איזה יום יוצא ראשון וכו' בשביל יישור היומן
-            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            const calendarStartIdx = firstDayOfMonth.getDay();
+            // יומן כטבלה
             calendarContainer.innerHTML = '';
-
+            const table = document.createElement('table');
+            table.className = 'calendar-table';
             // Header
-            const headerRow = document.createElement('div');
-            headerRow.className = 'calendar-header';
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
             for (let i = 0; i < 7; i++) {
-                const cell = document.createElement('div');
-                cell.textContent = dayNames[i];
-                headerRow.appendChild(cell);
+                const th = document.createElement('th');
+                th.textContent = dayNames[i];
+                headerRow.appendChild(th);
             }
-            calendarContainer.appendChild(headerRow);
-
-            const grid = document.createElement('div');
-            grid.className = 'calendar-grid';
-
-            // Placeholders for empty days before first available
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            // Body
+            const tbody = document.createElement('tbody');
+            let row = document.createElement('tr');
+            // Placeholders for empty days at start
             let gridPos = daysArr[0].date.getDay();
             for (let i = 0; i < gridPos; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'calendarDay disabled';
-                grid.appendChild(cell);
+                const td = document.createElement('td');
+                row.appendChild(td);
             }
             // Fill calendar
             daysArr.forEach((dayObj, idx) => {
+                if ((gridPos + idx) % 7 === 0 && idx !== 0) {
+                    tbody.appendChild(row);
+                    row = document.createElement('tr');
+                }
                 const { date, dayName, formatted } = dayObj;
+                const td = document.createElement('td');
+                td.style.verticalAlign = "top";
                 const cell = document.createElement('div');
                 cell.className = 'calendarDay';
                 cell.tabIndex = 0;
@@ -812,16 +942,12 @@
                 // שעות בתאריך (על גבי היומן)
                 const slotList = document.createElement('div');
                 slotList.className = 'slot-list';
-
-                // שעות אפשריות (אותו קוד כפי שהיה, רק שמוצג כאן)
                 let openTime = businessOpenTime, closeTime = businessCloseTime;
                 let currentTime = new Date(`${formatted}T${openTime}`);
                 const endTime = new Date(`${formatted}T${closeTime}`);
-                // חסימות שעות בתאריך זה
                 const businessUnavailableHoursForDate = businessUnavailableHours.filter(uh => uh.date === formatted);
-                // תורים קיימים
                 const dailyAppointments = existingAppointments.filter(app => app.date === formatted);
-
+                let anySlot = false;
                 while (currentTime < endTime) {
                     const slotEndTime = new Date(currentTime.getTime() + appointmentDuration * 60 * 1000);
                     if (slotEndTime > endTime) break;
@@ -848,13 +974,13 @@
                         }
                     }
                     if (isSlotAvailable) {
+                        anySlot = true;
                         const slotElem = document.createElement('div');
                         slotElem.className = 'slot';
                         slotElem.dataset.time = formattedSlot;
                         slotElem.textContent = formattedSlot;
                         slotElem.addEventListener('click', (ev) => {
                             ev.stopPropagation();
-                            // נבחר תאריך ושעה
                             document.querySelectorAll('.calendarDay').forEach(d => d.classList.remove('selected'));
                             document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
                             cell.classList.add('selected');
@@ -866,7 +992,7 @@
                     }
                     currentTime = new Date(slotEndTime.getTime() + breakDuration * 60 * 1000);
                 }
-                if (!slotList.childNodes.length) {
+                if (!anySlot) {
                     const noSlotEl = document.createElement('span');
                     noSlotEl.textContent = 'אין שעות';
                     noSlotEl.style.color = "#bbb";
@@ -874,17 +1000,21 @@
                     slotList.appendChild(noSlotEl);
                 }
                 cell.appendChild(slotList);
-                grid.appendChild(cell);
+                td.appendChild(cell);
+                row.appendChild(td);
             });
-            calendarContainer.appendChild(grid);
-
+            // Fill end-of-row blanks
+            let filled = (gridPos + daysArr.length) % 7;
+            if (filled !== 0) for (let i = filled; i < 7; i++) row.appendChild(document.createElement('td'));
+            tbody.appendChild(row);
+            table.appendChild(tbody);
+            calendarContainer.appendChild(table);
         } catch (e) {
             console.error("Error generating calendar:", e);
             calendarContainer.innerHTML = '<p>שגיאה בטעינת יומן.</p>';
         }
     }
-
-    // --- קביעת תור (ללא טופס לקוח) ---
+    // --- קביעת תור ---
     bookAppointmentButton.addEventListener('click', async () => {
         if (!currentBusiness || !selectedDate || !selectedSlot || !selectedService || !selectedTeamMember) {
             alert("אנא בחר עסק, שירות, איש צוות, תאריך ושעה לפני קביעת התור.");
@@ -899,7 +1029,6 @@
         const businessData = businessDocSnap.data();
         const serviceDetails = businessData.services.find(s => s.id === selectedService);
         const appointmentDuration = serviceDetails ? serviceDetails.duration : (businessData.appointmentDuration || 30);
-
         try {
             await addDoc(collection(db, "appointments"), {
                 businessId: currentBusiness.id,
@@ -917,9 +1046,7 @@
                 userId: userInfo.uid,
                 timestamp: new Date()
             });
-
             alert("התור נקבע בהצלחה!");
-            // איפוס הכל
             selectedDate = selectedSlot = selectedService = selectedTeamMember = null;
             calendarContainer.innerHTML = '';
             serviceSelect.value = '';
@@ -929,6 +1056,10 @@
             console.error("Error adding document: ", e);
             alert("אירעה שגיאה בקביעת התור. אנא נסה שוב.");
         }
+    });
+    // דיאלוג התחברות סגירה בלחיצה על רקע
+    authModal.addEventListener('click', (e) => {
+        if (e.target === authModal) authModal.style.display = "none";
     });
 </script>
 </body>
