@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת זימון תורים - לקוחות</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for Brand Colors */
+        :root {
+            --primary-dark: #572490; /* סגול כהה/אינדיגו */
+            --secondary-light: #4BC0C8; /* תכלת-טורקיז */
+            --text-dark: #333;
+            --text-light: #f4f4f4;
+            --border-color: #ddd;
+            --background-light: #f9f9f9;
+            --background-grey: #eee;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --modal-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            direction: rtl; /* Right-to-left for Hebrew */
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-dark);
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        button.primary {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+        }
+
+        button.primary:hover {
+            background-color: #4a1d7a; /* Slightly darker primary */
+        }
+
+        button.secondary {
+            background-color: var(--secondary-light);
+            color: var(--text-dark);
+        }
+
+        button.secondary:hover {
+            background-color: #3aa2a8; /* Slightly darker secondary */
+        }
+
+        button.danger {
+            background-color: #dc3545;
+            color: var(--text-light);
+        }
+
+        button.danger:hover {
+            background-color: #c82333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        /* --- Header / Top Navigation Bar --- */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 2px 5px var(--shadow-light);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            box-sizing: border-box;
+        }
+
+        .header-logo {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .header-logo img {
+            height: 40px; /* Adjust as needed */
+        }
+
+        .nav-links, .auth-controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a, .auth-controls button {
+            margin: 0 10px;
+            font-weight: 500;
+            color: var(--text-dark);
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links a:hover, .auth-controls button:hover {
+            background-color: var(--background-grey);
+            text-decoration: none;
+        }
+
+        .user-menu {
+            position: relative;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .user-menu-btn {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            font-weight: 500;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-menu-btn:hover {
+            background-color: var(--background-grey);
+        }
+
+        .user-menu-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px var(--shadow-light);
+            z-index: 1;
+            border-radius: 5px;
+            right: 0;
+            top: 100%;
+            margin-top: 5px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .user-menu-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: right;
+            border-bottom: 1px solid var(--background-grey);
+        }
+
+        .user-menu-content a:last-child {
+            border-bottom: none;
+        }
+
+        .user-menu-content a:hover {
+            background-color: var(--background-grey);
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .user-menu.active .user-menu-content {
+            display: block;
+        }
+
+        /* --- Main Content Area --- */
+        .container {
+            padding: 80px 20px 20px; /* Adjust padding for fixed header */
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- Home Screen --- */
+        #homeScreen {
+            display: block; /* Default display */
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(to right, var(--primary-dark), var(--secondary-light));
+            color: var(--text-light);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .search-bar-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            position: relative; /* For autocomplete */
+        }
+
+        .search-bar-container input {
+            width: 50%;
+            max-width: 500px;
+            border-radius: 25px;
+            padding: 12px 20px;
+            border: none;
+            box-shadow: 0 2px 5px var(--shadow-light);
+            font-size: 1.1em;
+        }
+
+        .search-bar-container button {
+            border-radius: 25px;
+            padding: 12px 25px;
+        }
+
+        .autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            max-width: 500px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 500;
+        }
+
+        .autocomplete-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--background-grey);
+            text-align: right; /* RTL */
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background-color: var(--background-grey);
+        }
+
+
+        .filters-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container select {
+            width: auto;
+            min-width: 150px;
+            margin-bottom: 0;
+        }
+
+        .recommended-businesses {
+            margin-top: 40px;
+        }
+
+        .recommended-businesses h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+        }
+
+        .business-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            justify-content: center;
+        }
+
+        .business-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-light);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: right; /* RTL */
+        }
+
+        .business-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .business-card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .business-card-content {
+            padding: 15px;
+        }
+
+        .business-card-content h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+
+        .business-card-content .rating {
+            color: #ffc107; /* Star color */
+            margin-bottom: 8px;
+        }
+
+        .business-card-content p {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* --- Business Details Page --- */
+        #businessDetailsDiv {
+            display: none; /* Hidden by default */
+        }
+
+        .business-hero-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: -50px; /* Overlap with info card */
+            position: relative;
+            z-index: 1;
+        }
+
+        .business-info-card {
+            background-color: rgba(255, 255, 255, 0.85); /* 85% opacity */
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 800px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 30px;
+            direction: rtl;
+        }
+
+        .business-logo-main {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 3px 10px var(--shadow-light);
+            position: absolute;
+            top: -50px; /* Halfway up the card */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .business-info-content {
+            padding-top: 60px; /* Space for logo */
+        }
+
+        .business-info-content h1 {
+            color: var(--primary-dark);
+            margin-top: 0;
+            font-size: 2.2em;
+        }
+
+        .business-info-content .address,
+        .business-info-content .contact {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .business-info-content .address a {
+            color: var(--secondary-light);
+            font-weight: bold;
+        }
+
+        .business-info-content .contact span {
+            margin: 0 10px;
+        }
+
+        .business-info-content .social-links a img {
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: transform 0.2s ease;
+        }
+        .business-info-content .social-links a img:hover {
+            transform: scale(1.1);
+        }
+
+        .appointment-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-light);
+            padding: 20px;
+            margin-top: 30px;
+            direction: rtl;
+        }
+
+        .appointment-section h2 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+        }
+
+        .appointment-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .appointment-controls select {
+            width: auto;
+            min-width: 200px;
+            margin-bottom: 0;
+        }
+
+        #selectedDateTimeSummary {
+            text-align: center;
+            margin: 15px 0;
+            color: var(--primary-dark);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* Calendar Styling */
+        .calendar-container {
+            padding: 10px;
+            background-color: var(--background-light);
+            border-radius: 8px;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .calendar-table th, .calendar-table td {
+            border: 1px solid var(--border-color);
+            padding: 0; /* Important for inner cell div */
+            text-align: center;
+            height: 100px; /* Fixed height for cells */
+            vertical-align: top;
+        }
+
+        .calendar-table th {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            font-weight: normal;
+            padding: 10px 0;
+        }
+
+        .calendarDay {
+            padding: 10px;
+            min-height: 80px; /* Ensure content fits */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            box-sizing: border-box;
+            background-color: white;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .calendarDay.open {
+            cursor: pointer;
+            background-color: #e6ffe6; /* Light green for open */
+        }
+
+        .calendarDay.open:hover {
+            background-color: #d0ffd0;
+            transform: translateY(-2px);
+        }
+
+        .calendarDay.closed {
+            background-color: var(--background-grey);
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .calendarDay.selected {
+            border: 2px solid var(--primary-dark);
+            box-shadow: 0 0 5px var(--secondary-light);
+        }
+
+        .calendarDay div:first-child {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-dark);
+        }
+
+        .calendarDay div:last-child {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+
+        /* --- Slots Modal --- */
+        .modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            direction: rtl;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .slots-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px; /* For scrollbar */
+        }
+
+        .slots-modal-slot {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .slots-modal-slot:hover {
+            background-color: var(--background-grey);
+        }
+
+        .slots-modal-slot.selected {
+            background-color: var(--secondary-light);
+            border-color: var(--secondary-light);
+            color: var(--text-dark);
+        }
+
+        .slots-modal-slot[disabled] {
+            background-color: var(--background-grey);
+            color: #888;
+            cursor: not-allowed;
+            border-color: #bbb;
+        }
+
+        .slots-modal-no-slots {
+            color: #888;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .modal-confirm-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            opacity: 0.7; /* Initially disabled */
+            cursor: not-allowed;
+        }
+
+        .modal-confirm-btn.active {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        /* --- Book Appointment Button --- */
+        .book-appointment-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .book-appointment-btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background-color: var(--secondary-light);
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .book-appointment-btn:disabled {
+            background-color: var(--background-grey);
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        /* --- Reviews Section --- */
+        .reviews-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-light);
+            padding: 20px;
+            margin-top: 30px;
+            direction: rtl;
+        }
+
+        .reviews-section h2 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+        }
+
+        .add-review-form {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .add-review-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .add-review-form .rating-stars {
+            unicode-bidi: bidi-override;
+            direction: rtl;
+            font-size: 2em;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .add-review-form .rating-stars > span {
+            display: inline-block;
+            position: relative;
+            width: 1.1em;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s ease;
+        }
+        .add-review-form .rating-stars > span:hover:before,
+        .add-review-form .rating-stars > span:hover ~ span:before,
+        .add-review-form .rating-stars > span.selected:before,
+        .add-review-form .rating-stars > span.selected ~ span:before {
+            content: "\2605";
+            position: absolute;
+            color: #ffc107;
+        }
+
+        .add-review-form textarea {
+            width: 100%;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .review-item {
+            border: 1px solid var(--background-grey);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: var(--background-light);
+        }
+
+        .review-item .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .review-item .review-author {
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .review-item .review-date {
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .review-item .review-rating {
+            color: #ffc107;
+            margin-bottom: 8px;
+        }
+
+        .review-item .review-text {
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* --- My Appointments Section --- */
+        #myAppointmentsScreen {
+            display: none; /* Hidden by default */
+            direction: rtl;
+        }
+
+        #myAppointmentsScreen h1 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+        }
+
+        .appointment-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .my-appointment-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-light);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .my-appointment-card .detail-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1em;
+        }
+
+        .my-appointment-card .detail-row span:first-child {
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .my-appointment-card .cancel-btn {
+            margin-top: 15px;
+            align-self: flex-end;
+        }
+        .my-appointment-card .calendar-btn {
+            margin-top: 10px;
+            align-self: flex-start;
+            background-color: #0d6efd; /* Google Calendar blue */
+            color: white;
+        }
+        .my-appointment-card .calendar-btn:hover {
+            background-color: #0a58ca;
+        }
+
+        .login-modal, .register-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .login-modal .modal-content, .register-modal .modal-content {
+            padding: 40px;
+            max-width: 450px;
+        }
+
+        .login-modal h2, .register-modal h2 {
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .login-modal form input, .register-modal form input {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .login-modal button, .register-modal button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+
+        .switch-auth-mode {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+
+        .switch-auth-mode a {
+            color: var(--primary-dark);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .nav-links, .auth-controls {
+                width: 100%;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            .header-logo {
+                flex-basis: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            .header-logo img {
+                height: 35px;
+            }
+
+            .container {
+                padding-top: 140px; /* Adjust for wrapped header */
+            }
+
+            .search-bar-container input {
+                width: 80%;
+            }
+
+            .business-cards-grid {
+                grid-template-columns: 1fr; /* Single column on small screens */
+            }
+
+            .business-info-card {
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+
+            .appointment-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            .appointment-controls select {
+                width: 90%;
+            }
+
+            .calendar-table th, .calendar-table td {
+                height: 80px; /* Smaller height for cells */
+                font-size: 0.9em;
+            }
+            .calendarDay div:first-child {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="nav-links">
+            <a href="#" id="homeLink">בית</a>
+            <a href="#" id="myAppointmentsLink">התורים שלי</a>
+            <a href="#" id="contactLink">צור קשר</a>
+        </div>
+        <div class="header-logo">
+            <img src="https://i.postimg.cc/JDFjry5v/logo.png" alt="לוגו המערכת">
+        </div>
+        <div class="auth-controls">
+            <div class="user-menu" id="userMenu">
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <span id="userNameDisplay">התחברות</span>
+                    <span style="margin-left: 5px;">&#9662;</span>
+                </button>
+                <ul class="user-menu-content" id="userMenuContent">
+                    <li><a href="#" id="profileLink">הפרופיל שלי</a></li>
+                    <li><a href="#" id="upcomingAppointmentsLink">התורים הקרובים</a></li>
+                    <li><a href="#" id="appointmentHistoryLink">היסטוריית תורים</a></li>
+                    <li><a href="#" id="settingsLink">הגדרות</a></li>
+                    <li><a href="#" id="logoutBtn">התנתקות</a></li>
+                </ul>
+            </div>
+            <button id="loginRegisterBtn" class="primary">התחברות / הרשמה</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section id="homeScreen">
+            <div class="hero-section">
+                <h1>מצא וקבע תורים בקלות!</h1>
+                <p>מגוון עסקים ושירותים במרחק לחיצה.</p>
+                <div class="search-bar-container">
+                    <input type="text" id="businessSearchInput" placeholder="חפש עסק, שירות או מיקום...">
+                    <button class="primary" id="searchBtn">חפש</button>
+                    <div id="autocompleteResults" class="autocomplete-results" style="display: none;"></div>
+                </div>
+                <div class="filters-container">
+                    <select id="categoryFilter">
+                        <option value="">כל הקטגוריות</option>
+                        </select>
+                    <select id="locationFilter">
+                        <option value="">כל המיקומים</option>
+                        </select>
+                    <select id="priceRangeFilter">
+                        <option value="">טווח מחירים</option>
+                        <option value="0-50">עד 50 ש"ח</option>
+                        <option value="51-100">51-100 ש"ח</option>
+                        <option value="101-200">101-200 ש"ח</option>
+                        <option value="201+">200 ש"ח ומעלה</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="recommended-businesses">
+                <h2>עסקים מומלצים עבורך</h2>
+                <div class="business-cards-grid" id="businessListings">
+                    <p id="noBusinessesFound" style="text-align: center; display: none;">לא נמצאו עסקים התואמים את החיפוש.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="businessDetailsDiv">
+            <img src="https://via.placeholder.com/1200x250?text=Business+Hero+Image" alt="תמונת נושא העסק" class="business-hero-image" id="businessHeroImage">
+            <div class="business-info-card">
+                <img src="https://via.placeholder.com/100x100?text=Logo" alt="לוגו העסק" class="business-logo-main" id="businessLogoMain">
+                <div class="business-info-content">
+                    <h1 id="businessNameH1">שם העסק</h1>
+                    <div class="address">
+                        <span id="businessAddressLink">כתובת העסק</span>
+                        <a href="#" target="_blank" class="primary" style="margin-right: 15px;">נווט בוויז</a>
+                    </div>
+                    <div class="contact">
+                        <span id="businessPhone">טלפון: 05X-XXXXXXX</span>
+                        <span id="businessEmail">מייל: example@email.com</span>
+                    </div>
+                    <div class="social-links" id="businessSocialLinks">
+                        </div>
+                </div>
+            </div>
+
+            <div class="appointment-section">
+                <h2>קביעת תור</h2>
+                <div class="appointment-controls">
+                    <div class="select-wrapper">
+                        <select id="serviceSelect">
+                            <option value="">בחר שירות...</option>
+                            </select>
+                    </div>
+                    <div class="select-wrapper" style="display: none;">
+                        <select id="teamMemberSelect">
+                            <option value="">בחר איש צוות...</option>
+                            </select>
+                    </div>
+                </div>
+                <div id="selectedDateTimeSummary"></div>
+                <div class="calendar-container" id="calendarContainer">
+                    <p>בחר שירות ואיש צוות כדי לראות יומן.</p>
+                </div>
+                <div class="book-appointment-btn-container">
+                    <button class="primary book-appointment-btn" id="bookAppointmentButton" disabled>קבע תור</button>
+                </div>
+            </div>
+
+            <div class="reviews-section">
+                <h2>ביקורות</h2>
+                <div class="add-review-form">
+                    <h3>השאר ביקורת</h3>
+                    <label for="reviewRating">דירוג:</label>
+                    <div id="reviewRatingStars" class="rating-stars" data-rating="0">
+                        <span data-value="5">&#9733;</span>
+                        <span data-value="4">&#9733;</span>
+                        <span data-value="3">&#9733;</span>
+                        <span data-value="2">&#9733;</span>
+                        <span data-value="1">&#9733;</span>
+                    </div>
+                    <label for="reviewText">הודעה (אופציונלי):</label>
+                    <textarea id="reviewText" placeholder="כתוב את הביקורת שלך כאן..."></textarea>
+                    <button class="primary" id="submitReviewBtn" style="width: auto;">שלח ביקורת</button>
+                </div>
+                <div class="reviews-list" id="reviewsList">
+                    <p id="noReviews" style="text-align: center; color: #888; display: none;">עדיין אין ביקורות. היה הראשון לכתוב!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="myAppointmentsScreen">
+            <h1>התורים שלי</h1>
+            <div class="appointment-list" id="myAppointmentsList">
+                <p style="text-align: center; color: #888;">טוען את התורים שלך...</p>
+                </div>
+        </section>
+
+    </div>
+
+    <div class="modal-overlay" id="slotsModalOverlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="closeSlotsModal">&times;</button>
+            <h3 class="modal-title" id="slotsModalTitle">שעות פנויות עבור תאריך זה</h3>
+            <div class="slots-list" id="slotsModalList">
+                </div>
+            <p class="slots-modal-no-slots" id="slotsModalNoSlots">אין שעות פנויות בתאריך זה.</p>
+            <button class="primary modal-confirm-btn" id="slotsModalConfirm" disabled>אשר שעה</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close-btn close-auth-modal">&times;</button>
+            <h2>התחברות</h2>
+            <form id="loginForm">
+                <input type="email" id="loginEmail" placeholder="אימייל" required>
+                <input type="password" id="loginPassword" placeholder="סיסמה" required>
+                <button type="submit" class="primary">התחבר</button>
+            </form>
+            <div class="switch-auth-mode">
+                אין לך חשבון? <a href="#" id="switchToRegister">הירשם כאן</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal-content">
+            <button class="modal-close-btn close-auth-modal">&times;</button>
+            <h2>הרשמה</h2>
+            <form id="registerForm">
+                <input type="text" id="registerFullName" placeholder="שם מלא" required>
+                <input type="email" id="registerEmail" placeholder="אימייל" required>
+                <input type="password" id="registerPassword" placeholder="סיסמה" placeholder="לפחות 6 תווים" required>
+                <input type="password" id="registerConfirmPassword" placeholder="אשר סיסמה" required>
+                <button type="submit" class="primary">הירשם</button>
+            </form>
+            <div class="switch-auth-mode">
+                יש לך כבר חשבון? <a href="#" id="switchToLogin">התחבר כאן</a>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Firebase Configuration (from your provided snippet)
+        import { initializeApp } from "firebase/app";
+        import { getAnalytics } from "firebase/analytics";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "firebase/firestore";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9Yx45QdVZpk6qfscw-buJYnXxEYziQII",
+            authDomain: "torim-titus.firebaseapp.com",
+            projectId: "torim-titus",
+            storageBucket: "torim-titus.firebasestorage.app",
+            messagingSenderId: "38963060106",
+            appId: "1:38963060106:web:758f9499941c3078be7c73",
+            measurementId: "G-ENR1E8JXN7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app); // eslint-disable-line no-unused-vars
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Global Variables
+        let currentBusiness = null;
+        let selectedService = null;
+        let selectedTeamMember = null;
+        let selectedDate = null;
+        let selectedSlot = null;
+        let tempSelectedSlot = null;
+        let slotConfirmed = false;
+        let userInfo = null; // Stores user data after login
+        let currentRating = 0; // For review submission
+
+        // DOM Elements
+        const homeScreen = document.getElementById('homeScreen');
+        const businessDetailsDiv = document.getElementById('businessDetailsDiv');
+        const myAppointmentsScreen = document.getElementById('myAppointmentsScreen');
+
+        const businessSearchInput = document.getElementById('businessSearchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const autocompleteResults = document.getElementById('autocompleteResults');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const locationFilter = document.getElementById('locationFilter');
+        const priceRangeFilter = document.getElementById('priceRangeFilter');
+        const businessListings = document.getElementById('businessListings');
+        const noBusinessesFound = document.getElementById('noBusinessesFound');
+
+        const businessNameH1 = document.getElementById('businessNameH1');
+        const businessAddressLink = document.getElementById('businessAddressLink');
+        const businessHeroImage = document.getElementById('businessHeroImage');
+        const businessLogoMain = document.getElementById('businessLogoMain');
+        const businessPhone = document.getElementById('businessPhone');
+        const businessEmail = document.getElementById('businessEmail');
+        const businessSocialLinks = document.getElementById('businessSocialLinks');
+
+        const serviceSelect = document.getElementById('serviceSelect');
+        const teamMemberSelect = document.getElementById('teamMemberSelect');
+        const calendarContainer = document.getElementById('calendarContainer');
+        const bookAppointmentButton = document.getElementById('bookAppointmentButton');
+
+        const slotsModalOverlay = document.getElementById('slotsModalOverlay');
+        const slotsModalList = document.getElementById('slotsModalList');
+        const slotsModalNoSlots = document.getElementById('slotsModalNoSlots');
+        const slotsModalTitle = document.getElementById('slotsModalTitle');
+        const slotsModalConfirm = document.getElementById('slotsModalConfirm');
+        const closeSlotsModal = document.getElementById('closeSlotsModal');
+
+        const reviewRatingStars = document.getElementById('reviewRatingStars');
+        const reviewText = document.getElementById('reviewText');
+        const submitReviewBtn = document.getElementById('submitReviewBtn');
+        const reviewsList = document.getElementById('reviewsList');
+        const noReviews = document.getElementById('noReviews');
+
+        const myAppointmentsList = document.getElementById('myAppointmentsList');
+
+        const loginRegisterBtn = document.getElementById('loginRegisterBtn');
+        const userMenu = document.getElementById('userMenu');
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const userMenuContent = document.getElementById('userMenuContent');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+
+        const homeLink = document.getElementById('homeLink');
+        const myAppointmentsLink = document.getElementById('myAppointmentsLink');
+
+        // --- Utility Functions ---
+        function showScreen(screenToShow) {
+            homeScreen.style.display = 'none';
+            businessDetailsDiv.style.display = 'none';
+            myAppointmentsScreen.style.display = 'none';
+
+            if (screenToShow === 'home') {
+                homeScreen.style.display = 'block';
+            } else if (screenToShow === 'business') {
+                businessDetailsDiv.style.display = 'block';
+            } else if (screenToShow === 'myAppointments') {
+                myAppointmentsScreen.style.display = 'block';
+            }
+            window.scrollTo(0, 0); // Scroll to top when changing screens
+        }
+
+        function showModal(modalElement) {
+            modalElement.style.display = 'flex';
+        }
+
+        function hideModal(modalElement) {
+            modalElement.style.display = 'none';
+        }
+
+        // --- Authentication Logic ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userInfo = { uid: user.uid, email: user.email, fullName: '' };
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists()) {
+                    userInfo.fullName = userDocSnap.data().fullName || user.email;
+                } else {
+                    // Create user profile if it doesn't exist (e.g., first time login via external provider)
+                    await addDoc(collection(db, "users"), {
+                        uid: user.uid,
+                        email: user.email,
+                        fullName: user.email, // Default to email if no full name provided during registration
+                        createdAt: new Date().toISOString()
+                    });
+                }
+                userNameDisplay.textContent = userInfo.fullName;
+                loginRegisterBtn.style.display = 'none';
+                userMenu.classList.add('active'); // Show menu for logged-in users
+            } else {
+                userInfo = null;
+                userNameDisplay.textContent = 'התחברות';
+                loginRegisterBtn.style.display = 'block';
+                userMenu.classList.remove('active');
+            }
+            // Initial screen load after auth status known
+            if (!currentBusiness) { // If not already viewing a business, show home
+                showScreen('home');
+            } else { // If a business was selected before page reload/auth state change, stay there
+                showScreen('business');
+            }
+            fetchAndDisplayBusinesses(); // Re-fetch for potential personalized content later
+        });
+
+        userMenuBtn.addEventListener('click', () => {
+            userMenuContent.style.display = userMenuContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!userMenu.contains(event.target) && userMenuContent.style.display === 'block') {
+                userMenuContent.style.display = 'none';
+            }
+        });
+
+        loginRegisterBtn.addEventListener('click', () => {
+            showModal(loginModal);
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                alert("התנתקת בהצלחה.");
+                showScreen('home');
+            } catch (error) {
+                console.error("Error logging out:", error);
+                alert("שגיאה בהתנתקות.");
+            }
+        });
+
+        // Toggle between Login and Register modals
+        switchToRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            hideModal(loginModal);
+            showModal(registerModal);
+        });
+
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            hideModal(registerModal);
+            showModal(loginModal);
+        });
+
+        document.querySelectorAll('.close-auth-modal').forEach(btn => {
+            btn.addEventListener('click', () => {
+                hideModal(loginModal);
+                hideModal(registerModal);
+            });
+        });
+
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) hideModal(loginModal);
+        });
+        registerModal.addEventListener('click', (e) => {
+            if (e.target === registerModal) hideModal(registerModal);
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm.loginEmail.value;
+            const password = loginForm.loginPassword.value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                alert('התחברת בהצלחה!');
+                hideModal(loginModal);
+            } catch (error) {
+                alert('שגיאת התחברות: ' + error.message);
+                console.error("Login error:", error);
+            }
+        });
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fullName = registerForm.registerFullName.value;
+            const email = registerForm.registerEmail.value;
+            const password = registerForm.registerPassword.value;
+            const confirmPassword = registerForm.registerConfirmPassword.value;
+
+            if (password !== confirmPassword) {
+                alert("הסיסמאות אינן תואמות.");
+                return;
+            }
+            if (password.length < 6) {
+                alert("הסיסמה חייבת להיות באורך 6 תווים לפחות.");
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await addDoc(collection(db, "users"), {
+                    uid: userCredential.user.uid,
+                    fullName: fullName,
+                    email: email,
+                    createdAt: new Date().toISOString()
+                });
+                alert('נרשמת בהצלחה!');
+                hideModal(registerModal);
+            } catch (error) {
+                alert('שגיאת הרשמה: ' + error.message);
+                console.error("Register error:", error);
+            }
+        });
+
+        // --- Navigation Links ---
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showScreen('home');
+            currentBusiness = null; // Reset current business
+            // Optionally clear search/filters
+            businessSearchInput.value = '';
+            categoryFilter.value = '';
+            locationFilter.value = '';
+            priceRangeFilter.value = '';
+            fetchAndDisplayBusinesses(); // Reload businesses on home screen
+        });
+
+        myAppointmentsLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!userInfo) {
+                alert('יש להתחבר כדי לצפות בתורים שלך.');
+                showModal(loginModal);
+                return;
+            }
+            showScreen('myAppointments');
+            await loadMyAppointments();
+        });
+
+        // --- Home Screen Logic ---
+        async function fetchAndDisplayBusinesses(searchTerm = '', category = '', location = '', priceRange = '') {
+            businessListings.innerHTML = '<p style="text-align: center;">טוען עסקים...</p>';
+            noBusinessesFound.style.display = 'none';
+            let businessesRef = collection(db, "businesses");
+            let q = businessesRef;
+
+            // Apply filters
+            if (category) {
+                q = query(q, where("category", "==", category));
+            }
+            if (location) {
+                q = query(q, where("location", "==", location));
+            }
+            // Price range filtering would be more complex and might require client-side filtering
+            // or specific price fields in Firestore and range queries if needed.
+            // For now, let's assume it's basic client-side if complexity arises.
+
+            try {
+                const querySnapshot = await getDocs(q);
+                let businesses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Client-side search and price range filtering
+                if (searchTerm) {
+                    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+                    businesses = businesses.filter(business =>
+                        business.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+                        (business.description && business.description.toLowerCase().includes(lowerCaseSearchTerm))
+                    );
+                }
+
+                if (priceRange) {
+                    businesses = businesses.filter(business => {
+                        // Assuming a 'minPrice' and 'maxPrice' on business or average service price
+                        // This is a placeholder. Real price range filtering would need more specific data structure.
+                        // For simplicity, let's say it checks if *any* service price falls within range.
+                        // Or, better, if a business has a 'priceLevel' field (e.g., 1-3 stars for price).
+                        // For now, we'll skip complex price range filtering on client-side directly from provided data.
+                        return true; // Implement real logic here if price data structure allows
+                    });
+                }
+
+                if (businesses.length === 0) {
+                    businessListings.innerHTML = '';
+                    noBusinessesFound.style.display = 'block';
+                    return;
+                }
+
+                businessListings.innerHTML = ''; // Clear previous listings
+                businesses.forEach(business => {
+                    const card = document.createElement('div');
+                    card.className = 'business-card';
+                    card.innerHTML = `
+                        <img src="${business.imageUrl || 'https://via.placeholder.com/400x180?text=Business'}" alt="${business.name}" class="business-card-image">
+                        <div class="business-card-content">
+                            <h3>${business.name}</h3>
+                            <div class="rating">${'⭐'.repeat(Math.round(business.averageRating || 0))} (${business.reviewCount || 0})</div>
+                            <p>${business.description || 'אין תיאור זמין.'}</p>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => selectBusiness(business.id, business));
+                    businessListings.appendChild(card);
+                });
+            } catch (e) {
+                console.error("Error fetching businesses:", e);
+                businessListings.innerHTML = '<p style="text-align: center; color: red;">שגיאה בטעינת עסקים.</p>';
+            }
+        }
+
+        // Initial load of filters (categories, locations)
+        async function loadFilters() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "businesses"));
+                const categories = new Set();
+                const locations = new Set();
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.category) categories.add(data.category);
+                    if (data.location) locations.add(data.location);
+                });
+
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    categoryFilter.appendChild(option);
+                });
+
+                locations.forEach(loc => {
+                    const option = document.createElement('option');
+                    option.value = loc;
+                    option.textContent = loc;
+                    locationFilter.appendChild(option);
+                });
+            } catch (e) {
+                console.error("Error loading filter options:", e);
+            }
+        }
+
+        searchBtn.addEventListener('click', () => {
+            const searchTerm = businessSearchInput.value;
+            const category = categoryFilter.value;
+            const location = locationFilter.value;
+            const priceRange = priceRangeFilter.value;
+            fetchAndDisplayBusinesses(searchTerm, category, location, priceRange);
+        });
+
+        categoryFilter.addEventListener('change', () => fetchAndDisplayBusinesses(businessSearchInput.value, categoryFilter.value, locationFilter.value, priceRangeFilter.value));
+        locationFilter.addEventListener('change', () => fetchAndDisplayBusinesses(businessSearchInput.value, categoryFilter.value, locationFilter.value, priceRangeFilter.value));
+        priceRangeFilter.addEventListener('change', () => fetchAndDisplayBusinesses(businessSearchInput.value, categoryFilter.value, locationFilter.value, priceRangeFilter.value));
+
+        // Autocomplete for search input
+        businessSearchInput.addEventListener('input', async () => {
+            const searchTerm = businessSearchInput.value.toLowerCase();
+            if (searchTerm.length < 2) {
+                autocompleteResults.style.display = 'none';
+                return;
+            }
+            try {
+                const businessesRef = collection(db, "businesses");
+                const querySnapshot = await getDocs(businessesRef); // Fetch all to filter client-side for autocomplete simplicity
+                const allBusinesses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                const filtered = allBusinesses.filter(b => b.name.toLowerCase().includes(searchTerm));
+                autocompleteResults.innerHTML = '';
+                if (filtered.length > 0) {
+                    filtered.forEach(business => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = business.name;
+                        div.addEventListener('click', () => {
+                            businessSearchInput.value = business.name;
+                            autocompleteResults.style.display = 'none';
+                            selectBusiness(business.id, business); // Immediately go to business page
+                        });
+                        autocompleteResults.appendChild(div);
+                    });
+                    autocompleteResults.style.display = 'block';
+                } else {
+                    autocompleteResults.style.display = 'none';
+                }
+            } catch (e) {
+                console.error("Error fetching for autocomplete:", e);
+                autocompleteResults.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!businessSearchInput.contains(e.target) && !autocompleteResults.contains(e.target)) {
+                autocompleteResults.style.display = 'none';
+            }
+        });
+
+
+        // --- Business Details & Appointment Booking Logic ---
+        async function selectBusiness(businessId, businessData) {
+            currentBusiness = { id: businessId, ...businessData };
+            businessNameH1.textContent = currentBusiness.name;
+            businessAddressLink.textContent = currentBusiness.address;
+            businessAddressLink.href = currentBusiness.addressLink || "#";
+            businessPhone.textContent = `טלפון: ${currentBusiness.phone || 'לא זמין'}`;
+            businessEmail.textContent = `מייל: ${currentBusiness.email || 'לא זמין'}`;
+            businessHeroImage.src = currentBusiness.heroImageUrl || 'https://via.placeholder.com/1200x250?text=Business+Hero+Image';
+            businessLogoMain.src = currentBusiness.logoUrl || 'https://via.placeholder.com/100x100?text=Logo';
+
+            // Populate social links
+            businessSocialLinks.innerHTML = '';
+            if (currentBusiness.facebook) {
+                businessSocialLinks.innerHTML += `<a href="${currentBusiness.facebook}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/100px-2021_Facebook_icon.svg.png" alt="Facebook"></a>`;
+            }
+            if (currentBusiness.instagram) {
+                businessSocialLinks.innerHTML += `<a href="${currentBusiness.instagram}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/100px-Instagram_icon.png" alt="Instagram"></a>`;
+            }
+            // Add more social media icons as needed
+
+            await loadServicesAndTeamMembers(currentBusiness.id);
+            await loadReviews(currentBusiness.id);
+            showScreen('business');
+        }
+
+        async function loadServicesAndTeamMembers(businessId) {
+            try {
+                const businessDocRef = doc(db, "businesses", businessId);
+                const businessDocSnap = await getDoc(businessDocRef);
+
+                if (businessDocSnap.exists()) {
+                    const data = businessDocSnap.data();
+                    serviceSelect.innerHTML = '<option value="">בחר שירות...</option>';
+                    if (data.services && data.services.length > 0) {
+                        data.services.forEach(service => {
+                            const option = document.createElement('option');
+                            option.value = service.id;
+                            option.textContent = `${service.name} (${service.price || 'מחיר לא צוין'} ש"ח)`;
+                            serviceSelect.appendChild(option);
+                        });
+                    } else {
+                        serviceSelect.innerHTML += '<option value="" disabled>אין שירותים זמינים</option>';
+                    }
+
+                    // Populate all team members initially, then filter on service selection
+                    teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>';
+                    if (data.teamMembers && data.teamMembers.length > 0) {
+                         // Store all team members for filtering later
+                        currentBusiness.allTeamMembers = data.teamMembers;
+                        data.teamMembers.forEach(member => {
+                            const option = document.createElement('option');
+                            option.value = member.id;
+                            option.textContent = member.name;
+                            teamMemberSelect.appendChild(option);
+                        });
+                    } else {
+                        teamMemberSelect.innerHTML += '<option value="" disabled>אין אנשי צוות זמינים</option>';
+                        currentBusiness.allTeamMembers = [];
+                    }
+
+                }
+            } catch (e) {
+                console.error("Error loading services and team members:", e);
+            }
+            calendarContainer.innerHTML = '<p>בחר שירות ואיש צוות כדי לראות יומן.</p>';
+            teamMemberSelect.parentElement.style.display = 'none'; // Hide team member select initially
+        }
+
+        serviceSelect.addEventListener('change', async () => {
+            selectedService = serviceSelect.value;
+            slotConfirmed = false;
+            showSelectedSummary(); // Clear summary if service changes
+
+            if (!selectedService) {
+                teamMemberSelect.value = "";
+                teamMemberSelect.parentElement.style.display = 'none';
+                calendarContainer.innerHTML = '<p>בחר שירות ואיש צוות כדי לראות יומן.</p>';
+                bookAppointmentButton.disabled = true;
+                return;
+            }
+
+            teamMemberSelect.parentElement.style.display = 'block';
+            teamMemberSelect.innerHTML = '<option value="">בחר איש צוות...</option>'; // Reset team members
+
+            try {
+                // Fetch fresh business data to ensure latest service assignments
+                const businessDocRef = doc(db, "businesses", currentBusiness.id);
+                const businessDocSnap = await getDoc(businessDocRef);
+
+                if (businessDocSnap.exists()) {
+                    const data = businessDocSnap.data();
+                    const selectedServiceObj = data.services.find(s => s.id === selectedService);
+
+                    if (selectedServiceObj && selectedServiceObj.assignedTeamMembers && selectedServiceObj.assignedTeamMembers.length > 0) {
+                        const filteredTeamMembers = data.teamMembers.filter(member =>
+                            selectedServiceObj.assignedTeamMembers.includes(member.id)
+                        );
+                        if (filteredTeamMembers.length > 0) {
+                            filteredTeamMembers.forEach(member => {
+                                const option = document.createElement('option');
+                                option.value = member.id;
+                                option.textContent = member.name;
+                                teamMemberSelect.appendChild(option);
+                            });
+                        } else {
+                            teamMemberSelect.innerHTML += '<option value="" disabled>אין אנשי צוות מתאימים לשירות זה</option>';
+                        }
+                    } else if (data.teamMembers && data.teamMembers.length > 0) {
+                        // If service has no assigned members, show all team members of the business
+                        data.teamMembers.forEach(member => {
+                            const option = document.createElement('option');
+                            option.value = member.id;
+                            option.textContent = member.name;
+                            teamMemberSelect.appendChild(option);
+                        });
+                    } else {
+                        teamMemberSelect.innerHTML += '<option value="" disabled>אין אנשי צוות זמינים</option>';
+                    }
+                }
+            } catch (e) {
+                console.error("Error filtering team members by service:", e);
+                teamMemberSelect.innerHTML = '<option value="" disabled>שגיאה בטעינת אנשי צוות</option>';
+            }
+            calendarContainer.innerHTML = '<p>בחר איש צוות כדי לראות יומן.</p>';
+        });
+
+
+        teamMemberSelect.addEventListener('change', () => {
+            selectedTeamMember = teamMemberSelect.value;
+            slotConfirmed = false;
+            showSelectedSummary(); // Clear summary if team member changes
+            if (selectedService && selectedTeamMember) {
+                generateCalendar(currentBusiness.id, selectedTeamMember, selectedService);
+            } else {
+                calendarContainer.innerHTML = '<p>בחר שירות ואיש צוות כדי לראות יומן.</p>';
+                bookAppointmentButton.disabled = true;
+            }
+        });
+
+        function showSlotsModal(dateObj, slotsArr, dayName) {
+            if (!userInfo) {
+                alert("יש להתחבר/להירשם כדי לצפות בשעות הפנויות.");
+                showModal(loginModal);
+                return;
+            }
+
+            slotsModalOverlay.style.display = "flex";
+            slotsModalList.innerHTML = '';
+            slotsModalNoSlots.style.display = 'none';
+            selectedDate = dateObj.formatted;
+            tempSelectedSlot = null;
+            slotConfirmed = false;
+            selectedSlot = null;
+            bookAppointmentButton.disabled = true;
+
+            if (slotsArr.length) {
+                slotsModalConfirm.style.display = '';
+                slotsModalConfirm.disabled = true;
+                slotsModalConfirm.classList.remove('active');
+            } else {
+                slotsModalConfirm.style.display = 'none';
+            }
+
+            slotsModalTitle.textContent = `${dateObj.date.getDate()}.${dateObj.date.getMonth()+1}.${dateObj.date.getFullYear()} - ${dayName || ""}`;
+
+            if (!slotsArr.length) {
+                slotsModalNoSlots.style.display = '';
+            } else {
+                slotsArr.forEach(slot => {
+                    const slotElem = document.createElement('div');
+                    slotElem.className = 'slots-modal-slot';
+                    slotElem.textContent = slot.time;
+                    if (!slot.available) {
+                        slotElem.setAttribute('disabled', 'disabled');
+                        slotElem.style.cursor = "not-allowed";
+                    } else {
+                        slotElem.addEventListener('click', () => {
+                            document.querySelectorAll('.slots-modal-slot').forEach(e => e.classList.remove('selected'));
+                            slotElem.classList.add('selected');
+                            tempSelectedSlot = slot.time;
+                            slotsModalConfirm.disabled = false;
+                            slotsModalConfirm.classList.add('active');
+                        });
+                    }
+                    slotsModalList.appendChild(slotElem);
+                });
+            }
+        }
+
+        function hideSlotsModal() {
+            slotsModalOverlay.style.display = "none";
+            tempSelectedSlot = null;
+        }
+        closeSlotsModal.addEventListener('click', hideSlotsModal);
+        slotsModalOverlay.addEventListener('click', (e) => {
+            if (e.target === slotsModalOverlay) hideSlotsModal();
+        });
+
+        slotsModalConfirm.addEventListener('click', function() {
+            if (!tempSelectedSlot) {
+                alert('יש לבחור שעה מהרשימה');
+                return;
+            }
+            selectedSlot = tempSelectedSlot;
+            slotConfirmed = true;
+            showSelectedSummary();
+            hideSlotsModal();
+            bookAppointmentButton.disabled = false;
+        });
+
+        function showSelectedSummary() {
+            let summary = document.getElementById('selectedDateTimeSummary');
+            if (!summary) { // Should already exist from HTML, but just in case
+                summary = document.createElement('div');
+                summary.id = 'selectedDateTimeSummary';
+                summary.style.textAlign = 'center';
+                summary.style.margin = '15px 0 0 0';
+                summary.style.color = 'var(--primary-dark)';
+                summary.style.fontWeight = 'bold';
+                calendarContainer.parentNode.insertBefore(summary, calendarContainer.nextSibling);
+            }
+            if (selectedDate && selectedSlot && slotConfirmed) {
+                const parts = selectedDate.split('-');
+                // Format date as DD.MM.YYYY
+                const displayDate = `${parts[2]}.${parts[1]}.${parts[0]}`;
+                summary.innerHTML = `נבחר: <span style="color:var(--secondary-light);">${displayDate}</span> בשעה <span style="color:var(--secondary-light);">${selectedSlot}</span>`;
+            } else {
+                summary.innerHTML = '';
+            }
+        }
+
+        async function generateCalendar(businessId, teamMemberId, serviceId) {
+            calendarContainer.innerHTML = '<p>טוען יומן...</p>';
+            try {
+                const businessDocRef = doc(db, "businesses", businessId);
+                const businessDocSnap = await getDoc(businessDocRef);
+                if (!businessDocSnap.exists()) {
+                    calendarContainer.innerHTML = '<p>שגיאה בטעינת נתוני עסק.</p>';
+                    return;
+                }
+                const businessData = businessDocSnap.data();
+
+                // Get specific team member's work hours if available, otherwise use business hours
+                let teamMemberWorkHours = null;
+                if (businessData.teamMembers && teamMemberId) {
+                    const member = businessData.teamMembers.find(m => m.id === teamMemberId);
+                    if (member && member.workHours) {
+                        teamMemberWorkHours = member.workHours;
+                    }
+                }
+
+                const businessWorkDays = businessData.workDays || [];
+                const businessOpenTime = businessData.openTime;
+                const businessCloseTime = businessData.closeTime;
+                const appointmentDuration = parseInt(businessData.appointmentDuration || 30);
+                const breakDuration = parseInt(businessData.breakDuration || 0); // Break after each appointment
+                const businessUnavailableDates = businessData.unavailableDates || []; // Full dates/ranges business is closed
+                const businessUnavailableHours = businessData.unavailableHours || []; // Specific hours on specific dates
+
+                const appointmentsQuery = query(
+                    collection(db, "appointments"),
+                    where("businessId", "==", businessId),
+                    where("teamMemberId", "==", teamMemberId)
+                );
+                const appointmentsSnapshot = await getDocs(appointmentsQuery);
+                const existingAppointments = appointmentsSnapshot.docs.map(doc => doc.data());
+
+                let daysArr = [];
+                const today = new Date();
+                today.setHours(0,0,0,0); // Set to start of day for accurate comparison
+
+                const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+                // Generate days for 30 days into the future, but check up to 42 to ensure enough open days are found
+                for (let i = 0; daysArr.length < 30 && i < 60; i++) { // Increased limit to 60 days
+                    const date = new Date(today);
+                    date.setDate(today.getDate() + i);
+                    const dayOfWeek = date.getDay(); // 0 for Sunday, 6 for Saturday
+                    const dayName = dayNames[dayOfWeek];
+                    const formattedDate = date.toISOString().split('T')[0];
+
+                    const isDateBlocked = businessUnavailableDates.some(range => {
+                        const start = new Date(range.startDate);
+                        const end = new Date(range.endDate);
+                        start.setHours(0,0,0,0);
+                        end.setHours(0,0,0,0);
+                        return date >= start && date <= end;
+                    });
+
+                    // Check if current day is a work day for the business OR for the specific team member
+                    let isBusinessOpenOnDay = businessWorkDays.includes(dayName);
+                    let isTeamMemberWorkingOnDay = true; // Assume working if no specific hours for member
+                    let effectiveOpenTime = businessOpenTime;
+                    let effectiveCloseTime = businessCloseTime;
+
+                    if (teamMemberWorkHours && teamMemberWorkHours[dayName]) {
+                        const memberDayHours = teamMemberWorkHours[dayName];
+                        if (!memberDayHours.isWorking) {
+                            isTeamMemberWorkingOnDay = false;
+                        } else {
+                            effectiveOpenTime = memberDayHours.openTime;
+                            effectiveCloseTime = memberDayHours.closeTime;
+                        }
+                    } else if (!isBusinessOpenOnDay) {
+                        isTeamMemberWorkingOnDay = false; // If business is closed, and no specific team member hours, then team member is also not working
+                    }
+
+
+                    const isOpen = isBusinessOpenOnDay && isTeamMemberWorkingOnDay && !isDateBlocked;
+
+                    daysArr.push({
+                        date,
+                        dayName,
+                        formatted: formattedDate,
+                        isOpen: isOpen,
+                        effectiveOpenTime: effectiveOpenTime,
+                        effectiveCloseTime: effectiveCloseTime
+                    });
+                }
+
+                calendarContainer.innerHTML = '';
+                const table = document.createElement('table');
+                table.className = 'calendar-table';
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+
+                // Generate header for days of the week (Sun-Sat)
+                for (let i = 0; i < 7; i++) {
+                    const th = document.createElement('th');
+                    th.textContent = dayNames[i];
+                    headerRow.appendChild(th);
+                }
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                let row = document.createElement('tr');
+                let gridPos = daysArr[0].date.getDay(); // Get day of week for the first day in daysArr
+
+                // Add empty cells for days before the first day of the month/range
+                for (let i = 0; i < gridPos; i++) {
+                    const td = document.createElement('td');
+                    row.appendChild(td);
+                }
+
+                daysArr.forEach((dayObj) => {
+                    if ((dayObj.date.getDay()) % 7 === 0 && dayObj.date.getDay() !== gridPos) { // Start a new row for each Sunday
+                        tbody.appendChild(row);
+                        row = document.createElement('tr');
+                    }
+                    const { date, dayName, formatted, isOpen, effectiveOpenTime, effectiveCloseTime } = dayObj;
+                    const td = document.createElement('td');
+                    td.style.verticalAlign = "top";
+
+                    const cell = document.createElement('div');
+                    cell.className = 'calendarDay';
+                    cell.tabIndex = isOpen ? 0 : -1;
+
+                    if (isOpen) {
+                        cell.classList.add('open');
+                        cell.title = "לחץ לצפייה בשעות";
+                        cell.style.cursor = "pointer";
+                        cell.addEventListener('click', async () => {
+                            document.querySelectorAll('.calendarDay').forEach(d => d.classList.remove('selected'));
+                            cell.classList.add('selected');
+                            let slotsArr = [];
+                            let currentTime = new Date(`${formatted}T${effectiveOpenTime}`);
+                            const endTime = new Date(`${formatted}T${effectiveCloseTime}`);
+
+                            const businessUnavailableHoursForDate = businessUnavailableHours.filter(uh => uh.date === formatted);
+                            const dailyAppointments = existingAppointments.filter(app => app.date === formatted);
+
+                            while (currentTime < endTime) {
+                                const slotEndTime = new Date(currentTime.getTime() + appointmentDuration * 60 * 1000);
+                                if (slotEndTime > endTime) break; // Slot extends beyond closing time
+
+                                const formattedSlot = currentTime.toTimeString().substring(0, 5);
+                                let isSlotAvailable = true;
+
+                                // Check against existing appointments for this team member
+                                for (const app of dailyAppointments) {
+                                    const appStart = new Date(`${app.date}T${app.time}`);
+                                    const appEnd = new Date(appStart.getTime() + (parseInt(app.duration || appointmentDuration)) * 60 * 1000);
+
+                                    // Check for overlap: [currentTime, slotEndTime) overlaps with [appStart, appEnd)
+                                    if (currentTime < appEnd && slotEndTime > appStart) {
+                                        isSlotAvailable = false;
+                                        break;
+                                    }
+                                }
+
+                                // Check against specific unavailable hours for the business on this date
+                                if (isSlotAvailable) {
+                                    for (const blocked of businessUnavailableHoursForDate) {
+                                        const blockedStart = new Date(`${formatted}T${blocked.startTime}`);
+                                        const blockedEnd = new Date(`${formatted}T${blocked.endTime}`);
+                                        if (currentTime < blockedEnd && slotEndTime > blockedStart) {
+                                            isSlotAvailable = false;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                slotsArr.push({
+                                    time: formattedSlot,
+                                    available: isSlotAvailable
+                                });
+
+                                // Move to the next slot, accounting for break duration
+                                currentTime = new Date(slotEndTime.getTime() + breakDuration * 60 * 1000);
+                            }
+                            showSlotsModal(dayObj, slotsArr, dayName);
+                        });
+                    } else {
+                        cell.classList.add('closed');
+                        cell.title = "העסק סגור ביום זה או שאיש הצוות אינו זמין.";
+                        cell.style.cursor = "not-allowed";
+                    }
+
+                    cell.innerHTML = `<div style="font-size:1.1em">${date.getDate()}</div>
+                                      <div style="font-size:0.98em;color:#888">${dayName}</div>`;
+                    td.appendChild(cell);
+                    row.appendChild(td);
+                });
+
+                // Add empty cells to complete the last row
+                let lastRowCells = (gridPos + daysArr.length) % 7;
+                if (lastRowCells !== 0) {
+                    for (let i = lastRowCells; i < 7; i++) {
+                        const td = document.createElement('td');
+                        row.appendChild(td);
+                    }
+                }
+                tbody.appendChild(row);
+                table.appendChild(tbody);
+                calendarContainer.appendChild(table);
+            } catch (e) {
+                console.error("Error in calendar generation:", e);
+                calendarContainer.innerHTML = '<p>שגיאה בטעינת יומן.</p>';
+            }
+        }
+
+
+        bookAppointmentButton.addEventListener('click', async () => {
+            if (!currentBusiness || !selectedService || !selectedTeamMember || !selectedDate || !selectedSlot || !slotConfirmed) {
+                alert('יש לבחור שירות, איש צוות, תאריך ושעה ולאשר שעה.');
+                return;
+            }
+            if (!userInfo) {
+                alert('יש להתחבר כדי לקבוע תור.');
+                showModal(loginModal);
+                return;
+            }
+
+            try {
+                // Fetch fresh business data for names and duration just before booking
+                const businessDocRef = doc(db, "businesses", currentBusiness.id);
+                const businessDocSnap = await getDoc(businessDocRef);
+
+                let serviceName = "", teamMemberName = "";
+                let serviceDuration = parseInt(businessDocSnap.data().appointmentDuration || 30); // Default to business duration
+
+                if (businessDocSnap.exists()) {
+                    const data = businessDocSnap.data();
+                    const serviceObj = data.services.find(s => s.id === selectedService);
+                    if(serviceObj){
+                        serviceName = serviceObj.name;
+                        serviceDuration = parseInt(serviceObj.duration || serviceDuration); // Use service-specific duration if available
+                    }
+                    const teamObj = data.teamMembers.find(t => t.id === selectedTeamMember);
+                    if(teamObj){
+                        teamMemberName = teamObj.name;
+                    }
+                } else {
+                    alert("שגיאה: פרטי העסק לא נמצאו.");
+                    return;
+                }
+
+                const appointmentRef = await addDoc(collection(db, "appointments"), {
+                    businessId: currentBusiness.id,
+                    businessName: currentBusiness.name,
+                    serviceId: selectedService,
+                    serviceName: serviceName,
+                    teamMemberId: selectedTeamMember,
+                    teamMemberName: teamMemberName,
+                    userId: userInfo.uid,
+                    userEmail: userInfo.email,
+                    userName: userInfo.fullName || userInfo.email,
+                    date: selectedDate,
+                    time: selectedSlot,
+                    duration: serviceDuration,
+                    status: 'pending', // e.g., 'pending', 'confirmed', 'cancelled', 'completed'
+                    createdAt: new Date().toISOString()
+                });
+
+                alert(`תור נקבע בהצלחה ל-${serviceName} אצל ${teamMemberName || ''} בתאריך ${selectedDate.split('-').reverse().join('.')} בשעה ${selectedSlot}`);
+
+                // Reset appointment selection
+                slotConfirmed = false;
+                selectedSlot = null;
+                selectedDate = null;
+                showSelectedSummary();
+                bookAppointmentButton.disabled = true;
+
+                // Re-generate calendar to show new booked slot as unavailable
+                generateCalendar(currentBusiness.id, selectedTeamMember, selectedService);
+
+            } catch (e) {
+                alert('שגיאה בשמירת התור: ' + (e.message || e));
+                console.error("Error booking appointment:", e);
+            }
+        });
+
+        // --- Reviews Logic ---
+        reviewRatingStars.addEventListener('click', (event) => {
+            if (event.target.tagName === 'SPAN') {
+                const value = parseInt(event.target.dataset.value);
+                currentRating = value;
+                // Update selected stars visually
+                Array.from(reviewRatingStars.children).forEach(star => {
+                    const starValue = parseInt(star.dataset.value);
+                    if (starValue <= currentRating) {
+                        star.classList.add('selected');
+                    } else {
+                        star.classList.remove('selected');
+                    }
+                });
+            }
+        });
+
+        submitReviewBtn.addEventListener('click', async () => {
+            if (!userInfo) {
+                alert("יש להתחבר כדי להשאיר ביקורת.");
+                showModal(loginModal);
+                return;
+            }
+            if (!currentBusiness) {
+                alert("לא נבחר עסק.");
+                return;
+            }
+            if (currentRating === 0) {
+                alert("אנא דרג את העסק (1-5 כוכבים).");
+                return;
+            }
+
+            const reviewContent = reviewText.value.trim();
+            if (reviewContent.length < 5 && currentRating < 3) { // Require text for low ratings
+                alert("אנא כתוב לפחות 5 תווים בביקורת שלך.");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "reviews"), {
+                    businessId: currentBusiness.id,
+                    userId: userInfo.uid,
+                    userName: userInfo.fullName || userInfo.email,
+                    rating: currentRating,
+                    comment: reviewContent,
+                    createdAt: new Date().toISOString()
+                });
+                alert("הביקורת נשלחה בהצלחה!");
+                reviewText.value = '';
+                currentRating = 0;
+                Array.from(reviewRatingStars.children).forEach(star => star.classList.remove('selected'));
+                await loadReviews(currentBusiness.id); // Reload reviews
+                // Optionally update average rating on business document
+                updateBusinessAverageRating(currentBusiness.id);
+
+            } catch (e) {
+                console.error("Error submitting review:", e);
+                alert("שגיאה בשליחת הביקורת: " + (e.message || e));
+            }
+        });
+
+        async function loadReviews(businessId) {
+            reviewsList.innerHTML = '<p style="text-align: center;">טוען ביקורות...</p>';
+            noReviews.style.display = 'none';
+            try {
+                const reviewsQuery = query(
+                    collection(db, "reviews"),
+                    where("businessId", "==", businessId)
+                );
+                const reviewsSnapshot = await getDocs(reviewsQuery);
+
+                if (reviewsSnapshot.empty) {
+                    reviewsList.innerHTML = '';
+                    noReviews.style.display = 'block';
+                    return;
+                }
+
+                reviewsList.innerHTML = ''; // Clear previous reviews
+                reviewsSnapshot.docs.forEach(doc => {
+                    const review = doc.data();
+                    const reviewItem = document.createElement('div');
+                    reviewItem.className = 'review-item';
+                    const reviewDate = new Date(review.createdAt).toLocaleDateString('he-IL'); // Format date
+                    reviewItem.innerHTML = `
+                        <div class="review-header">
+                            <span class="review-author">${review.userName || 'אנונימי'}</span>
+                            <span class="review-date">${reviewDate}</span>
+                        </div>
+                        <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                        <p class="review-text">${review.comment || ''}</p>
+                    `;
+                    reviewsList.appendChild(reviewItem);
+                });
+            } catch (e) {
+                console.error("Error loading reviews:", e);
+                reviewsList.innerHTML = '<p style="text-align: center; color: red;">שגיאה בטעינת ביקורות.</p>';
+            }
+        }
+
+        async function updateBusinessAverageRating(businessId) {
+            try {
+                const reviewsQuery = query(collection(db, "reviews"), where("businessId", "==", businessId));
+                const reviewsSnapshot = await getDocs(reviewsQuery);
+                let totalRating = 0;
+                let reviewCount = 0;
+                reviewsSnapshot.forEach(doc => {
+                    totalRating += doc.data().rating;
+                    reviewCount++;
+                });
+
+                const averageRating = reviewCount > 0 ? (totalRating / reviewCount) : 0;
+                const businessDocRef = doc(db, "businesses", businessId);
+                await setDoc(businessDocRef, { averageRating: averageRating, reviewCount: reviewCount }, { merge: true });
+            } catch (e) {
+                console.error("Error updating business average rating:", e);
+            }
+        }
+
+        // --- My Appointments Logic ---
+        async function loadMyAppointments() {
+            if (!userInfo || !userInfo.uid) {
+                myAppointmentsList.innerHTML = '<p style="text-align: center; color: #888;">יש להתחבר כדי לצפות בתורים שלך.</p>';
+                return;
+            }
+
+            myAppointmentsList.innerHTML = '<p style="text-align: center;">טוען את התורים שלך...</p>';
+            try {
+                const appointmentsQuery = query(
+                    collection(db, "appointments"),
+                    where("userId", "==", userInfo.uid)
+                );
+                const querySnapshot = await getDocs(appointmentsQuery);
+
+                if (querySnapshot.empty) {
+                    myAppointmentsList.innerHTML = '<p style="text-align: center; color: #888;">אין לך תורים קבועים כרגע.</p>';
+                    return;
+                }
+
+                myAppointmentsList.innerHTML = '';
+                querySnapshot.docs.forEach(docSnap => {
+                    const appt = docSnap.data();
+                    const apptId = docSnap.id;
+                    const displayDate = new Date(appt.date).toLocaleDateString('he-IL');
+
+                    const apptCard = document.createElement('div');
+                    apptCard.className = 'my-appointment-card';
+                    apptCard.innerHTML = `
+                        <div class="detail-row"><span>עסק:</span> <span>${appt.businessName}</span></div>
+                        <div class="detail-row"><span>שירות:</span> <span>${appt.serviceName}</span></div>
+                        <div class="detail-row"><span>איש צוות:</span> <span>${appt.teamMemberName || 'כל צוות העסק'}</span></div>
+                        <div class="detail-row"><span>תאריך:</span> <span>${displayDate}</span></div>
+                        <div class="detail-row"><span>שעה:</span> <span>${appt.time}</span></div>
+                        <button class="danger cancel-btn" data-appt-id="${apptId}">בטל תור</button>
+                        <button class="secondary calendar-btn" data-appt-id="${apptId}">הוסף ליומן</button>
+                    `;
+                    myAppointmentsList.appendChild(apptCard);
+                });
+
+                // Add event listeners for cancel buttons
+                document.querySelectorAll('.cancel-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const apptId = e.target.dataset.apptId;
+                        if (confirm('האם אתה בטוח שברצונך לבטל תור זה?')) {
+                            try {
+                                await deleteDoc(doc(db, "appointments", apptId));
+                                alert('התור בוטל בהצלחה.');
+                                loadMyAppointments(); // Reload the list
+                            } catch (error) {
+                                console.error("Error canceling appointment:", error);
+                                alert('שגיאה בביטול התור: ' + (error.message || error));
+                            }
+                        }
+                    });
+                });
+
+                // Add event listeners for add to calendar buttons
+                document.querySelectorAll('.calendar-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const apptId = e.target.dataset.apptId;
+                        const docRef = doc(db, "appointments", apptId);
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            const appt = docSnap.data();
+                            const startTime = new Date(`${appt.date}T${appt.time}`);
+                            const endTime = new Date(startTime.getTime() + (appt.duration || 30) * 60 * 1000);
+
+                            const formattedStartTime = startTime.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0, 13); // YYYYMMDDTHHMM
+                            const formattedEndTime = endTime.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0, 13); // YYYYMMDDTHHMM
+
+                            const title = `תור ב-${appt.businessName} לשירות ${appt.serviceName}`;
+                            const description = `עם ${appt.teamMemberName || 'צוות העסק'}.`;
+                            const location = appt.businessAddress || currentBusiness.address || '';
+
+                            // Google Calendar URL
+                            const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formattedStartTime}/${formattedEndTime}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}&sf=true&output=xml`;
+
+                            window.open(googleCalendarUrl, '_blank');
+                        }
+                    });
+                });
+
+            } catch (e) {
+                console.error("Error loading my appointments:", e);
+                myAppointmentsList.innerHTML = '<p style="text-align: center; color: red;">שגיאה בטעינת התורים שלך.</p>';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load filters and then businesses
+            loadFilters().then(() => {
+                fetchAndDisplayBusinesses();
+            });
+        });
+    </script>
+</body>
+</html>
