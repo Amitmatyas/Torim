@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torim - פאנל ניהול</title>
+    <title>Torim</title>
     <!-- Favicon using your logo -->
     <link rel="icon" href="https://i.postimg.cc/mkLjSCzL/9.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -1463,57 +1463,125 @@
         // --- Authentication & Initialization ---
         auth.onAuthStateChanged(async (user) => {
             if (user) {
-                currentManagerUser = user;
-                welcomeMessage.textContent = `שלום, ${user.email}`; // Fallback, will update with business/manager name
+                currentManagerUser = user; // Temporarily assign, will refine based on role
+                welcomeMessage.textContent = `שלום, ${user.email}`; // Fallback
 
-                // Try to fetch business data associated with this user
-                const businessesRef = db.collection("businesses");
-                const q = businessesRef.where("managerUid", "==", user.uid);
-                const querySnapshot = await q.get();
+                try {
+                    const userDocRef = db.collection("users").doc(user.uid);
+                    const userDocSnap = await userDocRef.get();
 
-                if (!querySnapshot.empty) {
-                    currentBusinessId = querySnapshot.docs[0].id;
-                    currentBusinessData = querySnapshot.docs[0].data();
-                    businessDashboardTitle.textContent = currentBusinessData.name || 'פאנל ניהול';
-                    welcomeMessage.textContent = `שלום, מנהל/ת ${currentBusinessData.name || ''}`;
-                    adminDashboardLayout.style.display = 'flex';
-                    hideLoading();
+                    if (userDocSnap.exists) {
+                        const userData = userDocSnap.data();
+                        const userRole = userData.role;
+                        const userBusinessId = userData.businessId;
 
-                    // Check if business profile is incomplete and direct them to fill it
-                    if (!currentBusinessData.type || !currentBusinessData.address || !currentBusinessData.phone) {
-                        alert("אנא השלם את פרטי העסק שלך.");
-                        showSection('businessProfileSection');
-                        loadBusinessProfile(); // Load existing data into the form
+                        if (userBusinessId) {
+                            const businessDocRef = db.collection("businesses").doc(userBusinessId);
+                            const businessDocSnap = await businessDocRef.get();
+
+                            if (businessDocSnap.exists) {
+                                currentBusinessId = businessDocSnap.id;
+                                currentBusinessData = businessDocSnap.data();
+                                businessDashboardTitle.textContent = currentBusinessData.name || 'פאנל ניהול';
+
+                                // Determine if the logged-in user is a manager or just an employee of this business
+                                const isManager = currentBusinessData.managerUid === user.uid;
+                                const isTeamMember = currentBusinessData.teamMembers && currentBusinessData.teamMembers.some(tm => tm.id === user.uid);
+
+                                if (isManager) {
+                                    welcomeMessage.textContent = `שלום, מנהל/ת ${currentBusinessData.name || ''}`;
+                                    // Ensure manager is also in teamMembers
+                                    if (!isTeamMember) {
+                                        // This case should ideally not happen if registration is done correctly
+                                        // But if it does, add manager to teamMembers
+                                        currentBusinessData.teamMembers = currentBusinessData.teamMembers || [];
+                                        currentBusinessData.teamMembers.push({ id: user.uid, name: userData.fullName || user.email, email: user.email, isManager: true, workHours: {} });
+                                        await businessDocRef.update({ teamMembers: currentBusinessData.teamMembers });
+                                    }
+                                    currentEmployeeData = currentBusinessData.teamMembers.find(tm => tm.id === user.uid); // Manager is also an employee for clock-in
+                                    navClock.style.display = 'block';
+                                    employeeClockName.textContent = currentEmployeeData.name || user.email;
+
+                                    // Check if business profile is incomplete and direct them to fill it
+                                    if (!currentBusinessData.type || !currentBusinessData.address || !currentBusinessData.phone) {
+                                        alert("אנא השלם את פרטי העסק שלך.");
+                                        showSection('businessProfileSection');
+                                        loadBusinessProfile();
+                                    } else {
+                                        showSection('dashboardSection'); // Default to dashboard for managers
+                                        loadDashboardData();
+                                    }
+                                    // Show all navigation links for manager
+                                    document.querySelectorAll('.side-menu nav ul li').forEach(li => li.style.display = 'block');
+
+                                } else if (isTeamMember) { // Logged-in user is an employee (not manager)
+                                    currentEmployeeData = currentBusinessData.teamMembers.find(tm => tm.id === user.uid);
+                                    welcomeMessage.textContent = `שלום, ${currentEmployeeData.name || user.email}`;
+                                    navClock.style.display = 'block'; // Only show clock-in/out for employees
+                                    employeeClockName.textContent = currentEmployeeData.name || user.email;
+                                    showSection('clockSection'); // Direct employees to their clock-in/out page
+                                    loadEmployeeAppointmentsAndStatus();
+
+                                    // Hide all other navigation links for employees
+                                    document.querySelectorAll('.side-menu nav ul li').forEach(li => {
+                                        if (li.querySelector('a').id !== 'navClock' && li.querySelector('a').id !== 'navDashboard') { // Optionally allow dashboard for employees
+                                            li.style.display = 'none';
+                                        }
+                                    });
+                                } else {
+                                    // User document exists, but they are not a manager or a team member of the found business
+                                    // This implies a data inconsistency or a user created outside the app's flow.
+                                    console.warn("User is authenticated but not a manager or team member of the associated business.");
+                                    alert("אין לך הרשאה לגשת לפאנל ניהול זה. אנא פנה למנהל העסק.");
+                                    await auth.signOut(); // Force sign out
+                                    hideLoading();
+                                    return;
+                                }
+
+                                adminDashboardLayout.style.display = 'flex';
+                                hideLoading();
+
+                                // Pre-fill general business settings if they exist (for Business Hours section)
+                                defaultAppointmentDuration.value = currentBusinessData.appointmentDuration || 30;
+                                timeBetweenAppointments.value = currentBusinessData.breakBetweenAppointments || 0;
+                                breakFrequency.value = currentBusinessData.regularBreakFrequency || 0;
+                                breakDuration.value = currentBusinessData.regularBreakDuration || 0;
+                                populateBusinessHoursForm(currentBusinessData.workDays || {});
+
+                            } else {
+                                // Business associated with userDocSnap.data().businessId not found
+                                console.error("Associated business not found for user:", user.uid, "Business ID:", userBusinessId);
+                                alert("העסק המשויך לחשבונך לא נמצא. אנא פנה לתמיכה.");
+                                await auth.signOut(); // Force sign out
+                                hideLoading();
+                                return;
+                            }
+                        } else {
+                            // User document exists but no businessId is associated.
+                            // This scenario implies a user created outside the standard registration flow.
+                            // For simplicity, we'll treat them as needing to create a business.
+                            console.warn("User document exists but no businessId found. Prompting to register new business.");
+                            hideLoading();
+                            showModal(registerModal);
+                            adminDashboardLayout.style.display = 'none';
+                        }
                     } else {
-                        showSection('dashboardSection'); // Default to dashboard
-                        loadDashboardData();
+                        // User is authenticated but no user document exists in 'users' collection.
+                        // This means a new Firebase Auth user was created but not linked to a business yet.
+                        // Prompt to register a new business (assuming new users are always managers creating a business).
+                        hideLoading();
+                        showModal(registerModal);
+                        adminDashboardLayout.style.display = 'none';
                     }
-
-                    // Check if current user is also an employee of this business
-                    if (currentBusinessData.teamMembers && currentBusinessData.teamMembers.some(tm => tm.email === user.email)) {
-                        currentEmployeeData = currentBusinessData.teamMembers.find(tm => tm.email === user.email);
-                        navClock.style.display = 'block'; // Show clock-in/out for managers who are also employees
-                        employeeClockName.textContent = currentEmployeeData.name || user.email;
-                        await loadClockStatus();
-                    } else {
-                        navClock.style.display = 'none';
-                    }
-
-                    // Pre-fill general business settings if they exist (for Business Hours section)
-                    defaultAppointmentDuration.value = currentBusinessData.appointmentDuration || 30;
-                    timeBetweenAppointments.value = currentBusinessData.breakBetweenAppointments || 0;
-                    breakFrequency.value = currentBusinessData.regularBreakFrequency || 0;
-                    breakDuration.value = currentBusinessData.regularBreakDuration || 0;
-
-                    populateBusinessHoursForm(currentBusinessData.workDays || {});
-
-                } else {
-                    // No business found for this manager, redirect to registration or prompt to create one
+                } catch (error) {
+                    console.error("Error in onAuthStateChanged fetching user/business data:", error);
+                    alert("שגיאה בטעינת נתוני משתמש/עסק: " + error.message);
+                    await auth.signOut(); // Force sign out on error
                     hideLoading();
-                    showModal(registerModal); // Prompt to register a new business
-                    adminDashboardLayout.style.display = 'none';
                 }
+
             } else {
+                // No user logged in
                 currentManagerUser = null;
                 currentBusinessId = null;
                 currentBusinessData = null;
