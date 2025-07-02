@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torim</title>
+    <title>Torim - פאנל ניהול</title>
     <!-- Favicon using your logo -->
     <link rel="icon" href="https://i.postimg.cc/mkLjSCzL/9.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -721,28 +721,32 @@
         </div>
     </div>
 
-    <!-- Register Modal - For new businesses / managers -->
+    <!-- Register Modal - For new businesses / managers (Simplified) -->
     <div class="modal-overlay" id="registerModal">
         <div class="modal-content">
             <button class="modal-close-btn close-auth-modal">&times;</button>
-            <h2>יצירת חשבון עסק</h2>
+            <h2>יצירת חשבון עסק חדש</h2>
             <form id="registerForm">
-                <input type="text" id="businessName" placeholder="שם העסק" required>
-                <input type="text" id="businessType" placeholder="סוג העסק (לדוגמה: מספרה, מכון יופי)" required>
-                <input type="text" id="businessAddress" placeholder="כתובת העסק" required>
-                <input type="tel" id="businessPhone" placeholder="טלפון העסק" required>
-                <textarea id="businessDescription" placeholder="תיאור קצר של העסק" rows="3"></textarea>
-                <label for="businessLogoUpload">לוגו העסק:</label>
-                <input type="file" id="businessLogoUpload" accept="image/*">
-                <label for="businessImagesUpload">תמונות העסק:</label>
-                <input type="file" id="businessImagesUpload" accept="image/*" multiple>
-
-                <hr style="margin: 20px 0;">
-                <h3>פרטי מנהל ראשי</h3>
-                <input type="text" id="managerFullName" placeholder="שם מלא של המנהל" required>
-                <input type="email" id="managerEmail" placeholder="אימייל מנהל (ישמש להתחברות)" required>
-                <input type="password" id="managerPassword" placeholder="סיסמה (לפחות 6 תווים)" required>
-                <input type="password" id="managerConfirmPassword" placeholder="אשר סיסמה" required>
+                <div class="form-group">
+                    <label for="registerBusinessName">שם העסק:</label>
+                    <input type="text" id="registerBusinessName" placeholder="שם העסק" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerManagerFullName">שם מלא של המנהל:</label>
+                    <input type="text" id="registerManagerFullName" placeholder="שם מלא של המנהל" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerManagerEmail">אימייל (ישמש להתחברות):</label>
+                    <input type="email" id="registerManagerEmail" placeholder="אימייל מנהל" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerManagerPassword">סיסמה (לפחות 6 תווים):</label>
+                    <input type="password" id="registerManagerPassword" placeholder="סיסמה" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">אשר סיסמה:</label>
+                    <input type="password" id="registerConfirmPassword" placeholder="אשר סיסמה" required>
+                </div>
                 <button type="submit" class="primary">הירשם והקם עסק</button>
             </form>
             <div class="switch-auth-mode">
@@ -761,6 +765,7 @@
             <nav>
                 <ul>
                     <li><a href="#" id="navDashboard" class="active">סקירה כללית</a></li>
+                    <li><a href="#" id="navBusinessProfile">פרטי עסק</a></li>
                     <li><a href="#" id="navEmployees">עובדים</a></li>
                     <li><a href="#" id="navServices">שירותים</a></li>
                     <li><a href="#" id="navBusinessHours">שעות פעילות</a></li>
@@ -816,6 +821,50 @@
                         </tbody>
                     </table>
                     <p id="noTodaysAppointments" style="text-align: center; color: #888; display: none;">אין תורים להיום.</p>
+                </div>
+            </section>
+
+            <!-- Business Profile Section -->
+            <section id="businessProfileSection" class="content-section" style="display: none;">
+                <div class="form-section">
+                    <h2>פרטי העסק</h2>
+                    <form id="businessProfileForm">
+                        <div class="form-group">
+                            <label for="profileBusinessName">שם העסק:</label>
+                            <input type="text" id="profileBusinessName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBusinessType">סוג העסק:</label>
+                            <input type="text" id="profileBusinessType" placeholder="לדוגמה: מספרה, מכון יופי">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBusinessAddress">כתובת העסק:</label>
+                            <input type="text" id="profileBusinessAddress" placeholder="כתובת מלאה">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBusinessPhone">טלפון העסק:</label>
+                            <input type="tel" id="profileBusinessPhone" placeholder="05X-XXXXXXX">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBusinessDescription">תיאור העסק:</label>
+                            <textarea id="profileBusinessDescription" rows="3" placeholder="תיאור קצר של העסק"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBusinessLogoUpload">לוגו העסק:</label>
+                            <input type="file" id="profileBusinessLogoUpload" accept="image/*">
+                            <img id="currentBusinessLogo" src="" alt="לוגו נוכחי" style="max-width: 100px; max-height: 100px; margin-top: 10px; display: none;">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBusinessImagesUpload">תמונות העסק:</label>
+                            <input type="file" id="profileBusinessImagesUpload" accept="image/*" multiple>
+                            <div id="currentBusinessImages" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                                <!-- Current images will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="primary">שמור פרטי עסק</button>
+                        </div>
+                    </form>
                 </div>
             </section>
 
@@ -1257,6 +1306,7 @@
 
         // Navigation links
         const navDashboard = document.getElementById('navDashboard');
+        const navBusinessProfile = document.getElementById('navBusinessProfile'); // New nav link
         const navEmployees = document.getElementById('navEmployees');
         const navServices = document.getElementById('navServices');
         const navBusinessHours = document.getElementById('navBusinessHours');
@@ -1268,6 +1318,7 @@
 
         // Content Sections
         const dashboardSection = document.getElementById('dashboardSection');
+        const businessProfileSection = document.getElementById('businessProfileSection'); // New section
         const employeesSection = document.getElementById('employeesSection');
         const servicesSection = document.getElementById('servicesSection');
         const businessHoursSection = document.getElementById('businessHoursSection');
@@ -1283,6 +1334,19 @@
         const newReviewsCount = document.getElementById('newReviewsCount');
         const todaysAppointmentsTable = document.getElementById('todaysAppointmentsTable').querySelector('tbody');
         const noTodaysAppointments = document.getElementById('noTodaysAppointments');
+
+        // Business Profile section elements
+        const businessProfileForm = document.getElementById('businessProfileForm');
+        const profileBusinessName = document.getElementById('profileBusinessName');
+        const profileBusinessType = document.getElementById('profileBusinessType');
+        const profileBusinessAddress = document.getElementById('profileBusinessAddress');
+        const profileBusinessPhone = document.getElementById('profileBusinessPhone');
+        const profileBusinessDescription = document.getElementById('profileBusinessDescription');
+        const profileBusinessLogoUpload = document.getElementById('profileBusinessLogoUpload');
+        const currentBusinessLogo = document.getElementById('currentBusinessLogo');
+        const profileBusinessImagesUpload = document.getElementById('profileBusinessImagesUpload');
+        const currentBusinessImages = document.getElementById('currentBusinessImages');
+
 
         // Employee section
         const addEmployeeForm = document.getElementById('addEmployeeForm');
@@ -1390,7 +1454,7 @@
                 link.classList.remove('active');
             });
             // Set active class on the corresponding nav link
-            const activeNavLink = document.querySelector(`#nav${sectionId.replace('Section', '')}`);
+            const activeNavLink = document.querySelector(`#nav${sectionId.replace('Section', '').replace('Profile', 'Profile')}`); // Handle BusinessProfile
             if (activeNavLink) {
                 activeNavLink.classList.add('active');
             }
@@ -1414,7 +1478,16 @@
                     welcomeMessage.textContent = `שלום, מנהל/ת ${currentBusinessData.name || ''}`;
                     adminDashboardLayout.style.display = 'flex';
                     hideLoading();
-                    showSection('dashboardSection'); // Default to dashboard
+
+                    // Check if business profile is incomplete and direct them to fill it
+                    if (!currentBusinessData.type || !currentBusinessData.address || !currentBusinessData.phone) {
+                        alert("אנא השלם את פרטי העסק שלך.");
+                        showSection('businessProfileSection');
+                        loadBusinessProfile(); // Load existing data into the form
+                    } else {
+                        showSection('dashboardSection'); // Default to dashboard
+                        loadDashboardData();
+                    }
 
                     // Check if current user is also an employee of this business
                     if (currentBusinessData.teamMembers && currentBusinessData.teamMembers.some(tm => tm.email === user.email)) {
@@ -1426,14 +1499,14 @@
                         navClock.style.display = 'none';
                     }
 
-                    // Pre-fill general business settings if they exist
+                    // Pre-fill general business settings if they exist (for Business Hours section)
                     defaultAppointmentDuration.value = currentBusinessData.appointmentDuration || 30;
                     timeBetweenAppointments.value = currentBusinessData.breakBetweenAppointments || 0;
                     breakFrequency.value = currentBusinessData.regularBreakFrequency || 0;
                     breakDuration.value = currentBusinessData.regularBreakDuration || 0;
 
                     populateBusinessHoursForm(currentBusinessData.workDays || {});
-                    loadDashboardData();
+
                 } else {
                     // No business found for this manager, redirect to registration or prompt to create one
                     hideLoading();
@@ -1490,22 +1563,15 @@
             }
         });
 
-        // Register Business Form Submission
+        // Register Business Form Submission (SIMPLIFIED)
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             showLoading();
-            const businessName = document.getElementById('businessName').value;
-            const businessType = document.getElementById('businessType').value;
-            const businessAddress = document.getElementById('businessAddress').value;
-            const businessPhone = document.getElementById('businessPhone').value;
-            const businessDescription = document.getElementById('businessDescription').value;
-            const logoFile = document.getElementById('businessLogoUpload').files[0];
-            const imageFiles = document.getElementById('businessImagesUpload').files;
-
-            const managerFullName = document.getElementById('managerFullName').value;
-            const managerEmail = document.getElementById('managerEmail').value;
-            const managerPassword = document.getElementById('managerPassword').value;
-            const managerConfirmPassword = document.getElementById('managerConfirmPassword').value;
+            const businessName = document.getElementById('registerBusinessName').value;
+            const managerFullName = document.getElementById('registerManagerFullName').value;
+            const managerEmail = document.getElementById('registerManagerEmail').value;
+            const managerPassword = document.getElementById('registerManagerPassword').value;
+            const managerConfirmPassword = document.getElementById('registerConfirmPassword').value;
 
             if (managerPassword !== managerConfirmPassword) {
                 alert("הסיסמאות אינן תואמות.");
@@ -1522,31 +1588,18 @@
                 const userCredential = await auth.createUserWithEmailAndPassword(managerEmail, managerPassword);
                 const managerUid = userCredential.user.uid;
 
-                let logoUrl = '';
-                if (logoFile) {
-                    const logoRef = storage.ref(`business_logos/${managerUid}/${logoFile.name}`);
-                    await logoRef.put(logoFile);
-                    logoUrl = await logoRef.getDownloadURL();
-                }
-
-                let imageUrls = [];
-                for (const file of imageFiles) {
-                    const imageRef = storage.ref(`business_images/${managerUid}/${file.name}`);
-                    await imageRef.put(file);
-                    imageUrls.push(await imageRef.getDownloadURL());
-                }
-
                 const newBusinessRef = db.collection("businesses").doc(); // Generate unique ID
                 await newBusinessRef.set({
                     name: businessName,
-                    type: businessType,
-                    address: businessAddress,
-                    phone: businessPhone,
-                    description: businessDescription,
-                    logoUrl: logoUrl,
-                    imageUrls: imageUrls,
                     managerUid: managerUid,
                     createdAt: new Date().toISOString(),
+                    // Default empty values for other profile fields, to be filled later
+                    type: '',
+                    address: '',
+                    phone: '',
+                    description: '',
+                    logoUrl: '',
+                    imageUrls: [],
                     // Default business hours
                     workDays: ["ראשון", "שני", "שלישי", "רביעי", "חמישי"],
                     openTime: "09:00",
@@ -1570,8 +1623,8 @@
                     createdAt: new Date().toISOString()
                 }, { merge: true });
 
-                alert('העסק נוצר בהצלחה!');
-                // Auth state listener will now detect the new business and display dashboard
+                alert('העסק נוצר בהצלחה! אנא השלם את פרטי העסק שלך.');
+                // Auth state listener will now detect the new business and display dashboard/profile
             } catch (error) {
                 alert('שגיאת יצירת עסק: ' + error.message);
                 console.error("Register business error:", error);
@@ -1595,7 +1648,8 @@
 
         // --- Navigation ---
         navDashboard.addEventListener('click', (e) => { e.preventDefault(); showSection('dashboardSection'); loadDashboardData(); });
-        navEmployees.addEventListener('click', (e) => { e.preventDefault(); showSection('employeesSection'); loadEmployees(); loadServicesForEmployeeAssignment(); });
+        navBusinessProfile.addEventListener('click', (e) => { e.preventDefault(); showSection('businessProfileSection'); loadBusinessProfile(); }); // New nav handler
+        navEmployees.addEventListener('click', (e) => { e.preventDefault(); showSection('employeesSection'); loadEmployees(); /* Removed: loadServicesForEmployeeAssignment(); */ });
         navServices.addEventListener('click', (e) => { e.preventDefault(); showSection('servicesSection'); loadServices(); loadEmployeesForServiceAssignment(); });
         navBusinessHours.addEventListener('click', (e) => { e.preventDefault(); showSection('businessHoursSection'); populateBusinessHoursForm(currentBusinessData.workDays || {}); });
         navAppointments.addEventListener('click', (e) => { e.preventDefault(); showSection('appointmentsSection'); loadAppointmentFilters(); loadAppointments(); });
@@ -1718,6 +1772,118 @@
                 }
             }
         }
+
+        // --- Business Profile Section Logic (NEW) ---
+        async function loadBusinessProfile() {
+            if (!currentBusinessData) return;
+
+            profileBusinessName.value = currentBusinessData.name || '';
+            profileBusinessType.value = currentBusinessData.type || '';
+            profileBusinessAddress.value = currentBusinessData.address || '';
+            profileBusinessPhone.value = currentBusinessData.phone || '';
+            profileBusinessDescription.value = currentBusinessData.description || '';
+
+            // Display current logo
+            if (currentBusinessData.logoUrl) {
+                currentBusinessLogo.src = currentBusinessData.logoUrl;
+                currentBusinessLogo.style.display = 'block';
+            } else {
+                currentBusinessLogo.style.display = 'none';
+            }
+
+            // Display current images
+            currentBusinessImages.innerHTML = '';
+            if (currentBusinessData.imageUrls && currentBusinessData.imageUrls.length > 0) {
+                currentBusinessData.imageUrls.forEach((url, index) => {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.style.position = 'relative';
+                    imgContainer.style.display = 'inline-block';
+                    imgContainer.style.margin = '5px';
+                    imgContainer.innerHTML = `
+                        <img src="${url}" alt="תמונת עסק" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">
+                        <button class="danger remove-image-btn" data-index="${index}" style="position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; padding: 0; font-size: 0.8em; border-radius: 50%;">X</button>
+                    `;
+                    currentBusinessImages.appendChild(imgContainer);
+                });
+                document.querySelectorAll('.remove-image-btn').forEach(btn => {
+                    btn.addEventListener('click', removeBusinessImage);
+                });
+            }
+        }
+
+        async function removeBusinessImage(event) {
+            const indexToRemove = parseInt(event.target.dataset.index);
+            if (confirm('האם אתה בטוח שברצונך למחוק תמונה זו?')) {
+                try {
+                    const newImageUrls = [...currentBusinessData.imageUrls];
+                    const imageUrlToDelete = newImageUrls.splice(indexToRemove, 1)[0]; // Remove and get the URL
+
+                    const businessRef = db.collection("businesses").doc(currentBusinessId);
+                    await businessRef.update({ imageUrls: newImageUrls });
+
+                    // Optional: Delete image from Firebase Storage
+                    if (imageUrlToDelete) {
+                        const imageRef = storage.refFromURL(imageUrlToDelete);
+                        await imageRef.delete().catch(error => console.warn("Could not delete image from storage:", error.message));
+                    }
+
+                    alert('תמונה נמחקה בהצלחה!');
+                    await updateCurrentBusinessData(); // Refresh global data
+                    loadBusinessProfile(); // Reload form
+                } catch (error) {
+                    console.error("Error removing image:", error);
+                    alert('שגיאה במחיקת תמונה: ' + (error.message || error));
+                }
+            }
+        }
+
+
+        businessProfileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentBusinessId) return;
+
+            showLoading();
+
+            const updatedBusinessData = {
+                name: profileBusinessName.value,
+                type: profileBusinessType.value,
+                address: profileBusinessAddress.value,
+                phone: profileBusinessPhone.value,
+                description: profileBusinessDescription.value
+            };
+
+            const logoFile = profileBusinessLogoUpload.files[0];
+            const imageFiles = profileBusinessImagesUpload.files;
+
+            try {
+                const businessRef = db.collection("businesses").doc(currentBusinessId);
+
+                if (logoFile) {
+                    const logoRef = storage.ref(`business_logos/${currentBusinessId}/${logoFile.name}`);
+                    await logoRef.put(logoFile);
+                    updatedBusinessData.logoUrl = await logoRef.getDownloadURL();
+                }
+
+                let newImageUrls = currentBusinessData.imageUrls || [];
+                for (const file of imageFiles) {
+                    const imageRef = storage.ref(`business_images/${currentBusinessId}/${file.name}`);
+                    await imageRef.put(file);
+                    newImageUrls.push(await imageRef.getDownloadURL());
+                }
+                updatedBusinessData.imageUrls = newImageUrls;
+
+                await businessRef.update(updatedBusinessData);
+                alert('פרטי העסק עודכנו בהצלחה!');
+                await updateCurrentBusinessData(); // Refresh global data
+                loadBusinessProfile(); // Reload form with updated data
+                businessDashboardTitle.textContent = currentBusinessData.name || 'פאנל ניהול'; // Update header title
+                hideLoading();
+            } catch (error) {
+                console.error("Error updating business profile:", error);
+                alert('שגיאה בעדכון פרטי העסק: ' + (error.message || error));
+                hideLoading();
+            }
+        });
 
 
         // --- Employees Section Logic ---
@@ -2143,11 +2309,11 @@
 
                 const checkbox = div.querySelector(`#business-day-${day}`);
                 const openInput = div.querySelector(`#business-open-${day}`);
-                const closeInput = div.querySelector(`#business-close-${day}`);
+                const closeInputCorrected = div.querySelector(`#business-close-${day}`); // Corrected variable name
 
                 checkbox.addEventListener('change', () => {
                     openInput.disabled = !checkbox.checked;
-                    closeInput.disabled = !checkbox.checked;
+                    closeInputCorrected.disabled = !checkbox.checked; // Use corrected variable
                 });
             });
         }
