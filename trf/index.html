@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת זימון תורים - לקוחות</title>
+    <title>Torim</title>
+    <!-- Favicon using your logo -->
+    <link rel="icon" href="https://i.postimg.cc/mkLjSCzL/9.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         /* CSS Variables for Brand Colors */
@@ -912,6 +914,7 @@
 </head>
 <body>
 
+    <!-- Header / Top Navigation Bar -->
     <header class="header">
         <div class="nav-links">
             <a href="#" id="homeLink">בית</a>
@@ -919,7 +922,7 @@
             <a href="#" id="contactLink">צור קשר</a>
         </div>
         <div class="header-logo">
-            <img src="https://i.postimg.cc/JDFjry5v/logo.png" alt="לוגו המערכת">
+            <img src="https://i.postimg.cc/mkLjSCzL/9.png" alt="לוגו המערכת">
         </div>
         <div class="auth-controls">
             <div class="user-menu" id="userMenu">
@@ -939,8 +942,10 @@
         </div>
     </header>
 
+    <!-- Main Content Container -->
     <div class="container">
 
+        <!-- Home Screen -->
         <section id="homeScreen">
             <div class="hero-section">
                 <h1>מצא וקבע תורים בקלות!</h1>
@@ -953,10 +958,12 @@
                 <div class="filters-container">
                     <select id="categoryFilter">
                         <option value="">כל הקטגוריות</option>
-                        </select>
+                        <!-- Options will be loaded dynamically -->
+                    </select>
                     <select id="locationFilter">
                         <option value="">כל המיקומים</option>
-                        </select>
+                        <!-- Options will be loaded dynamically -->
+                    </select>
                     <select id="priceRangeFilter">
                         <option value="">טווח מחירים</option>
                         <option value="0-50">עד 50 ש"ח</option>
@@ -970,11 +977,13 @@
             <div class="recommended-businesses">
                 <h2>עסקים מומלצים עבורך</h2>
                 <div class="business-cards-grid" id="businessListings">
+                    <!-- Business cards will be loaded here -->
                     <p id="noBusinessesFound" style="text-align: center; display: none;">לא נמצאו עסקים התואמים את החיפוש.</p>
                 </div>
             </div>
         </section>
 
+        <!-- Business Details Screen -->
         <section id="businessDetailsDiv">
             <img src="https://via.placeholder.com/1200x250?text=Business+Hero+Image" alt="תמונת נושא העסק" class="business-hero-image" id="businessHeroImage">
             <div class="business-info-card">
@@ -990,22 +999,26 @@
                         <span id="businessEmail">מייל: example@email.com</span>
                     </div>
                     <div class="social-links" id="businessSocialLinks">
-                        </div>
+                        <!-- Social media icons will go here -->
+                    </div>
                 </div>
             </div>
 
+            <!-- Appointment Booking Section -->
             <div class="appointment-section">
                 <h2>קביעת תור</h2>
                 <div class="appointment-controls">
                     <div class="select-wrapper">
                         <select id="serviceSelect">
                             <option value="">בחר שירות...</option>
-                            </select>
+                            <!-- Services loaded dynamically -->
+                        </select>
                     </div>
                     <div class="select-wrapper" style="display: none;">
                         <select id="teamMemberSelect">
                             <option value="">בחר איש צוות...</option>
-                            </select>
+                            <!-- Team members loaded dynamically -->
+                        </select>
                     </div>
                 </div>
                 <div id="selectedDateTimeSummary"></div>
@@ -1017,6 +1030,7 @@
                 </div>
             </div>
 
+            <!-- Reviews Section -->
             <div class="reviews-section">
                 <h2>ביקורות</h2>
                 <div class="add-review-form">
@@ -1034,31 +1048,37 @@
                     <button class="primary" id="submitReviewBtn" style="width: auto;">שלח ביקורת</button>
                 </div>
                 <div class="reviews-list" id="reviewsList">
+                    <!-- Reviews will be loaded here -->
                     <p id="noReviews" style="text-align: center; color: #888; display: none;">עדיין אין ביקורות. היה הראשון לכתוב!</p>
                 </div>
             </div>
         </section>
 
+        <!-- My Appointments Screen -->
         <section id="myAppointmentsScreen">
             <h1>התורים שלי</h1>
             <div class="appointment-list" id="myAppointmentsList">
                 <p style="text-align: center; color: #888;">טוען את התורים שלך...</p>
-                </div>
+                <!-- User's appointments will be listed here -->
+            </div>
         </section>
 
     </div>
 
+    <!-- Slots Modal -->
     <div class="modal-overlay" id="slotsModalOverlay">
         <div class="modal-content">
             <button class="modal-close-btn" id="closeSlotsModal">&times;</button>
             <h3 class="modal-title" id="slotsModalTitle">שעות פנויות עבור תאריך זה</h3>
             <div class="slots-list" id="slotsModalList">
-                </div>
+                <!-- Slots will be loaded here -->
+            </div>
             <p class="slots-modal-no-slots" id="slotsModalNoSlots">אין שעות פנויות בתאריך זה.</p>
             <button class="primary modal-confirm-btn" id="slotsModalConfirm" disabled>אשר שעה</button>
         </div>
     </div>
 
+    <!-- Login/Register Modals -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content">
             <button class="modal-close-btn close-auth-modal">&times;</button>
@@ -1092,13 +1112,16 @@
     </div>
 
 
-    <script type="module">
-        // Firebase Configuration (from your provided snippet)
-        import { initializeApp } from "firebase/app";
-        import { getAnalytics } from "firebase/analytics";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "firebase/firestore";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+    <!-- Firebase SDKs - MUST be loaded before your custom script -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+
+    <script type="text/javascript">
+        // Firebase Configuration (from your provided snippet)
         const firebaseConfig = {
             apiKey: "AIzaSyB9Yx45QdVZpk6qfscw-buJYnXxEYziQII",
             authDomain: "torim-titus.firebaseapp.com",
@@ -1110,10 +1133,11 @@
         };
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app); // eslint-disable-line no-unused-vars
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        const app = firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics(); // eslint-disable-line no-unused-vars
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
 
         // Global Variables
         let currentBusiness = null;
@@ -1210,16 +1234,16 @@
         }
 
         // --- Authentication Logic ---
-        onAuthStateChanged(auth, async (user) => {
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
                 userInfo = { uid: user.uid, email: user.email, fullName: '' };
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
+                const userDocRef = db.collection("users").doc(user.uid);
+                const userDocSnap = await userDocRef.get();
+                if (userDocSnap.exists) {
                     userInfo.fullName = userDocSnap.data().fullName || user.email;
                 } else {
                     // Create user profile if it doesn't exist (e.g., first time login via external provider)
-                    await addDoc(collection(db, "users"), {
+                    await db.collection("users").doc(user.uid).set({
                         uid: user.uid,
                         email: user.email,
                         fullName: user.email, // Default to email if no full name provided during registration
@@ -1260,7 +1284,7 @@
 
         logoutBtn.addEventListener('click', async () => {
             try {
-                await signOut(auth);
+                await auth.signOut();
                 alert("התנתקת בהצלחה.");
                 showScreen('home');
             } catch (error) {
@@ -1301,7 +1325,7 @@
             const email = loginForm.loginEmail.value;
             const password = loginForm.loginPassword.value;
             try {
-                await signInWithEmailAndPassword(auth, email, password);
+                await auth.signInWithEmailAndPassword(email, password);
                 alert('התחברת בהצלחה!');
                 hideModal(loginModal);
             } catch (error) {
@@ -1327,8 +1351,8 @@
             }
 
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await addDoc(collection(db, "users"), {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection("users").doc(userCredential.user.uid).set({
                     uid: userCredential.user.uid,
                     fullName: fullName,
                     email: email,
@@ -1370,22 +1394,22 @@
         async function fetchAndDisplayBusinesses(searchTerm = '', category = '', location = '', priceRange = '') {
             businessListings.innerHTML = '<p style="text-align: center;">טוען עסקים...</p>';
             noBusinessesFound.style.display = 'none';
-            let businessesRef = collection(db, "businesses");
+            let businessesRef = db.collection("businesses");
             let q = businessesRef;
 
             // Apply filters
             if (category) {
-                q = query(q, where("category", "==", category));
+                q = q.where("category", "==", category);
             }
             if (location) {
-                q = query(q, where("location", "==", location));
+                q = q.where("location", "==", location);
             }
             // Price range filtering would be more complex and might require client-side filtering
             // or specific price fields in Firestore and range queries if needed.
             // For now, let's assume it's basic client-side if complexity arises.
 
             try {
-                const querySnapshot = await getDocs(q);
+                const querySnapshot = await q.get();
                 let businesses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 // Client-side search and price range filtering
@@ -1438,7 +1462,7 @@
         // Initial load of filters (categories, locations)
         async function loadFilters() {
             try {
-                const querySnapshot = await getDocs(collection(db, "businesses"));
+                const querySnapshot = await db.collection("businesses").get();
                 const categories = new Set();
                 const locations = new Set();
                 querySnapshot.forEach(doc => {
@@ -1485,8 +1509,8 @@
                 return;
             }
             try {
-                const businessesRef = collection(db, "businesses");
-                const querySnapshot = await getDocs(businessesRef); // Fetch all to filter client-side for autocomplete simplicity
+                const businessesRef = db.collection("businesses");
+                const querySnapshot = await businessesRef.get(); // Fetch all to filter client-side for autocomplete simplicity
                 const allBusinesses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 const filtered = allBusinesses.filter(b => b.name.toLowerCase().includes(searchTerm));
@@ -1548,10 +1572,10 @@
 
         async function loadServicesAndTeamMembers(businessId) {
             try {
-                const businessDocRef = doc(db, "businesses", businessId);
-                const businessDocSnap = await getDoc(businessDocRef);
+                const businessDocRef = db.collection("businesses").doc(businessId);
+                const businessDocSnap = await businessDocRef.get();
 
-                if (businessDocSnap.exists()) {
+                if (businessDocSnap.exists) {
                     const data = businessDocSnap.data();
                     serviceSelect.innerHTML = '<option value="">בחר שירות...</option>';
                     if (data.services && data.services.length > 0) {
@@ -1607,10 +1631,10 @@
 
             try {
                 // Fetch fresh business data to ensure latest service assignments
-                const businessDocRef = doc(db, "businesses", currentBusiness.id);
-                const businessDocSnap = await getDoc(businessDocRef);
+                const businessDocRef = db.collection("businesses").doc(currentBusiness.id);
+                const businessDocSnap = await businessDocRef.get();
 
-                if (businessDocSnap.exists()) {
+                if (businessDocSnap.exists) {
                     const data = businessDocSnap.data();
                     const selectedServiceObj = data.services.find(s => s.id === selectedService);
 
@@ -1755,9 +1779,9 @@
         async function generateCalendar(businessId, teamMemberId, serviceId) {
             calendarContainer.innerHTML = '<p>טוען יומן...</p>';
             try {
-                const businessDocRef = doc(db, "businesses", businessId);
-                const businessDocSnap = await getDoc(businessDocRef);
-                if (!businessDocSnap.exists()) {
+                const businessDocRef = db.collection("businesses").doc(businessId);
+                const businessDocSnap = await businessDocRef.get();
+                if (!businessDocSnap.exists) {
                     calendarContainer.innerHTML = '<p>שגיאה בטעינת נתוני עסק.</p>';
                     return;
                 }
@@ -1776,16 +1800,14 @@
                 const businessOpenTime = businessData.openTime;
                 const businessCloseTime = businessData.closeTime;
                 const appointmentDuration = parseInt(businessData.appointmentDuration || 30);
-                const breakDuration = parseInt(businessData.breakDuration || 0); // Break after each appointment
+                const breakDuration = parseInt(businessData.breakBetweenAppointments || 0); // Break after each appointment
                 const businessUnavailableDates = businessData.unavailableDates || []; // Full dates/ranges business is closed
                 const businessUnavailableHours = businessData.unavailableHours || []; // Specific hours on specific dates
 
-                const appointmentsQuery = query(
-                    collection(db, "appointments"),
-                    where("businessId", "==", businessId),
-                    where("teamMemberId", "==", teamMemberId)
-                );
-                const appointmentsSnapshot = await getDocs(appointmentsQuery);
+                const appointmentsQuery = db.collection("appointments")
+                    .where("businessId", "==", businessId)
+                    .where("teamMemberId", "==", teamMemberId);
+                const appointmentsSnapshot = await appointmentsQuery.get();
                 const existingAppointments = appointmentsSnapshot.docs.map(doc => doc.data());
 
                 let daysArr = [];
@@ -1793,8 +1815,8 @@
                 today.setHours(0,0,0,0); // Set to start of day for accurate comparison
 
                 const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-                // Generate days for 30 days into the future, but check up to 42 to ensure enough open days are found
-                for (let i = 0; daysArr.length < 30 && i < 60; i++) { // Increased limit to 60 days
+                // Generate days for 30 days into the future, but check up to 60 to ensure enough open days are found
+                for (let i = 0; daysArr.length < 30 && i < 60; i++) {
                     const date = new Date(today);
                     date.setDate(today.getDate() + i);
                     const dayOfWeek = date.getDay(); // 0 for Sunday, 6 for Saturday
@@ -1976,13 +1998,13 @@
 
             try {
                 // Fetch fresh business data for names and duration just before booking
-                const businessDocRef = doc(db, "businesses", currentBusiness.id);
-                const businessDocSnap = await getDoc(businessDocRef);
+                const businessDocRef = db.collection("businesses").doc(currentBusiness.id);
+                const businessDocSnap = await businessDocRef.get();
 
                 let serviceName = "", teamMemberName = "";
                 let serviceDuration = parseInt(businessDocSnap.data().appointmentDuration || 30); // Default to business duration
 
-                if (businessDocSnap.exists()) {
+                if (businessDocSnap.exists) {
                     const data = businessDocSnap.data();
                     const serviceObj = data.services.find(s => s.id === selectedService);
                     if(serviceObj){
@@ -1998,7 +2020,7 @@
                     return;
                 }
 
-                const appointmentRef = await addDoc(collection(db, "appointments"), {
+                const appointmentRef = await db.collection("appointments").add({
                     businessId: currentBusiness.id,
                     businessName: currentBusiness.name,
                     serviceId: selectedService,
@@ -2072,7 +2094,7 @@
             }
 
             try {
-                await addDoc(collection(db, "reviews"), {
+                await db.collection("reviews").add({
                     businessId: currentBusiness.id,
                     userId: userInfo.uid,
                     userName: userInfo.fullName || userInfo.email,
@@ -2098,11 +2120,9 @@
             reviewsList.innerHTML = '<p style="text-align: center;">טוען ביקורות...</p>';
             noReviews.style.display = 'none';
             try {
-                const reviewsQuery = query(
-                    collection(db, "reviews"),
-                    where("businessId", "==", businessId)
-                );
-                const reviewsSnapshot = await getDocs(reviewsQuery);
+                const reviewsQuery = db.collection("reviews")
+                    .where("businessId", "==", businessId);
+                const reviewsSnapshot = await reviewsQuery.get();
 
                 if (reviewsSnapshot.empty) {
                     reviewsList.innerHTML = '';
@@ -2134,8 +2154,8 @@
 
         async function updateBusinessAverageRating(businessId) {
             try {
-                const reviewsQuery = query(collection(db, "reviews"), where("businessId", "==", businessId));
-                const reviewsSnapshot = await getDocs(reviewsQuery);
+                const reviewsQuery = db.collection("reviews").where("businessId", "==", businessId);
+                const reviewsSnapshot = await reviewsQuery.get();
                 let totalRating = 0;
                 let reviewCount = 0;
                 reviewsSnapshot.forEach(doc => {
@@ -2144,8 +2164,8 @@
                 });
 
                 const averageRating = reviewCount > 0 ? (totalRating / reviewCount) : 0;
-                const businessDocRef = doc(db, "businesses", businessId);
-                await setDoc(businessDocRef, { averageRating: averageRating, reviewCount: reviewCount }, { merge: true });
+                const businessDocRef = db.collection("businesses").doc(businessId);
+                await businessDocRef.set({ averageRating: averageRating, reviewCount: reviewCount }, { merge: true });
             } catch (e) {
                 console.error("Error updating business average rating:", e);
             }
@@ -2160,11 +2180,9 @@
 
             myAppointmentsList.innerHTML = '<p style="text-align: center;">טוען את התורים שלך...</p>';
             try {
-                const appointmentsQuery = query(
-                    collection(db, "appointments"),
-                    where("userId", "==", userInfo.uid)
-                );
-                const querySnapshot = await getDocs(appointmentsQuery);
+                const appointmentsQuery = db.collection("appointments")
+                    .where("userId", "==", userInfo.uid);
+                const querySnapshot = await appointmentsQuery.get();
 
                 if (querySnapshot.empty) {
                     myAppointmentsList.innerHTML = '<p style="text-align: center; color: #888;">אין לך תורים קבועים כרגע.</p>';
@@ -2197,7 +2215,7 @@
                         const apptId = e.target.dataset.apptId;
                         if (confirm('האם אתה בטוח שברצונך לבטל תור זה?')) {
                             try {
-                                await deleteDoc(doc(db, "appointments", apptId));
+                                await db.collection("appointments").doc(apptId).delete();
                                 alert('התור בוטל בהצלחה.');
                                 loadMyAppointments(); // Reload the list
                             } catch (error) {
@@ -2212,22 +2230,24 @@
                 document.querySelectorAll('.calendar-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         const apptId = e.target.dataset.apptId;
-                        const docRef = doc(db, "appointments", apptId);
-                        const docSnap = await getDoc(docRef);
-                        if (docSnap.exists()) {
+                        const docRef = db.collection("appointments").doc(apptId);
+                        const docSnap = await docRef.get();
+                        if (docSnap.exists) {
                             const appt = docSnap.data();
                             const startTime = new Date(`${appt.date}T${appt.time}`);
                             const endTime = new Date(startTime.getTime() + (appt.duration || 30) * 60 * 1000);
 
-                            const formattedStartTime = startTime.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0, 13); // YYYYMMDDTHHMM
-                            const formattedEndTime = endTime.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0, 13); // YYYYMMDDTHHMM
+                            const formattedStartTime = startTime.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0, 15); // YYYYMMDDTHHMMSSZ
+                            const formattedEndTime = endTime.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0, 15); // YYYYMMDDTHHMMSSZ
+
 
                             const title = `תור ב-${appt.businessName} לשירות ${appt.serviceName}`;
                             const description = `עם ${appt.teamMemberName || 'צוות העסק'}.`;
-                            const location = appt.businessAddress || currentBusiness.address || '';
+                            // Fetch business address if available in currentBusiness or from a lookup
+                            const businessAddress = currentBusiness && currentBusiness.id === appt.businessId ? currentBusiness.address : '';
 
                             // Google Calendar URL
-                            const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formattedStartTime}/${formattedEndTime}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}&sf=true&output=xml`;
+                            const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formattedStartTime}/${formattedEndTime}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(businessAddress)}&sf=true&output=xml`;
 
                             window.open(googleCalendarUrl, '_blank');
                         }
