@@ -620,6 +620,16 @@
             margin: 0 10px;
         }
 
+        .clock-in-section .clock-btn.green-glow {
+            background-color: var(--success-color);
+            box-shadow: 0 0 10px var(--success-color), 0 0 20px var(--success-color);
+        }
+        .clock-in-section .clock-btn.red-glow {
+            background-color: var(--danger-color);
+            box-shadow: 0 0 10px var(--danger-color), 0 0 20px var(--danger-color);
+        }
+
+
         #clockInTime, #clockOutTime {
             font-size: 1.1em;
             margin-top: 10px;
@@ -643,6 +653,36 @@
         }
         .review-card p {
             margin: 5px 0;
+        }
+
+        /* Employee Hours Management Section */
+        .employee-hours-summary-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-light);
+            margin-bottom: 20px;
+        }
+        .employee-hours-summary-card h3 {
+            color: var(--primary-dark);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .employee-hours-summary-card .employee-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .employee-hours-summary-card .employee-entry:last-child {
+            border-bottom: none;
+        }
+        .employee-hours-summary-card .employee-entry strong {
+            flex-basis: 60%;
+        }
+        .employee-hours-summary-card .employee-entry span {
+            flex-basis: 40%;
+            text-align: left;
         }
 
 
@@ -796,6 +836,7 @@
                     <li><a href="#" id="navStats">סטטיסטיקות</a></li>
                     <li><a href="#" id="navReviews">ביקורות</a></li> <!-- New Reviews Nav Link -->
                     <li><a href="#" id="navClock">שעון נוכחות</a></li>
+                    <li><a href="#" id="navEmployeeHours">ניהול שעות עובדים</a></li> <!-- New nav link -->
                 </ul>
             </nav>
             <div class="logout-btn-container">
@@ -1112,11 +1153,24 @@
                         <h2 id="clientDetailName"></h2>
                         <div class="employee-details-card">
                             <h3>פרטי לקוח</h3>
-                            <p><strong>אימייל:</strong> <span id="clientDetailEmail"></span></p>
-                            <p><strong>טלפון:</strong> <span id="clientDetailPhone"></span></p>
-                            <!-- Add more client details here if needed -->
+                            <form id="editClientForm">
+                                <input type="hidden" id="editClientId">
+                                <div class="form-group">
+                                    <label for="editClientName">שם:</label>
+                                    <input type="text" id="editClientName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editClientEmail">אימייל:</label>
+                                    <input type="email" id="editClientEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editClientPhone">טלפון:</label>
+                                    <input type="tel" id="editClientPhone">
+                                </div>
+                                <button type="submit" class="primary">שמור שינויים</button>
+                            </form>
                         </div>
-                        <div class="data-table-container">
+                        <div class="data-table-container" style="margin-top: 20px;">
                             <h3>היסטוריית תורים</h3>
                             <ul class="client-history-list" id="clientAppointmentsHistory">
                                 <!-- Client's past appointments will be listed here -->
@@ -1218,8 +1272,8 @@
                 <div class="form-section clock-in-section">
                     <h2>שעון נוכחות - <span id="employeeClockName"></span></h2>
                     <p class="clock-status" id="clockStatus">העובד לא מחובר</p>
-                    <button class="primary clock-btn" id="clockInBtn" style="display: none;">כניסה</button>
-                    <button class="danger clock-btn" id="clockOutBtn" style="display: none;">יציאה</button>
+                    <button class="clock-btn green-glow" id="clockInBtn" style="display: none;">כניסה</button>
+                    <button class="clock-btn red-glow" id="clockOutBtn" style="display: none;">יציאה</button>
                     <p id="clockInTime" style="display: none;">שעת כניסה: </p>
                     <p id="clockOutTime" style="display: none;">שעת יציאה: </p>
 
@@ -1285,6 +1339,25 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Employee Hours Management Section - NEW -->
+            <section id="employeeHoursSection" class="content-section" style="display: none;">
+                <div class="form-section">
+                    <h2>ניהול שעות עובדים</h2>
+                    <div class="form-group" style="display: flex; gap: 10px; align-items: center;">
+                        <label for="hoursMonthSelect" style="margin-bottom: 0;">בחר חודש:</label>
+                        <input type="month" id="hoursMonthSelect" style="flex-grow: 1;">
+                        <button class="primary" id="generateHoursReportBtn">הצג דוח שעות</button>
+                    </div>
+                    <div class="employee-hours-summary-card" style="margin-top: 20px;">
+                        <h3>סיכום שעות עבודה לחודש <span id="selectedMonthDisplay"></span></h3>
+                        <div id="employeeHoursSummaryList">
+                            <p style="text-align: center; color: #888;">בחר חודש והצג דוח.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -1337,6 +1410,33 @@
                     </select>
                 </div>
                 <button type="submit" class="primary">שמור שינויים</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transfer Appointment Modal -->
+    <div class="modal-overlay" id="transferAppointmentModal">
+        <div class="modal-content">
+            <button class="modal-close-btn close-transfer-appointment-modal">&times;</button>
+            <h2>העברת תור</h2>
+            <form id="transferAppointmentForm">
+                <input type="hidden" id="transferAppointmentId">
+                <p>התור הנוכחי: <strong id="transferCurrentApptDetails"></strong></p>
+                <div class="form-group">
+                    <label for="transferNewEmployee">העבר לעובד אחר:</label>
+                    <select id="transferNewEmployee" required>
+                        <!-- Employees will be loaded here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transferNewDate">תאריך חדש (אופציונלי):</label>
+                    <input type="date" id="transferNewDate">
+                </div>
+                <div class="form-group">
+                    <label for="transferNewTime">שעה חדשה (אופציונלי):</label>
+                    <input type="time" id="transferNewTime">
+                </div>
+                <button type="submit" class="primary">שלח בקשת העברה</button>
             </form>
         </div>
     </div>
@@ -1403,6 +1503,7 @@
         const navStats = document.getElementById('navStats');
         const navReviews = document.getElementById('navReviews'); // New Reviews Nav Link
         const navClock = document.getElementById('navClock');
+        const navEmployeeHours = document.getElementById('navEmployeeHours'); // New nav link
 
 
         // Content Sections
@@ -1417,6 +1518,7 @@
         const statsSection = document.getElementById('statsSection');
         const reviewsSection = document.getElementById('reviewsSection'); // New Reviews Section
         const clockSection = document.getElementById('clockSection');
+        const employeeHoursSection = document.getElementById('employeeHoursSection'); // New section
 
         // Dashboard elements
         const upcomingAppointmentsCount = document.getElementById('upcomingAppointmentsCount');
@@ -1483,6 +1585,11 @@
         const clientDetailPhone = document.getElementById('clientDetailPhone');
         const clientAppointmentsHistory = document.getElementById('clientAppointmentsHistory');
         const noClientAppointments = document.getElementById('noClientAppointments');
+        const editClientForm = document.getElementById('editClientForm'); // New client edit form
+        const editClientId = document.getElementById('editClientId');
+        const editClientName = document.getElementById('editClientName');
+        const editClientEmail = document.getElementById('editClientEmail');
+        const editClientPhone = document.getElementById('editClientPhone');
         let currentClientData = null; // To store client data when modal is open
 
         // Absences section
@@ -1544,6 +1651,21 @@
         const editTime = document.getElementById('editTime');
         const editStatus = document.getElementById('editStatus');
 
+        // Transfer Appointment Modal Elements
+        const transferAppointmentModal = document.getElementById('transferAppointmentModal');
+        const transferAppointmentForm = document.getElementById('transferAppointmentForm');
+        const transferAppointmentId = document.getElementById('transferAppointmentId');
+        const transferCurrentApptDetails = document.getElementById('transferCurrentApptDetails');
+        const transferNewEmployee = document.getElementById('transferNewEmployee');
+        const transferNewDate = document.getElementById('transferNewDate');
+        const transferNewTime = document.getElementById('transferNewTime');
+
+        // Employee Hours Management elements
+        const hoursMonthSelect = document.getElementById('hoursMonthSelect');
+        const generateHoursReportBtn = document.getElementById('generateHoursReportBtn');
+        const selectedMonthDisplay = document.getElementById('selectedMonthDisplay');
+        const employeeHoursSummaryList = document.getElementById('employeeHoursSummaryList');
+
 
         // --- Utility Functions ---
         function showLoading() { loadingScreen.style.display = 'flex'; }
@@ -1561,7 +1683,7 @@
                 link.classList.remove('active');
             });
             // Set active class on the corresponding nav link
-            const activeNavLink = document.querySelector(`#nav${sectionId.replace('Section', '').replace('Profile', 'Profile')}`); // Handle BusinessProfile
+            const activeNavLink = document.querySelector(`#nav${sectionId.replace('Section', '').replace('Profile', 'Profile').replace('Hours', 'Hours')}`); // Handle BusinessProfile, EmployeeHours
             if (activeNavLink) {
                 activeNavLink.classList.add('active');
             }
@@ -1572,6 +1694,10 @@
             if (user) {
                 currentManagerUser = user; // Temporarily assign, will refine based on role
                 welcomeMessage.textContent = `שלום, ${user.email}`; // Fallback
+
+                // Hide auth modals immediately upon authentication
+                hideModal(loginModal);
+                hideModal(registerModal);
 
                 try {
                     const userDocRef = db.collection("users").doc(user.uid);
@@ -1607,6 +1733,7 @@
                                     }
                                     currentEmployeeData = currentBusinessData.teamMembers.find(tm => tm.id === user.uid); // Manager is also an employee for clock-in
                                     navClock.style.display = 'block';
+                                    navEmployeeHours.style.display = 'block'; // Show for managers
                                     employeeClockName.textContent = currentEmployeeData.name || user.email;
 
                                     // Check if business profile is incomplete and direct them to fill it
@@ -1618,13 +1745,14 @@
                                         showSection('dashboardSection'); // Default to dashboard for managers
                                         loadDashboardData();
                                     }
-                                    // Show all navigation links for manager
+                                    // Show all navigation links for manager (ensure navEmployeeHours is visible)
                                     document.querySelectorAll('.side-menu nav ul li').forEach(li => li.style.display = 'block');
 
                                 } else if (isTeamMember) { // Logged-in user is an employee (not manager)
                                     currentEmployeeData = currentBusinessData.teamMembers.find(tm => tm.id === user.uid);
                                     welcomeMessage.textContent = `שלום, ${currentEmployeeData.name || user.email}`;
                                     navClock.style.display = 'block'; // Only show clock-in/out for employees
+                                    navEmployeeHours.style.display = 'none'; // Hide for employees
                                     employeeClockName.textContent = currentEmployeeData.name || user.email;
                                     showSection('clockSection'); // Direct employees to their clock-in/out page
                                     loadEmployeeAppointmentsAndStatus();
@@ -1638,7 +1766,6 @@
                                     });
                                 } else {
                                     // User document exists, but they are not a manager or a team member of the found business
-                                    // This implies a data inconsistency or a user created outside the app's flow.
                                     console.warn("User is authenticated but not a manager or team member of the associated business.");
                                     alert("אין לך הרשאה לגשת לפאנל ניהול זה. אנא פנה למנהל העסק.");
                                     await auth.signOut(); // Force sign out
@@ -1666,8 +1793,6 @@
                             }
                         } else {
                             // User document exists but no businessId is associated.
-                            // This scenario implies a user created outside the standard registration flow.
-                            // For simplicity, we'll treat them as needing to create a business.
                             console.warn("User document exists but no businessId found. Prompting to register new business.");
                             hideLoading();
                             showModal(registerModal);
@@ -1675,8 +1800,6 @@
                         }
                     } else {
                         // User is authenticated but no user document exists in 'users' collection.
-                        // This means a new Firebase Auth user was created but not linked to a business yet.
-                        // Prompt to register a new business (assuming new users are always managers creating a business).
                         hideLoading();
                         showModal(registerModal);
                         adminDashboardLayout.style.display = 'none';
@@ -1834,6 +1957,7 @@
         navStats.addEventListener('click', (e) => { e.preventDefault(); showSection('statsSection'); }); // Stats data will load on button click
         navReviews.addEventListener('click', (e) => { e.preventDefault(); showSection('reviewsSection'); loadReviews(); }); // New Reviews Nav Handler
         navClock.addEventListener('click', (e) => { e.preventDefault(); showSection('clockSection'); loadEmployeeAppointmentsAndStatus(); });
+        navEmployeeHours.addEventListener('click', (e) => { e.preventDefault(); showSection('employeeHoursSection'); loadEmployeeHoursSummary(); }); // New nav handler
 
 
         // --- Dashboard Section Logic ---
@@ -1927,6 +2051,9 @@
                     alert('התור בוטל בהצלחה.');
                     loadDashboardData(); // Refresh dashboard
                     loadAppointments(); // Refresh general appointments list
+                    if (currentEmployeeData && currentManagerUser.uid !== currentEmployeeData.id) { // If employee is logged in and not manager
+                        loadEmployeeAppointmentsAndStatus(); // Refresh employee's view
+                    }
                 } catch (error) {
                     console.error("Error cancelling appointment:", error);
                     alert('שגיאה בביטול התור: ' + (error.message || error));
@@ -1944,6 +2071,9 @@
                     alert('התור סומן כהושלם.');
                     loadDashboardData(); // Refresh dashboard
                     loadAppointments(); // Refresh general appointments list
+                    if (currentEmployeeData && currentManagerUser.uid !== currentEmployeeData.id) { // If employee is logged in and not manager
+                        loadEmployeeAppointmentsAndStatus(); // Refresh employee's view
+                    }
                 } catch (error) {
                     console.error("Error completing appointment:", error);
                     alert('שגיאה בסימון התור כהושלם: ' + (error.message || error));
@@ -2661,6 +2791,9 @@
                 alert(`סטטוס התור עודכן ל-${newStatus}.`);
                 loadAppointments(); // Refresh list
                 loadDashboardData(); // Refresh dashboard
+                if (currentEmployeeData && currentManagerUser.uid !== currentEmployeeData.id) { // If employee is logged in and not manager
+                    loadEmployeeAppointmentsAndStatus(); // Refresh employee's view
+                }
             } catch (error) {
                 console.error("Error updating appointment status:", error);
                 alert('שגיאה בעדכון סטטוס תור: ' + (error.message || error));
@@ -2741,6 +2874,9 @@
                 hideModal(editAppointmentModal);
                 loadAppointments(); // Refresh list
                 loadDashboardData(); // Refresh dashboard
+                if (currentEmployeeData && currentManagerUser.uid !== currentEmployeeData.id) { // If employee is logged in and not manager
+                    loadEmployeeAppointmentsAndStatus(); // Refresh employee's view
+                }
             } catch (error) {
                 console.error("Error updating appointment:", error);
                 alert('שגיאה בעדכון התור: ' + (error.message || error));
@@ -2775,11 +2911,13 @@
 
                 querySnapshot.forEach(docSnap => {
                     const appt = docSnap.data();
-                    if (appt.userId) { // Ensure appointment is linked to a user
-                        let client = clientsMap.get(appt.userId);
+                    // Use userId from appointment if available, otherwise fallback to email hash or similar for uniqueness
+                    const clientId = appt.userId || btoa(appt.userEmail || appt.userName); // Simple fallback for client ID
+                    if (clientId) { 
+                        let client = clientsMap.get(clientId);
                         if (!client) {
                             client = {
-                                id: appt.userId,
+                                id: clientId,
                                 name: appt.userName,
                                 email: appt.userEmail,
                                 phone: appt.userPhone || 'N/A', // Assuming phone might be stored with appointment or user doc
@@ -2787,7 +2925,7 @@
                             };
                         }
                         client.appointmentCount++;
-                        clientsMap.set(appt.userId, client);
+                        clientsMap.set(clientId, client);
                     }
                 });
 
@@ -2815,10 +2953,17 @@
                         <td>${client.phone}</td>
                         <td>${client.appointmentCount}</td>
                         <td class="actions">
-                            <button class="secondary view-client-details" data-id="${client.id}">פרטים / היסטוריה</button>
+                            <button class="secondary view-client-details" data-id="${client.id}" data-email="${client.email}" data-name="${client.name}" data-phone="${client.phone}">פרטים / היסטוריה</button>
                         </td>
                     `;
-                    row.querySelector('.view-client-details').addEventListener('click', () => showClientDetails(client));
+                    // Pass full client data to showClientDetails
+                    row.querySelector('.view-client-details').addEventListener('click', (e) => {
+                        const clientId = e.target.dataset.id;
+                        const clientName = e.target.dataset.name;
+                        const clientEmail = e.target.dataset.email;
+                        const clientPhone = e.target.dataset.phone;
+                        showClientDetails({ id: clientId, name: clientName, email: clientEmail, phone: clientPhone });
+                    });
                 });
 
             } catch (error) {
@@ -2833,6 +2978,12 @@
             clientDetailName.textContent = client.name;
             clientDetailEmail.textContent = client.email;
             clientDetailPhone.textContent = client.phone;
+
+            // Populate edit client form
+            editClientId.value = client.id;
+            editClientName.value = client.name;
+            editClientEmail.value = client.email;
+            editClientPhone.value = client.phone === 'N/A' ? '' : client.phone;
 
             clientAppointmentsHistory.innerHTML = '';
             noClientAppointments.style.display = 'block';
@@ -2874,6 +3025,42 @@
             showModal(clientDetailsModal);
         }
 
+        editClientForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const clientId = editClientId.value;
+            if (!clientId) return;
+
+            const updatedClientData = {
+                userName: editClientName.value,
+                userEmail: editClientEmail.value,
+                userPhone: editClientPhone.value
+            };
+
+            try {
+                // Find all appointments associated with this client ID and update their user details
+                const q = db.collection("appointments")
+                    .where("businessId", "==", currentBusinessId)
+                    .where("userId", "==", clientId);
+                
+                const querySnapshot = await q.get();
+                const batch = db.batch();
+
+                querySnapshot.forEach(doc => {
+                    const apptRef = db.collection("appointments").doc(doc.id);
+                    batch.update(apptRef, updatedClientData);
+                });
+
+                await batch.commit();
+                alert('פרטי הלקוח עודכנו בהצלחה בכל התורים המשויכים!');
+                hideModal(clientDetailsModal);
+                loadClients(); // Refresh client list
+                loadAppointments(); // Refresh appointments list (if client data is shown there)
+            } catch (error) {
+                console.error("Error updating client details:", error);
+                alert('שגיאה בעדכון פרטי הלקוח: ' + (error.message || error));
+            }
+        });
+
         document.querySelectorAll('.close-client-modal').forEach(btn => {
             btn.addEventListener('click', () => hideModal(clientDetailsModal));
         });
@@ -2909,6 +3096,7 @@
                 await updateCurrentBusinessData();
                 loadBusinessAbsences();
                 generateApprovedAbsencesCalendar(); // Update calendar
+                cancelAppointmentsForUnavailablePeriod(startDate, endDate, null, reason); // Cancel relevant appointments
             } catch (error) {
                 console.error("Error adding business absence:", error);
                 alert('שגיאה בהוספת השבתה: ' + (error.message || error));
@@ -2928,8 +3116,8 @@
 
             try {
                 const q = db.collection("absence_requests")
-                    .where("businessId", "==", currentBusinessId)
-                    .where("status", "==", "pending"); // Only show pending requests
+                    .where("businessId", "==", currentBusinessId);
+                    // Removed status filter to show all, and allow re-approving
                 
                 const querySnapshot = await q.get();
 
@@ -2940,9 +3128,16 @@
                 }
 
                 noAbsenceRequests.style.display = 'none';
+                const requests = [];
                 querySnapshot.forEach(docSnap => {
-                    const request = docSnap.data();
-                    const requestId = docSnap.id;
+                    requests.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                // Sort requests by requestedAt (newest first)
+                requests.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+
+                requests.forEach(request => {
+                    const requestId = request.id;
                     const employeeName = currentBusinessData.teamMembers.find(e => e.id === request.employeeId)?.name || 'עובד לא ידוע';
 
                     const div = document.createElement('div');
@@ -2955,14 +3150,14 @@
                     }
 
                     div.innerHTML = `
-                        <span><strong>${employeeName}</strong> ביקש חופשה: ${displayDates} (סיבה: ${request.reason || 'אין'})</span>
-                        <button class="primary approve-absence" data-id="${requestId}">אשר</button>
-                        <button class="danger reject-absence" data-id="${requestId}">דחה</button>
+                        <span><strong>${employeeName}</strong> ביקש חופשה: ${displayDates} (סיבה: ${request.reason || 'אין'}) - סטטוס: ${request.status === 'pending' ? 'ממתין' : request.status === 'approved' ? 'אושר' : 'נדחה'}</span>
+                        <button class="primary approve-absence" data-id="${requestId}" ${request.status === 'approved' ? 'disabled' : ''}>אשר</button>
+                        <button class="danger reject-absence" data-id="${requestId}" ${request.status === 'rejected' ? 'disabled' : ''}>דחה</button>
                     `;
                     employeeAbsenceRequests.appendChild(div);
 
                     div.querySelector('.approve-absence').addEventListener('click', () => approveAbsenceRequest(requestId, request));
-                    div.querySelector('.reject-absence').addEventListener('click', () => rejectAbsenceRequest(requestId));
+                    div.querySelector('.reject-absence').addEventListener('click', () => rejectAbsenceRequest(requestId, request));
                 });
 
             } catch (error) {
@@ -2977,30 +3172,22 @@
                 const requestRef = db.collection("absence_requests").doc(requestId);
                 await requestRef.update({ status: 'approved', approvedAt: new Date().toISOString() });
 
-                // Add to business unavailableDates or update employee workHours based on request type
-                const businessRef = db.collection("businesses").doc(currentBusinessId);
-                const businessDoc = await businessRef.get();
-                let currentTeamMembers = businessDoc.data().teamMembers || [];
-
+                // Store approved full-day absences as specific date blocks for the employee
                 if (requestData.type === 'fullDay') {
-                    // Option 2 (Better): Block specific employee's work hours for that day
-                    // This requires updating the employee's workHours for that specific date/day
-                    // For simplicity, let's just mark the employee's workhours for that day as not working
-                    const employeeIndex = currentTeamMembers.findIndex(tm => tm.id === requestData.employeeId);
-                    if(employeeIndex !== -1) {
-                        const dayName = new Date(requestData.date).toLocaleDateString('he-IL', { weekday: 'long' }); // Get day name
-                        // Ensure workHours exists
-                        currentTeamMembers[employeeIndex].workHours = currentTeamMembers[employeeIndex].workHours || {};
-                        currentTeamMembers[employeeIndex].workHours[dayName] = { isWorking: false, openTime: '', closeTime: '' }; // Mark as not working for that specific day
-                        
-                        // Update the entire teamMembers array in Firestore
-                        await businessRef.update({ teamMembers: currentTeamMembers });
-                    }
+                    const employeeRef = db.collection("users").doc(requestData.employeeId); // Assuming user doc for employee exists
+                    await employeeRef.update({
+                        approvedAbsences: firebase.firestore.FieldValue.arrayUnion({
+                            date: requestData.date,
+                            reason: requestData.reason,
+                            type: 'fullDay'
+                        })
+                    });
+                    // Cancel appointments for this employee on this specific full day
+                    cancelAppointmentsForUnavailablePeriod(requestData.date, requestData.date, requestData.employeeId, requestData.reason);
 
                 } else if (requestData.type === 'specificHours') {
                     // Add to business's unavailableHours for specific employee on specific date
-                    // This is for blocking specific slots *within* a working day
-                    await businessRef.update({
+                    await db.collection("businesses").doc(currentBusinessId).update({
                         unavailableHours: firebase.firestore.FieldValue.arrayUnion({
                             date: requestData.date,
                             startTime: requestData.startTime,
@@ -3010,10 +3197,12 @@
                             type: 'employee_absence_hours'
                         })
                     });
+                    // Cancel appointments for this employee within these specific hours
+                    cancelAppointmentsForUnavailablePeriod(requestData.date, requestData.date, requestData.employeeId, requestData.reason, requestData.startTime, requestData.endTime);
                 }
                 alert('בקשת חופשה אושרה בהצלחה!');
-                await updateCurrentBusinessData();
-                loadEmployeeAbsenceRequests();
+                await updateCurrentBusinessData(); // Refresh global business data for unavailableHours
+                loadEmployeeAbsenceRequests(); // Refresh manager's view
                 generateApprovedAbsencesCalendar(); // Update calendar
             } catch (error) {
                 console.error("Error approving absence request:", error);
@@ -3021,13 +3210,41 @@
             }
         }
 
-        async function rejectAbsenceRequest(requestId) {
+        async function rejectAbsenceRequest(requestId, requestData) {
             if (confirm('האם אתה בטוח שברצונך לדחות בקשת חופשה זו?')) {
                 try {
                     const requestRef = db.collection("absence_requests").doc(requestId);
                     await requestRef.update({ status: 'rejected', rejectedAt: new Date().toISOString() });
+
+                    // If it was previously approved, remove the block
+                    if (requestData.status === 'approved') {
+                        if (requestData.type === 'fullDay') {
+                            const employeeRef = db.collection("users").doc(requestData.employeeId);
+                            await employeeRef.update({
+                                approvedAbsences: firebase.firestore.FieldValue.arrayRemove({
+                                    date: requestData.date,
+                                    reason: requestData.reason,
+                                    type: 'fullDay'
+                                })
+                            });
+                        } else if (requestData.type === 'specificHours') {
+                            await db.collection("businesses").doc(currentBusinessId).update({
+                                unavailableHours: firebase.firestore.FieldValue.arrayRemove({
+                                    date: requestData.date,
+                                    startTime: requestData.startTime,
+                                    endTime: requestData.endTime,
+                                    employeeId: requestData.employeeId,
+                                    reason: requestData.reason,
+                                    type: 'employee_absence_hours'
+                                })
+                            });
+                        }
+                    }
+
                     alert('בקשת חופשה נדחתה.');
-                    loadEmployeeAbsenceRequests();
+                    await updateCurrentBusinessData(); // Refresh global business data for unavailableHours
+                    loadEmployeeAbsenceRequests(); // Refresh manager's view
+                    generateApprovedAbsencesCalendar(); // Update calendar
                 } catch (error) {
                     console.error("Error rejecting absence request:", error);
                     alert('שגיאה בדחיית בקשת חופשה: ' + (error.message || error));
@@ -3057,6 +3274,9 @@
             } catch (error) {
                 console.error("Error fetching approved full-day absences:", error);
             }
+
+            // Fetch all approved hourly absences for employees (from business.unavailableHours)
+            const approvedEmployeeHourlyAbsences = currentBusinessData.unavailableHours || [];
 
 
             for (let monthOffset = 0; monthOffset < 2; monthOffset++) { // Current and next month
@@ -3121,7 +3341,7 @@
                     }
 
                     // Check for approved employee hourly absences
-                    const employeeHourlyAbsencesForDay = (currentBusinessData.unavailableHours || []).filter(uh => uh.date === formattedDate && uh.type === 'employee_absence_hours');
+                    const employeeHourlyAbsencesForDay = approvedEmployeeHourlyAbsences.filter(uh => uh.date === formattedDate && uh.type === 'employee_absence_hours');
                     if(employeeHourlyAbsencesForDay.length > 0) {
                         if(!cell.classList.contains('has-absence')) { // Don't override if already marked by full day/business closure
                             cell.classList.add('has-absence');
@@ -3212,7 +3432,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true, // Keep aspect ratio to prevent stretching
                     plugins: {
                         title: { display: true, text: 'הכנסות לפי יום', font: { size: 16 } }
                     }
@@ -3282,7 +3502,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true, // Keep aspect ratio
                     plugins: {
                         title: { display: true, text: 'תפוסת עובדים', font: { size: 16 } }
                     },
@@ -3321,7 +3541,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true, // Keep aspect ratio
                     plugins: {
                         title: { display: true, text: 'שירותים פופולריים', font: { size: 16 } },
                         legend: { position: 'right' }
@@ -3358,7 +3578,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true, // Keep aspect ratio
                     plugins: {
                         title: { display: true, text: 'שעות שיא בקביעת תורים', font: { size: 16 } }
                     },
@@ -3398,7 +3618,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true, // Keep aspect ratio
                     plugins: {
                         title: { display: true, text: 'סיכום ביקורות', font: { size: 16 } }
                     },
@@ -3485,7 +3705,7 @@
                 }
 
                 if (currentEntry) {
-                    clockStatus.textContent = `מחובר (מאז ${currentEntry.clockInTime})`;
+                    clockStatus.textContent = `בעבודה`;
                     clockStatus.classList.remove('out');
                     clockStatus.classList.add('in');
                     clockInBtn.style.display = 'none';
@@ -3496,7 +3716,7 @@
 
                     // Start a timer to update elapsed time (if needed, this example just shows the status)
                 } else {
-                    clockStatus.textContent = 'לא מחובר';
+                    clockStatus.textContent = 'לא בעבודה';
                     clockStatus.classList.remove('in');
                     clockStatus.classList.add('out');
                     clockInBtn.style.display = 'block';
@@ -3518,7 +3738,8 @@
             const today = now.toISOString().split('T')[0];
 
             // Basic check against business hours for today
-            const dayOfWeek = new Date().toLocaleDateString('he-IL', { weekday: 'long' });
+            const dayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+            const dayOfWeek = dayNames[now.getDay()];
             let isWorkingHours = false;
             let effectiveOpen = currentBusinessData.openTime;
             let effectiveClose = currentBusinessData.closeTime;
@@ -3532,6 +3753,7 @@
                 isWorkingHours = true;
             }
 
+            // Check if current time is within working hours
             if (!isWorkingHours || currentTime < effectiveOpen || currentTime > effectiveClose) {
                 alert(`לא ניתן להיכנס מחוץ לשעות העבודה המוגדרות (${effectiveOpen}-${effectiveClose}).`);
                 return;
@@ -3544,7 +3766,14 @@
                 if (docSnap.exists && docSnap.data().entries) {
                     entries = docSnap.data().entries;
                 }
-                entries.push({ date: today, clockInTime: currentTime, clockOutTime: null });
+                // Check if there's an open entry for today
+                const openEntry = entries.find(entry => entry.date === today && !entry.clockOutTime);
+                if (openEntry) {
+                    alert('כבר נכנסת היום. אנא בצע יציאה לפני כניסה מחודשת.');
+                    return;
+                }
+
+                entries.push({ date: today, clockInTime: currentTime, clockOutTime: null, type: 'regular' }); // 'regular', 'break', 'urgent_exit'
 
                 await clockEntryRef.set({ entries: entries }, { merge: true });
                 alert('נכנסת בהצלחה!');
@@ -3575,6 +3804,9 @@
                     const outTime = new Date(`2000-01-01T${currentTime}`);
                     const durationMs = outTime - inTime;
                     entries[currentEntryIndex].durationMinutes = Math.round(durationMs / (1000 * 60));
+                } else {
+                    alert('לא נמצאה כניסה פתוחה להיום. לא ניתן לבצע יציאה.');
+                    return;
                 }
 
                 await clockEntryRef.set({ entries: entries }, { merge: true });
@@ -3588,6 +3820,57 @@
             }
         });
 
+        // Helper to cancel appointments
+        async function cancelAppointmentsForUnavailablePeriod(startDate, endDate, employeeId = null, reason = "זמינות עובד/עסק", startTime = "00:00", endTime = "23:59") {
+            if (!currentBusinessId) return;
+
+            let q = db.collection("appointments")
+                .where("businessId", "==", currentBusinessId)
+                .where("date", ">=", startDate)
+                .where("date", "<=", endDate)
+                .where("status", "in", ["pending", "confirmed"]); // Only cancel pending/confirmed
+
+            if (employeeId) {
+                q = q.where("teamMemberId", "==", employeeId);
+            }
+
+            try {
+                const querySnapshot = await q.get();
+                const batch = db.batch();
+                let cancelledCount = 0;
+
+                querySnapshot.forEach(doc => {
+                    const appt = doc.data();
+                    const apptTime = appt.time;
+
+                    // Check if appointment time falls within the unavailable hours if specified
+                    if (apptTime >= startTime && apptTime <= endTime) {
+                        const apptRef = db.collection("appointments").doc(doc.id);
+                        batch.update(apptRef, {
+                            status: 'cancelled',
+                            cancellationReason: reason,
+                            cancelledAt: new Date().toISOString()
+                        });
+                        cancelledCount++;
+                    }
+                });
+
+                if (cancelledCount > 0) {
+                    await batch.commit();
+                    alert(`בוטלו אוטומטית ${cancelledCount} תורים עקב ${reason}.`);
+                    loadAppointments(); // Refresh relevant tables
+                    loadDashboardData();
+                    if (currentEmployeeData && currentManagerUser.uid !== currentEmployeeData.id) {
+                        loadEmployeeAppointmentsAndStatus();
+                    }
+                }
+            } catch (error) {
+                console.error("Error cancelling appointments for unavailability:", error);
+                alert('שגיאה בביטול אוטומטי של תורים: ' + (error.message || error));
+            }
+        }
+
+
         async function loadEmployeeAppointmentsAndStatus() {
             if (!currentEmployeeData || !currentBusinessId) return;
 
@@ -3598,16 +3881,13 @@
             nextAppointmentDisplay.innerHTML = '<p style="color:#888;">טוען את התור הבא...</p>';
             const now = new Date();
             const today = now.toISOString().split('T')[0];
-            const tomorrow = new Date(now);
-            tomorrow.setDate(now.getDate() + 1);
-            const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
 
             try {
                 // Fetch all pending appointments for the employee
                 const qNext = db.collection("appointments")
                     .where("businessId", "==", currentBusinessId)
                     .where("teamMemberId", "==", currentEmployeeData.id)
-                    .where("status", "==", "pending");
+                    .where("status", "in", ["pending", "confirmed"]); // Include confirmed appointments
                 
                 const nextAppointmentsSnapshot = await qNext.get();
                 let upcomingAppts = [];
@@ -3673,16 +3953,18 @@
                         <td>${appt.serviceName}</td>
                         <td>${appt.status}</td>
                         <td class="actions">
-                            <button class="primary employee-complete-appt" data-id="${appt.id}" ${appt.status === 'completed' ? 'disabled' : ''}>
-                                ${appt.status === 'completed' ? 'הושלם' : 'סמן כהושלם'}
-                            </button>
-                            <button class="danger employee-cancel-appt" data-id="${appt.id}" ${appt.status === 'cancelled' ? 'disabled' : ''}>
+                            <button class="primary employee-edit-appt" data-id="${appt.id}">ערוך</button>
+                            <button class="danger employee-cancel-appt" data-id="${appt.id}" ${appt.status === 'cancelled' || appt.status === 'completed' ? 'disabled' : ''}>
                                 ${appt.status === 'cancelled' ? 'בוטל' : 'בטל'}
+                            </button>
+                            <button class="secondary employee-transfer-appt" data-id="${appt.id}" ${appt.status === 'cancelled' || appt.status === 'completed' ? 'disabled' : ''}>
+                                העבר
                             </button>
                         </td>
                     `;
-                    row.querySelector('.employee-complete-appt').addEventListener('click', () => updateAppointmentStatus(appt.id, 'completed'));
-                    row.querySelector('.employee-cancel-appt').addEventListener('click', () => updateAppointmentStatus(appt.id, 'cancelled'));
+                    row.querySelector('.employee-edit-appt').addEventListener('click', () => openEditAppointmentModal(appt.id));
+                    row.querySelector('.employee-cancel-appt').addEventListener('click', () => cancelAppointment(appt.id));
+                    row.querySelector('.employee-transfer-appt').addEventListener('click', () => openTransferAppointmentModal(appt.id));
                 });
 
 
@@ -3804,26 +4086,341 @@
 
 
         // Real-time updates (BLT"Ms) - these would require server-side logic
-        // or direct DB updates that affect current business data and possibly calendar regeneration.
-        longBreakBtn.addEventListener('click', () => {
-            alert('הפסקה ארוכה סומנה. יש ליישם לוגיקה לחסימת תורים זמנית.');
-            // Implement logic to temporarily block appointments for this employee
-            // This would likely involve updating a field in employee's document or a real-time "status"
-        });
+        longBreakBtn.addEventListener('click', async () => {
+            if (!currentEmployeeData || !currentBusinessId) return;
+            if (confirm('האם אתה בטוח שברצונך לסמן הפסקה ארוכה? תורים קרובים יבוטלו אוטומטית.')) {
+                const now = new Date();
+                const currentTime = now.toTimeString().substring(0, 5);
+                const today = now.toISOString().split('T')[0];
+                const breakReason = "הפסקה ארוכה";
+                const breakEndTime = "23:59"; // Assume until end of day or until manually clock back in for simplicity
 
-        urgentExitBtn.addEventListener('click', async () => {
-            if (confirm('האם אתה בטוח שברצונך לסמן יציאה דחופה? פעולה זו תבצע יציאה מהשעון ותחסום תורים באופן מיידי.')) {
-                await clockOutBtn.click(); // Simulate clock out
-                alert('יציאה דחופה סומנה. יש ליישם לוגיקה לחסימת תורים עד כניסה מחודשת.');
-                // Implement logic to block future appointments for today/until next clock-in
+                try {
+                    // Mark employee as on break in their clock-in entry or a dedicated status field
+                    const clockEntryRef = db.collection("business_clock_ins").doc(currentBusinessId).collection("employees").doc(currentEmployeeData.id);
+                    const docSnap = await clockEntryRef.get();
+                    let entries = docSnap.data().entries || [];
+                    const currentEntryIndex = entries.findIndex(entry => entry.date === today && !entry.clockOutTime);
+
+                    if (currentEntryIndex !== -1) {
+                        // If clocked in, mark as on break
+                        entries[currentEntryIndex].status = 'on_break';
+                        entries[currentEntryIndex].breakStartTime = currentTime;
+                        entries[currentEntryIndex].breakEndTime = breakEndTime; // Or a specific duration
+                    } else {
+                        // If not clocked in, create a temporary "break" entry
+                        entries.push({ date: today, clockInTime: currentTime, clockOutTime: null, type: 'break', breakStartTime: currentTime, breakEndTime: breakEndTime });
+                    }
+                    await clockEntryRef.set({ entries: entries }, { merge: true });
+
+                    // Cancel upcoming appointments for this employee for the rest of the day
+                    await cancelAppointmentsForUnavailablePeriod(today, today, currentEmployeeData.id, breakReason, currentTime, breakEndTime);
+                    alert('הפסקה ארוכה סומנה. תורים קרובים בוטלו.');
+                    await loadClockStatus(); // Update status
+                } catch (error) {
+                    console.error("Error marking long break:", error);
+                    alert('שגיאה בסימון הפסקה ארוכה: ' + (error.message || error));
+                }
             }
         });
 
-        addWalkInAppointmentBtn.addEventListener('click', () => {
-            alert('קבלת תור נוסף (Walk-in) סומנה. יש ליישם לוגיקה להוספת תור מהיר למערכת.');
-            // This would open a simplified modal to quickly add an appointment for the current employee
-            // and block the time slot.
+        urgentExitBtn.addEventListener('click', async () => {
+            if (!currentEmployeeData || !currentBusinessId) return;
+            if (confirm('האם אתה בטוח שברצונך לסמן יציאה דחופה? פעולה זו תבצע יציאה מהשעון ותבטל תורים באופן מיידי.')) {
+                const now = new Date();
+                const currentTime = now.toTimeString().substring(0, 5);
+                const today = now.toISOString().split('T')[0];
+                const exitReason = "יציאה דחופה";
+
+                try {
+                    // Clock out the employee
+                    await clockOutBtn.click(); // This will update the clock-in entry
+
+                    // Cancel upcoming appointments for this employee for the rest of the day
+                    await cancelAppointmentsForUnavailablePeriod(today, today, currentEmployeeData.id, exitReason, currentTime, "23:59");
+                    alert('יציאה דחופה סומנה. תורים קרובים בוטלו.');
+                    await loadClockStatus(); // Update status
+                } catch (error) {
+                    console.error("Error marking urgent exit:", error);
+                    alert('שגיאה בסימון יציאה דחופה: ' + (error.message || error));
+                }
+            }
         });
+
+        addWalkInAppointmentBtn.addEventListener('click', async () => {
+            if (!currentEmployeeData || !currentBusinessId) {
+                alert("אין נתוני עובד כדי להוסיף תור.");
+                return;
+            }
+            // This would open a simplified modal to quickly add an appointment for the current employee
+            // and block the time slot. For now, a simple alert.
+            alert('יש ליישם לוגיקה להוספת תור מהיר (Walk-in) למערכת.');
+            // Example: open a simplified modal for walk-in
+            // showModal(walkInAppointmentModal);
+            // populateWalkInAppointmentForm(currentEmployeeData.id);
+        });
+
+        // --- Transfer Appointment Modal Logic ---
+        async function openTransferAppointmentModal(apptId) {
+            if (!currentBusinessId) return;
+            try {
+                const apptDoc = await db.collection("appointments").doc(apptId).get();
+                if (!apptDoc.exists) {
+                    alert("תור לא נמצא.");
+                    return;
+                }
+                const apptData = apptDoc.data();
+
+                transferAppointmentId.value = apptId;
+                transferCurrentApptDetails.textContent = `${apptData.userName} - ${apptData.serviceName} ב- ${apptData.date} בשעה ${apptData.time}`;
+
+                // Populate employees dropdown, excluding the current employee
+                transferNewEmployee.innerHTML = '<option value="">בחר עובד חדש</option>';
+                if (currentBusinessData && currentBusinessData.teamMembers) {
+                    currentBusinessData.teamMembers.forEach(employee => {
+                        if (employee.id !== apptData.teamMemberId) { // Exclude current employee
+                            const option = document.createElement('option');
+                            option.value = employee.id;
+                            option.textContent = employee.name;
+                            transferNewEmployee.appendChild(option);
+                        }
+                    });
+                }
+                // Pre-fill date/time with current appointment's, allow changing
+                transferNewDate.value = apptData.date;
+                transferNewTime.value = apptData.time;
+
+                showModal(transferAppointmentModal);
+            } catch (error) {
+                console.error("Error opening transfer appointment modal:", error);
+                alert('שגיאה בפתיחת חלון העברת תור: ' + (error.message || error));
+            }
+        }
+
+        transferAppointmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const apptId = transferAppointmentId.value;
+            const newEmployeeId = transferNewEmployee.value;
+            const newDate = transferNewDate.value;
+            const newTime = transferNewTime.value;
+
+            if (!newEmployeeId) {
+                alert("אנא בחר עובד חדש להעברת התור.");
+                return;
+            }
+
+            try {
+                const originalApptDoc = await db.collection("appointments").doc(apptId).get();
+                const originalApptData = originalApptDoc.data();
+
+                const newEmployee = currentBusinessData.teamMembers.find(tm => tm.id === newEmployeeId);
+                if (!newEmployee) {
+                    alert("העובד החדש שנבחר אינו קיים.");
+                    return;
+                }
+
+                // Check availability of the new employee for the service at the new time
+                const isAvailable = await checkEmployeeAvailability(newEmployeeId, originalApptData.serviceId, newDate, newTime, apptId);
+                if (!isAvailable) {
+                    alert(`העובד/ת ${newEmployee.name} אינו זמין בתאריך ${newDate} בשעה ${newTime} עבור שירות ${originalApptData.serviceName}.`);
+                    return;
+                }
+
+                // Update the appointment
+                await db.collection("appointments").doc(apptId).update({
+                    teamMemberId: newEmployeeId,
+                    teamMemberName: newEmployee.name,
+                    date: newDate,
+                    time: newTime,
+                    status: 'pending', // Reset status to pending for re-confirmation
+                    transferredFrom: originalApptData.teamMemberId,
+                    transferredAt: new Date().toISOString()
+                });
+
+                alert('בקשת העברת תור נשלחה בהצלחה!');
+                hideModal(transferAppointmentModal);
+                loadEmployeeAppointmentsAndStatus(); // Refresh employee's view
+                loadAppointments(); // Refresh manager's view
+            } catch (error) {
+                console.error("Error transferring appointment:", error);
+                alert('שגיאה בהעברת התור: ' + (error.message || error));
+            }
+        });
+
+        document.querySelectorAll('.close-transfer-appointment-modal').forEach(btn => {
+            btn.addEventListener('click', () => hideModal(transferAppointmentModal));
+        });
+        transferAppointmentModal.addEventListener('click', (e) => {
+            if (e.target === transferAppointmentModal) hideModal(transferAppointmentModal);
+        });
+
+        async function checkEmployeeAvailability(employeeId, serviceId, date, time, excludeAppointmentId = null) {
+            // This is a simplified availability check.
+            // A robust system would check:
+            // 1. Employee's specific work hours for the day
+            // 2. Business general work hours for the day
+            // 3. Employee's approved full-day absences
+            // 4. Business-wide closures
+            // 5. Employee's approved hourly absences
+            // 6. Existing appointments for that employee/time slot
+
+            const service = currentBusinessData.services.find(s => s.id === serviceId);
+            if (!service) return false; // Service not found
+
+            const employee = currentBusinessData.teamMembers.find(tm => tm.id === employeeId);
+            if (!employee) return false; // Employee not found
+
+            const apptDuration = service.duration || currentBusinessData.appointmentDuration || 30;
+            const apptStart = new Date(`${date}T${time}`);
+            const apptEnd = new Date(apptStart.getTime() + apptDuration * 60 * 1000);
+
+            const dayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+            const dayOfWeek = dayNames[apptStart.getDay()];
+
+            // 1. Check if employee works on this day (considering personal overrides)
+            let employeeIsWorkingToday = false;
+            let employeeOpenTime = currentBusinessData.openTime;
+            let employeeCloseTime = currentBusinessData.closeTime;
+
+            if (employee.workHours && employee.workHours[dayOfWeek]) {
+                employeeIsWorkingToday = employee.workHours[dayOfWeek].isWorking;
+                employeeOpenTime = employee.workHours[dayOfWeek].openTime || employeeOpenTime;
+                employeeCloseTime = employee.workHours[dayOfWeek].closeTime || employeeCloseTime;
+            } else {
+                employeeIsWorkingToday = currentBusinessData.workDays.includes(dayOfWeek);
+            }
+
+            if (!employeeIsWorkingToday) return false;
+
+            const employeeWorkStart = new Date(`${date}T${employeeOpenTime}`);
+            const employeeWorkEnd = new Date(`${date}T${employeeCloseTime}`);
+
+            if (apptStart < employeeWorkStart || apptEnd > employeeWorkEnd) return false; // Outside employee's work hours
+
+            // 2. Check for business-wide closures
+            const isBusinessClosed = currentBusinessData.unavailableDates.some(range => {
+                const start = new Date(range.startDate);
+                const end = new Date(range.endDate);
+                start.setHours(0,0,0,0); end.setHours(0,0,0,0);
+                return apptStart >= start && apptStart <= end;
+            });
+            if (isBusinessClosed) return false;
+
+            // 3. Check for employee's approved full-day absences (fetch from user doc)
+            const employeeUserDoc = await db.collection("users").doc(employeeId).get();
+            const employeeApprovedAbsences = employeeUserDoc.exists ? (employeeUserDoc.data().approvedAbsences || []) : [];
+            const isEmployeeAbsentFullDay = employeeApprovedAbsences.some(abs => abs.date === date && abs.type === 'fullDay');
+            if (isEmployeeAbsentFullDay) return false;
+
+            // 4. Check for employee's approved hourly absences (from business.unavailableHours)
+            const isEmployeeAbsentHourly = (currentBusinessData.unavailableHours || []).some(uh => {
+                return uh.date === date && uh.employeeId === employeeId &&
+                       time >= uh.startTime && time < uh.endTime; // Check if appt time falls within hourly absence
+            });
+            if (isEmployeeAbsentHourly) return false;
+
+            // 5. Check for existing appointments for this employee at this time
+            const existingAppointmentsQuery = db.collection("appointments")
+                .where("businessId", "==", currentBusinessId)
+                .where("teamMemberId", "==", employeeId)
+                .where("date", "==", date)
+                .where("status", "in", ["pending", "confirmed"]);
+            
+            const existingAppointmentsSnapshot = await existingAppointmentsQuery.get();
+            const hasConflict = existingAppointmentsSnapshot.docs.some(doc => {
+                if (excludeAppointmentId && doc.id === excludeAppointmentId) return false; // Exclude the appointment being edited/transferred
+
+                const existingAppt = doc.data();
+                const existingApptStart = new Date(`${existingAppt.date}T${existingAppt.time}`);
+                const existingService = currentBusinessData.services.find(s => s.id === existingAppt.serviceId);
+                const existingApptDuration = existingService ? existingService.duration : (currentBusinessData.appointmentDuration || 30);
+                const existingApptEnd = new Date(existingApptStart.getTime() + existingApptDuration * 60 * 1000);
+
+                // Check for overlap
+                return (apptStart < existingApptEnd && apptEnd > existingApptStart);
+            });
+
+            return !hasConflict;
+        }
+
+
+        // --- Employee Hours Management Section Logic ---
+        generateHoursReportBtn.addEventListener('click', loadEmployeeHoursSummary);
+
+        async function loadEmployeeHoursSummary() {
+            if (!currentBusinessId) {
+                employeeHoursSummaryList.innerHTML = '<p style="text-align: center; color: #888;">אין נתוני עסק.</p>';
+                return;
+            }
+
+            const selectedMonth = hoursMonthSelect.value; // YYYY-MM
+            if (!selectedMonth) {
+                alert("אנא בחר חודש.");
+                return;
+            }
+
+            const [year, month] = selectedMonth.split('-').map(Number);
+            const startDate = new Date(year, month - 1, 1); // Month is 0-indexed in JS
+            const endDate = new Date(year, month, 0); // Last day of the month
+
+            selectedMonthDisplay.textContent = startDate.toLocaleDateString('he-IL', { month: 'long', year: 'numeric' });
+            employeeHoursSummaryList.innerHTML = '<p style="text-align: center; color: #888;">טוען דוח שעות...</p>';
+
+            try {
+                const employeeHours = new Map(); // Map: employeeId -> totalMinutes
+                const employeeNamesMap = new Map(); // Map: employeeId -> employeeName
+
+                currentBusinessData.teamMembers.forEach(member => {
+                    employeeHours.set(member.id, 0);
+                    employeeNamesMap.set(member.id, member.name);
+                });
+
+                // Fetch all clock-in/out entries for the business
+                const clockInsCollectionRef = db.collection("business_clock_ins").doc(currentBusinessId).collection("employees");
+                const clockInsSnapshot = await clockInsCollectionRef.get();
+
+                clockInsSnapshot.forEach(doc => {
+                    const employeeId = doc.id;
+                    const entries = doc.data().entries || [];
+
+                    entries.forEach(entry => {
+                        const entryDate = new Date(entry.date); // YYYY-MM-DD
+                        if (entryDate >= startDate && entryDate <= endDate && entry.clockInTime && entry.clockOutTime) {
+                            const inTime = new Date(`${entry.date}T${entry.clockInTime}`);
+                            const outTime = new Date(`${entry.date}T${entry.clockOutTime}`);
+                            const durationMinutes = Math.round((outTime - inTime) / (1000 * 60));
+                            if (employeeHours.has(employeeId)) {
+                                employeeHours.set(employeeId, employeeHours.get(employeeId) + durationMinutes);
+                            }
+                        }
+                    });
+                });
+
+                employeeHoursSummaryList.innerHTML = '';
+                if (employeeHours.size === 0) {
+                    employeeHoursSummaryList.innerHTML = '<p style="text-align: center; color: #888;">לא נמצאו נתוני שעות עבור חודש זה.</p>';
+                    return;
+                }
+
+                employeeHours.forEach((totalMinutes, employeeId) => {
+                    const employeeName = employeeNamesMap.get(employeeId) || 'עובד לא ידוע';
+                    const hours = Math.floor(totalMinutes / 60);
+                    const minutes = totalMinutes % 60;
+
+                    const div = document.createElement('div');
+                    div.className = 'employee-entry';
+                    div.innerHTML = `
+                        <strong>${employeeName}:</strong>
+                        <span>${hours} שעות ו-${minutes} דקות</span>
+                    `;
+                    employeeHoursSummaryList.appendChild(div);
+                });
+
+            } catch (error) {
+                console.error("Error loading employee hours summary:", error);
+                employeeHoursSummaryList.innerHTML = `<p style="text-align: center; color: red;">שגיאה בטעינת דוח שעות: ${error.message}</p>`;
+            }
+        }
 
 
         // --- General Functions ---
@@ -3844,6 +4441,11 @@
         // Initial loading of the app
         document.addEventListener('DOMContentLoaded', () => {
             showLoading(); // Show loading screen initially
+            // Set default month for employee hours report to current month
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            hoursMonthSelect.value = `${year}-${month}`;
         });
 
     </script>
