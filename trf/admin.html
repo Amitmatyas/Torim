@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת זימון תורים - פאנל ניהול</title>
+    <title>Torim</title>
+    <!-- Favicon using your logo -->
+    <link rel="icon" href="https://i.postimg.cc/mkLjSCzL/9.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         /* CSS Variables for Brand Colors */
@@ -698,11 +700,13 @@
 </head>
 <body>
 
+    <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
-        <img src="https://i.postimg.cc/JDFjry5v/logo.png" alt="לוגו המערכת">
+        <img src="https://i.postimg.cc/mkLjSCzL/9.png" alt="לוגו המערכת">
         <p>טוען את לוח הבקרה...</p>
     </div>
 
+    <!-- Login Modal - Always shown first if not authenticated -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content">
             <h2>התחברות למנהלים</h2>
@@ -717,6 +721,7 @@
         </div>
     </div>
 
+    <!-- Register Modal - For new businesses / managers -->
     <div class="modal-overlay" id="registerModal">
         <div class="modal-content">
             <button class="modal-close-btn close-auth-modal">&times;</button>
@@ -746,10 +751,12 @@
         </div>
     </div>
 
+    <!-- Admin Dashboard Layout -->
     <div class="admin-dashboard-layout" id="adminDashboardLayout" style="display: none;">
+        <!-- Side Menu -->
         <aside class="side-menu">
             <div class="logo">
-                <img src="https://i.postimg.cc/JDFjry5v/logo.png" alt="לוגו המערכת">
+                <img src="https://i.postimg.cc/mkLjSCzL/9.png" alt="לוגו המערכת">
             </div>
             <nav>
                 <ul>
@@ -769,12 +776,14 @@
             </div>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
             <div class="dashboard-header">
                 <h1 id="businessDashboardTitle"></h1>
                 <p class="welcome-message" id="welcomeMessage"></p>
             </div>
 
+            <!-- Dashboard Section -->
             <section id="dashboardSection" class="content-section">
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -803,12 +812,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            </tbody>
+                            <!-- Appointments will be loaded here -->
+                        </tbody>
                     </table>
                     <p id="noTodaysAppointments" style="text-align: center; color: #888; display: none;">אין תורים להיום.</p>
                 </div>
             </section>
 
+            <!-- Employees Section -->
             <section id="employeesSection" class="content-section" style="display: none;">
                 <div class="form-section">
                     <h2>הוספת עובד חדש</h2>
@@ -841,10 +852,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            </tbody>
+                            <!-- Employees will be loaded here -->
+                        </tbody>
                     </table>
                     <p id="noEmployees" style="text-align: center; color: #888; display: none;">אין עובדים רשומים.</p>
                 </div>
+                <!-- Employee Details Modal -->
                 <div class="modal-overlay" id="employeeDetailsModal">
                     <div class="modal-content">
                         <button class="modal-close-btn close-employee-modal">&times;</button>
@@ -852,12 +865,14 @@
                         <div class="employee-details-card">
                             <h3>פרטי עובד</h3>
                             <p><strong>אימייל:</strong> <span id="employeeDetailEmail"></span></p>
-                            </div>
+                            <!-- Add more employee details here if needed -->
+                        </div>
 
                         <div class="form-section employee-service-assignment">
                             <h3>שירותים שמבוצעים על ידי עובד זה</h3>
                             <div id="employeeServicesCheckboxes" class="checkbox-group">
-                                </div>
+                                <!-- Services will be loaded here -->
+                            </div>
                             <button class="primary" id="saveEmployeeServices">שמור שירותים</button>
                         </div>
 
@@ -865,13 +880,15 @@
                             <h3>ניהול זמינות אישית</h3>
                             <p style="font-size:0.9em; color:#777;">שעות אלה ידרסו את שעות העסק הרגילות עבור עובד זה.</p>
                             <form id="employeeAvailabilityForm">
-                                </form>
+                                <!-- Day hours will be loaded here -->
+                            </form>
                             <button class="primary" id="saveEmployeeAvailability">שמור זמינות</button>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- Services Section -->
             <section id="servicesSection" class="content-section" style="display: none;">
                 <div class="form-section service-form">
                     <h2>הוספת שירות חדש</h2>
@@ -895,7 +912,8 @@
                         <div class="form-group">
                             <label>עובדים המבצעים שירות זה:</label>
                             <div id="serviceEmployeesCheckboxes" class="checkbox-group">
-                                </div>
+                                <!-- Employees will be loaded here -->
+                            </div>
                         </div>
                         <div class="form-buttons">
                             <button type="submit" class="primary">הוסף שירות</button>
@@ -915,12 +933,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            </tbody>
+                            <!-- Services will be loaded here -->
+                        </tbody>
                     </table>
                     <p id="noServices" style="text-align: center; color: #888; display: none;">אין שירותים מוגדרים.</p>
                 </div>
             </section>
 
+            <!-- Business Hours Section -->
             <section id="businessHoursSection" class="content-section" style="display: none;">
                 <div class="form-section">
                     <h2>שעות פעילות קבועות לעסק</h2>
@@ -934,6 +954,7 @@
                             <label for="timeBetweenAppointments">זמן הספקה בין תורים (דקות):</label>
                             <input type="number" id="timeBetweenAppointments" min="0" value="0" required>
                         </div>
+                        <!-- Breaks mechanism requires more complex UI/logic, added conceptually here -->
                         <div class="form-group">
                             <label for="breakFrequency">הפסקות קבועות:</label>
                             <input type="number" id="breakFrequency" min="0" value="0" placeholder="כל X תורים" style="width: calc(50% - 5px); display: inline-block;">
@@ -942,7 +963,8 @@
                         </div>
 
                         <div id="dailyBusinessHours">
-                            </div>
+                            <!-- Daily hours will be loaded here -->
+                        </div>
                         <div class="form-buttons">
                             <button type="submit" class="primary">שמור שעות פעילות</button>
                         </div>
@@ -950,16 +972,19 @@
                 </div>
             </section>
 
+            <!-- Appointments Section -->
             <section id="appointmentsSection" class="content-section" style="display: none;">
                 <div class="form-section">
                     <h2>ניהול תורים</h2>
                     <div class="appointments-filters">
                         <select id="appointmentFilterEmployee">
                             <option value="">כל העובדים</option>
-                            </select>
+                            <!-- Employees will be loaded -->
+                        </select>
                         <select id="appointmentFilterService">
                             <option value="">כל השירותים</option>
-                            </select>
+                            <!-- Services will be loaded -->
+                        </select>
                         <input type="date" id="appointmentFilterDate">
                         <button class="primary" id="filterAppointmentsBtn">סנן</button>
                     </div>
@@ -978,13 +1003,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                </tbody>
+                                <!-- Appointments will be loaded here -->
+                            </tbody>
                         </table>
                         <p id="noAppointments" style="text-align: center; color: #888; display: none;">לא נמצאו תורים.</p>
                     </div>
                 </div>
             </section>
 
+            <!-- Clients Section -->
             <section id="clientsSection" class="content-section" style="display: none;">
                 <div class="form-section">
                     <h2>רשימת לקוחות</h2>
@@ -1001,11 +1028,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                </tbody>
+                                <!-- Clients will be loaded here -->
+                            </tbody>
                         </table>
                         <p id="noClients" style="text-align: center; color: #888; display: none;">אין לקוחות רשומים.</p>
                     </div>
                 </div>
+                <!-- Client Details Modal -->
                 <div class="modal-overlay" id="clientDetailsModal">
                     <div class="modal-content">
                         <button class="modal-close-btn close-client-modal">&times;</button>
@@ -1014,17 +1043,20 @@
                             <h3>פרטי לקוח</h3>
                             <p><strong>אימייל:</strong> <span id="clientDetailEmail"></span></p>
                             <p><strong>טלפון:</strong> <span id="clientDetailPhone"></span></p>
-                            </div>
+                            <!-- Add more client details here if needed -->
+                        </div>
                         <div class="data-table-container">
                             <h3>היסטוריית תורים</h3>
                             <ul class="client-history-list" id="clientAppointmentsHistory">
-                                </ul>
+                                <!-- Client's past appointments will be listed here -->
+                            </ul>
                             <p id="noClientAppointments" style="text-align: center; color: #888; display: none;">ללקוח זה אין היסטוריית תורים.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- Absences Section -->
             <section id="absencesSection" class="content-section" style="display: none;">
                 <div class="form-section">
                     <h2>השבתות וחופשות</h2>
@@ -1049,14 +1081,17 @@
                     <h3 style="margin-top: 30px;">בקשות חופשה של עובדים</h3>
                     <div id="employeeAbsenceRequests">
                         <p id="noAbsenceRequests" style="text-align: center; color: #888; display: none;">אין בקשות חופשה חדשות.</p>
-                        </div>
+                        <!-- Employee absence requests will be loaded here -->
+                    </div>
 
                     <h3 style="margin-top: 30px;">יומן חופשות מאושרות</h3>
                     <div class="absence-calendar" id="approvedAbsencesCalendar">
-                        </div>
+                        <!-- Calendar will be generated here -->
+                    </div>
                 </div>
             </section>
 
+            <!-- Statistics Section -->
             <section id="statsSection" class="content-section" style="display: none;">
                 <div class="form-section">
                     <h2>סטטיסטיקות ודוחות</h2>
@@ -1069,6 +1104,7 @@
                     </div>
                     <button class="primary" id="generateStatsBtn">הצג דוח</button>
                     <div id="revenueChartContainer" style="margin-top: 20px;">
+                        <!-- Chart will be rendered here -->
                         <canvas id="revenueChart"></canvas>
                         <p id="totalRevenueDisplay" style="text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 15px;"></p>
                     </div>
@@ -1095,6 +1131,7 @@
                 </div>
             </section>
 
+            <!-- Clock-in/Clock-out Section -->
             <section id="clockSection" class="content-section" style="display: none;">
                 <div class="form-section clock-in-section">
                     <h2>שעון נוכחות - <span id="employeeClockName"></span></h2>
@@ -1123,7 +1160,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                </tbody>
+                                <!-- Employee's appointments will be loaded here -->
+                            </tbody>
                         </table>
                         <p id="noEmployeeAppointments" style="text-align: center; color: #888; display: none;">אין תורים קבועים לך.</p>
                     </div>
@@ -1154,7 +1192,8 @@
                     <div id="pendingAbsenceRequests">
                         <h4 style="margin-top: 20px;">בקשות ממתינות/מאושרות:</h4>
                         <p id="noPendingAbsences" style="text-align: center; color: #888; display: none;">אין בקשות חופשה ממתינות/מאושרות.</p>
-                        </div>
+                        <!-- Pending/Approved absences will be listed here -->
+                    </div>
 
                     <h3 style="margin-top: 30px;">בלת"מים / עדכונים בזמן אמת</h3>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
@@ -1167,17 +1206,18 @@
         </main>
     </div>
 
-    <script type="module">
-        // Firebase Configuration
-        import { initializeApp } from "firebase/app";
-        import { getAnalytics } from "firebase/analytics";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, setDoc } from "firebase/firestore";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+    <!-- Firebase SDKs - MUST be loaded before your custom script -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <!-- Optional: For Chart.js for statistics (add this if you want charts) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-        // Optional: For Chart.js for statistics (add <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> to head)
-        import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.esm.js';
 
+    <script type="text/javascript">
+        // Firebase Configuration (from your provided snippet)
         const firebaseConfig = {
             apiKey: "AIzaSyB9Yx45QdVZpk6qfscw-buJYnXxEYziQII",
             authDomain: "torim-titus.firebaseapp.com",
@@ -1188,11 +1228,12 @@
             measurementId: "G-ENR1E8JXN7"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app); // eslint-disable-line no-unused-vars
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics(); // eslint-disable-line no-unused-vars
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
 
         // Global Variables
         let currentBusinessId = null;
@@ -1314,7 +1355,7 @@
         let reviewsSummaryChartInstance = null;
 
 
-        // Clock section
+        // Clock-in/Clock-out section
         const employeeClockName = document.getElementById('employeeClockName');
         const clockStatus = document.getElementById('clockStatus');
         const clockInBtn = document.getElementById('clockInBtn');
@@ -1356,15 +1397,15 @@
         }
 
         // --- Authentication & Initialization ---
-        onAuthStateChanged(auth, async (user) => {
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentManagerUser = user;
                 welcomeMessage.textContent = `שלום, ${user.email}`; // Fallback, will update with business/manager name
 
                 // Try to fetch business data associated with this user
-                const businessesRef = collection(db, "businesses");
-                const q = query(businessesRef, where("managerUid", "==", user.uid));
-                const querySnapshot = await getDocs(q);
+                const businessesRef = db.collection("businesses");
+                const q = businessesRef.where("managerUid", "==", user.uid);
+                const querySnapshot = await q.get();
 
                 if (!querySnapshot.empty) {
                     currentBusinessId = querySnapshot.docs[0].id;
@@ -1440,7 +1481,7 @@
             const password = loginForm.loginPassword.value;
             showLoading();
             try {
-                await signInWithEmailAndPassword(auth, email, password);
+                await auth.signInWithEmailAndPassword(email, password);
                 // Auth state listener handles redirect/display
             } catch (error) {
                 alert('שגיאת התחברות: ' + error.message);
@@ -1478,25 +1519,25 @@
             }
 
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, managerEmail, managerPassword);
+                const userCredential = await auth.createUserWithEmailAndPassword(managerEmail, managerPassword);
                 const managerUid = userCredential.user.uid;
 
                 let logoUrl = '';
                 if (logoFile) {
-                    const logoRef = ref(storage, `business_logos/${managerUid}/${logoFile.name}`);
-                    await uploadBytes(logoRef, logoFile);
-                    logoUrl = await getDownloadURL(logoRef);
+                    const logoRef = storage.ref(`business_logos/${managerUid}/${logoFile.name}`);
+                    await logoRef.put(logoFile);
+                    logoUrl = await logoRef.getDownloadURL();
                 }
 
                 let imageUrls = [];
                 for (const file of imageFiles) {
-                    const imageRef = ref(storage, `business_images/${managerUid}/${file.name}`);
-                    await uploadBytes(imageRef, file);
-                    imageUrls.push(await getDownloadURL(imageRef));
+                    const imageRef = storage.ref(`business_images/${managerUid}/${file.name}`);
+                    await imageRef.put(file);
+                    imageUrls.push(await imageRef.getDownloadURL());
                 }
 
-                const newBusinessRef = doc(collection(db, "businesses"));
-                await setDoc(newBusinessRef, {
+                const newBusinessRef = db.collection("businesses").doc(); // Generate unique ID
+                await newBusinessRef.set({
                     name: businessName,
                     type: businessType,
                     address: businessAddress,
@@ -1521,7 +1562,7 @@
                 });
 
                 // Update manager's user document with business ID (optional, but good for quick lookup)
-                await setDoc(doc(db, "users", managerUid), {
+                await db.collection("users").doc(managerUid).set({
                     businessId: newBusinessRef.id,
                     fullName: managerFullName,
                     email: managerEmail,
@@ -1542,7 +1583,7 @@
         logoutBtn.addEventListener('click', async () => {
             showLoading();
             try {
-                await signOut(auth);
+                await auth.signOut();
                 alert("התנתקת בהצלחה.");
                 // Auth state listener handles display
             } catch (error) {
@@ -1574,13 +1615,12 @@
             const tomorrow = new Date(today);
             tomorrow.setDate(today.getDate() + 1);
 
-            const todaysAppointmentsQuery = query(
-                collection(db, "appointments"),
-                where("businessId", "==", currentBusinessId),
-                where("date", "==", today.toISOString().split('T')[0])
+            const todaysAppointmentsQuery = db.collection("appointments")
+                .where("businessId", "==", currentBusinessId)
+                .where("date", "==", today.toISOString().split('T')[0]);
                 // Add more complex date range query if needed
-            );
-            const todaysAppointmentsSnapshot = await getDocs(todaysAppointmentsQuery);
+            
+            const todaysAppointmentsSnapshot = await todaysAppointmentsQuery.get();
             let todaysAppointments = [];
             let upcomingCount = 0; // for current and future appointments
             todaysAppointmentsSnapshot.forEach(doc => {
@@ -1637,19 +1677,18 @@
             dailyRevenue.textContent = `${totalDailyRevenue.toFixed(2)} ₪`;
 
             // Fetch new reviews (e.g., from last 24 hours or just unread, simplified here)
-            const reviewsQuery = query(
-                collection(db, "reviews"),
-                where("businessId", "==", currentBusinessId)
+            const reviewsQuery = db.collection("reviews")
+                .where("businessId", "==", currentBusinessId);
                 // Add filter for "new" if a timestamp is stored for read/unread
-            );
-            const reviewsSnapshot = await getDocs(reviewsQuery);
+            
+            const reviewsSnapshot = await reviewsQuery.get();
             newReviewsCount.textContent = reviewsSnapshot.docs.length; // Count all for now
         }
 
         async function cancelAppointment(apptId) {
             if (confirm('האם אתה בטוח שברצונך לבטל תור זה?')) {
                 try {
-                    await updateDoc(doc(db, "appointments", apptId), {
+                    await db.collection("appointments").doc(apptId).update({
                         status: 'cancelled',
                         cancelledAt: new Date().toISOString()
                     });
@@ -1666,7 +1705,7 @@
         async function completeAppointment(apptId) {
             if (confirm('האם אתה בטוח שברצונך לסמן תור זה כהושלם?')) {
                 try {
-                    await updateDoc(doc(db, "appointments", apptId), {
+                    await db.collection("appointments").doc(apptId).update({
                         status: 'completed',
                         completedAt: new Date().toISOString()
                     });
@@ -1695,13 +1734,13 @@
 
             try {
                 // Create Firebase Auth user for employee
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const employeeUid = userCredential.user.uid;
 
                 // Add employee to business's teamMembers array
-                const businessRef = doc(db, "businesses", currentBusinessId);
-                await updateDoc(businessRef, {
-                    teamMembers: arrayUnion({
+                const businessRef = db.collection("businesses").doc(currentBusinessId);
+                await businessRef.update({
+                    teamMembers: firebase.firestore.FieldValue.arrayUnion({
                         id: employeeUid,
                         name: name,
                         email: email,
@@ -1711,11 +1750,11 @@
                 });
 
                 // Create a basic user document for the employee (optional, but good for general user management)
-                await setDoc(doc(db, "users", employeeUid), {
+                await db.collection("users").doc(employeeUid).set({
                     businessId: currentBusinessId,
                     fullName: name,
                     email: email,
-                    role: "employee",
+                    role: "employee", // Define user roles
                     createdAt: new Date().toISOString()
                 }, { merge: true });
 
@@ -1764,9 +1803,9 @@
                     // Remove from business teamMembers array
                     const employeeToDelete = currentBusinessData.teamMembers.find(e => e.id === employeeId);
                     if (employeeToDelete) {
-                        const businessRef = doc(db, "businesses", currentBusinessId);
-                        await updateDoc(businessRef, {
-                            teamMembers: arrayRemove(employeeToDelete)
+                        const businessRef = db.collection("businesses").doc(currentBusinessId);
+                        await businessRef.update({
+                            teamMembers: firebase.firestore.FieldValue.arrayRemove(employeeToDelete)
                         });
                         alert('עובד נמחק בהצלחה.');
                         await updateCurrentBusinessData(); // Refresh global business data
@@ -1840,9 +1879,9 @@
             if (!currentEmployeeIdForDetails || !currentBusinessId) return;
 
             try {
-                const businessRef = doc(db, "businesses", currentBusinessId);
+                const businessRef = db.collection("businesses").doc(currentBusinessId);
                 // Fetch current business data to ensure we have the latest services array
-                const businessDoc = await getDoc(businessRef);
+                const businessDoc = await businessRef.get();
                 let currentServices = businessDoc.data().services || [];
 
                 // Update assignedTeamMembers for each service based on checkboxes
@@ -1862,7 +1901,7 @@
                     }
                 });
 
-                await updateDoc(businessRef, { services: currentServices });
+                await businessRef.update({ services: currentServices });
                 alert("שירותי העובד עודכנו בהצלחה!");
                 await updateCurrentBusinessData(); // Refresh global business data
                 hideModal(employeeDetailsModal);
@@ -1877,8 +1916,8 @@
             if (!currentEmployeeIdForDetails || !currentBusinessId) return;
 
             try {
-                const businessRef = doc(db, "businesses", currentBusinessId);
-                const businessDoc = await getDoc(businessRef);
+                const businessRef = db.collection("businesses").doc(currentBusinessId);
+                const businessDoc = await businessRef.get();
                 let teamMembers = businessDoc.data().teamMembers || [];
 
                 const employeeIndex = teamMembers.findIndex(e => e.id === currentEmployeeIdForDetails);
@@ -1897,7 +1936,7 @@
                         };
                     });
                     teamMembers[employeeIndex].workHours = employeeWorkHours;
-                    await updateDoc(businessRef, { teamMembers: teamMembers });
+                    await businessRef.update({ teamMembers: teamMembers });
                     alert("זמינות העובד עודכנה בהצלחה!");
                     await updateCurrentBusinessData(); // Refresh global business data
                     hideModal(employeeDetailsModal);
@@ -1929,11 +1968,11 @@
                                             .map(checkbox => checkbox.value);
 
             try {
-                const businessRef = doc(db, "businesses", currentBusinessId);
-                const newServiceId = doc(collection(db, "businesses", currentBusinessId, "services")).id; // Generate unique ID
+                const businessRef = db.collection("businesses").doc(currentBusinessId);
+                const newServiceId = db.collection("businesses").doc(currentBusinessId).collection("services").doc().id; // Generate unique ID
 
-                await updateDoc(businessRef, {
-                    services: arrayUnion({
+                await businessRef.update({
+                    services: firebase.firestore.FieldValue.arrayUnion({
                         id: newServiceId, // Assign a unique ID for the service
                         name: name,
                         description: description,
@@ -1995,9 +2034,9 @@
                 try {
                     const serviceToDelete = currentBusinessData.services.find(s => s.id === serviceId);
                     if (serviceToDelete) {
-                        const businessRef = doc(db, "businesses", currentBusinessId);
-                        await updateDoc(businessRef, {
-                            services: arrayRemove(serviceToDelete)
+                        const businessRef = db.collection("businesses").doc(currentBusinessId);
+                        await businessRef.update({
+                            services: firebase.firestore.FieldValue.arrayRemove(serviceToDelete)
                         });
                         alert('שירות נמחק בהצלחה.');
                         await updateCurrentBusinessData(); // Refresh global business data
@@ -2033,8 +2072,8 @@
                                                         .map(checkbox => checkbox.value);
 
                 try {
-                    const businessRef = doc(db, "businesses", currentBusinessId);
-                    const businessDoc = await getDoc(businessRef);
+                    const businessRef = db.collection("businesses").doc(currentBusinessId);
+                    const businessDoc = await businessRef.get();
                     let currentServices = businessDoc.data().services || [];
 
                     const serviceIndex = currentServices.findIndex(s => s.id === service.id);
@@ -2047,7 +2086,7 @@
                             duration: updatedDuration,
                             assignedTeamMembers: updatedAssignedTeamMembers
                         };
-                        await updateDoc(businessRef, { services: currentServices });
+                        await businessRef.update({ services: currentServices });
                         alert('שירות עודכן בהצלחה!');
                         addServiceForm.reset();
                         addServiceForm.onsubmit = addServiceFormDefaultSubmit; // Revert to default add
@@ -2135,8 +2174,8 @@
             const durBreak = parseInt(breakDuration.value);
 
             try {
-                const businessRef = doc(db, "businesses", currentBusinessId);
-                await updateDoc(businessRef, {
+                const businessRef = db.collection("businesses").doc(currentBusinessId);
+                await businessRef.update({
                     workDays: updatedWorkDays,
                     openTime: generalOpenTime,
                     closeTime: generalCloseTime,
@@ -2186,24 +2225,24 @@
             appointmentsTable.innerHTML = '';
             noAppointments.style.display = 'block';
 
-            let q = query(collection(db, "appointments"), where("businessId", "==", currentBusinessId));
+            let q = db.collection("appointments").where("businessId", "==", currentBusinessId);
 
             const filterEmployeeId = appointmentFilterEmployee.value;
             const filterServiceId = appointmentFilterService.value;
             const filterDate = appointmentFilterDate.value;
 
             if (filterEmployeeId) {
-                q = query(q, where("teamMemberId", "==", filterEmployeeId));
+                q = q.where("teamMemberId", "==", filterEmployeeId);
             }
             if (filterServiceId) {
-                q = query(q, where("serviceId", "==", filterServiceId));
+                q = q.where("serviceId", "==", filterServiceId);
             }
             if (filterDate) {
-                q = query(q, where("date", "==", filterDate));
+                q = q.where("date", "==", filterDate);
             }
 
             try {
-                const querySnapshot = await getDocs(q);
+                const querySnapshot = await q.get();
                 let appointments = [];
                 querySnapshot.forEach(doc => {
                     appointments.push({ id: doc.id, ...doc.data() });
@@ -2258,7 +2297,7 @@
         async function deleteAppointmentPermanently(apptId) {
             if (confirm('האם אתה בטוח שברצונך למחוק תור זה לצמיתות?')) {
                 try {
-                    await deleteDoc(doc(db, "appointments", apptId));
+                    await db.collection("appointments").doc(apptId).delete();
                     alert('התור נמחק לצמיתות.');
                     loadAppointments(); // Refresh list
                     loadDashboardData(); // Refresh dashboard
@@ -2271,7 +2310,7 @@
 
         async function updateAppointmentStatus(apptId, newStatus) {
             try {
-                await updateDoc(doc(db, "appointments", apptId), {
+                await db.collection("appointments").doc(apptId).update({
                     status: newStatus,
                     updatedAt: new Date().toISOString()
                 });
@@ -2298,11 +2337,10 @@
             let clientsMap = new Map(); // Use map to store unique clients and their appointment count
 
             try {
-                const q = query(
-                    collection(db, "appointments"),
-                    where("businessId", "==", currentBusinessId)
-                );
-                const querySnapshot = await getDocs(q);
+                const q = db.collection("appointments")
+                    .where("businessId", "==", currentBusinessId);
+                
+                const querySnapshot = await q.get();
 
                 querySnapshot.forEach(docSnap => {
                     const appt = docSnap.data();
@@ -2369,12 +2407,11 @@
             noClientAppointments.style.display = 'block';
 
             try {
-                const q = query(
-                    collection(db, "appointments"),
-                    where("businessId", "==", currentBusinessId),
-                    where("userId", "==", client.id)
-                );
-                const querySnapshot = await getDocs(q);
+                const q = db.collection("appointments")
+                    .where("businessId", "==", currentBusinessId)
+                    .where("userId", "==", client.id);
+                
+                const querySnapshot = await q.get();
 
                 if (querySnapshot.empty) {
                     clientAppointmentsHistory.innerHTML = '';
@@ -2427,9 +2464,9 @@
             }
 
             try {
-                const businessRef = doc(db, "businesses", currentBusinessId);
-                await updateDoc(businessRef, {
-                    unavailableDates: arrayUnion({
+                const businessRef = db.collection("businesses").doc(currentBusinessId);
+                await businessRef.update({
+                    unavailableDates: firebase.firestore.FieldValue.arrayUnion({
                         reason: reason,
                         startDate: startDate,
                         endDate: endDate,
@@ -2459,12 +2496,11 @@
             noAbsenceRequests.style.display = 'block';
 
             try {
-                const q = query(
-                    collection(db, "absence_requests"),
-                    where("businessId", "==", currentBusinessId),
-                    where("status", "==", "pending") // Only show pending requests
-                );
-                const querySnapshot = await getDocs(q);
+                const q = db.collection("absence_requests")
+                    .where("businessId", "==", currentBusinessId)
+                    .where("status", "==", "pending"); // Only show pending requests
+                
+                const querySnapshot = await q.get();
 
                 if (querySnapshot.empty) {
                     employeeAbsenceRequests.innerHTML = '';
@@ -2507,18 +2543,18 @@
 
         async function approveAbsenceRequest(requestId, requestData) {
             try {
-                const requestRef = doc(db, "absence_requests", requestId);
-                await updateDoc(requestRef, { status: 'approved', approvedAt: new Date().toISOString() });
+                const requestRef = db.collection("absence_requests").doc(requestId);
+                await requestRef.update({ status: 'approved', approvedAt: new Date().toISOString() });
 
                 // Add to business unavailableDates or update employee workHours based on request type
-                const businessRef = doc(db, "businesses", currentBusinessId);
-                const businessDoc = await getDoc(businessRef);
+                const businessRef = db.collection("businesses").doc(currentBusinessId);
+                const businessDoc = await businessRef.get();
                 const currentTeamMembers = businessDoc.data().teamMembers || [];
 
                 if (requestData.type === 'fullDay') {
                     // Option 1: Add to business's general unavailable dates (affects all)
-                    // await updateDoc(businessRef, {
-                    //     unavailableDates: arrayUnion({
+                    // await businessRef.update({
+                    //     unavailableDates: firebase.firestore.FieldValue.arrayUnion({
                     //         startDate: requestData.date,
                     //         endDate: requestData.date,
                     //         reason: requestData.reason,
@@ -2537,14 +2573,14 @@
                             [dayName]: { isWorking: false, openTime: '', closeTime: '' } // Mark as not working for that specific day
                         };
                         currentTeamMembers[employeeIndex].workHours = updatedWorkHours;
-                        await updateDoc(businessRef, { teamMembers: currentTeamMembers });
+                        await businessRef.update({ teamMembers: currentTeamMembers });
                     }
 
                 } else if (requestData.type === 'specificHours') {
                     // Add to business's unavailableHours for specific employee on specific date
                     // This is for blocking specific slots *within* a working day
-                    await updateDoc(businessRef, {
-                        unavailableHours: arrayUnion({
+                    await businessRef.update({
+                        unavailableHours: firebase.firestore.FieldValue.arrayUnion({
                             date: requestData.date,
                             startTime: requestData.startTime,
                             endTime: requestData.endTime,
@@ -2567,8 +2603,8 @@
         async function rejectAbsenceRequest(requestId) {
             if (confirm('האם אתה בטוח שברצונך לדחות בקשת חופשה זו?')) {
                 try {
-                    const requestRef = doc(db, "absence_requests", requestId);
-                    await updateDoc(requestRef, { status: 'rejected', rejectedAt: new Date().toISOString() });
+                    const requestRef = db.collection("absence_requests").doc(requestId);
+                    await requestRef.update({ status: 'rejected', rejectedAt: new Date().toISOString() });
                     alert('בקשת חופשה נדחתה.');
                     loadEmployeeAbsenceRequests();
                 } catch (error) {
@@ -2616,7 +2652,7 @@
                 for (let day = 1; day <= numDays; day++) {
                     const cell = document.createElement('div');
                     const currentDate = new Date(currentYear, currentMonth + monthOffset, day);
-                    const formattedDate = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+                    const formattedDate = currentDate.toISOString().split('T')[0]; //YYYY-MM-DD
 
                     cell.innerHTML = `<span class="day-number">${day}</span>`;
                     if (currentDate.toDateString() === today.toDateString()) {
@@ -2681,23 +2717,21 @@
             }
 
             // Fetch all relevant appointments within the date range
-            const q = query(
-                collection(db, "appointments"),
-                where("businessId", "==", currentBusinessId),
-                where("date", ">=", startDate),
-                where("date", "<=", endDate)
-            );
-            const querySnapshot = await getDocs(q);
+            const q = db.collection("appointments")
+                .where("businessId", "==", currentBusinessId)
+                .where("date", ">=", startDate)
+                .where("date", "<=", endDate);
+            
+            const querySnapshot = await q.get();
             const allAppointmentsInRange = querySnapshot.docs.map(doc => doc.data());
 
             // Fetch all reviews within the date range
-            const reviewsQuery = query(
-                collection(db, "reviews"),
-                where("businessId", "==", currentBusinessId),
-                where("createdAt", ">=", new Date(startDate).toISOString()), // Assuming createdAt is ISO string
-                where("createdAt", "<=", new Date(endDate).toISOString())
-            );
-            const reviewsSnapshot = await getDocs(reviewsQuery);
+            const reviewsQuery = db.collection("reviews")
+                .where("businessId", "==", currentBusinessId)
+                .where("createdAt", ">=", new Date(startDate).toISOString()) // Assuming createdAt is ISO string
+                .where("createdAt", "<=", new Date(endDate).toISOString());
+            
+            const reviewsSnapshot = await reviewsQuery.get();
             const allReviewsInRange = reviewsSnapshot.docs.map(doc => doc.data());
 
             // 1. Revenue
@@ -2946,13 +2980,13 @@
                 return;
             }
 
-            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-            const clockEntryRef = doc(db, "business_clock_ins", currentBusinessId, "employees", currentEmployeeData.id);
+            const today = new Date().toISOString().split('T')[0]; //YYYY-MM-DD
+            const clockEntryRef = db.collection("business_clock_ins").doc(currentBusinessId).collection("employees").doc(currentEmployeeData.id);
 
             try {
-                const docSnap = await getDoc(clockEntryRef);
+                const docSnap = await clockEntryRef.get();
                 let currentEntry = null;
-                if (docSnap.exists() && docSnap.data().entries) {
+                if (docSnap.exists && docSnap.data().entries) {
                     currentEntry = docSnap.data().entries.find(entry => entry.date === today && !entry.clockOutTime);
                 }
 
@@ -3010,15 +3044,15 @@
             }
 
             try {
-                const clockEntryRef = doc(db, "business_clock_ins", currentBusinessId, "employees", currentEmployeeData.id);
-                const docSnap = await getDoc(clockEntryRef);
+                const clockEntryRef = db.collection("business_clock_ins").doc(currentBusinessId).collection("employees").doc(currentEmployeeData.id);
+                const docSnap = await clockEntryRef.get();
                 let entries = [];
-                if (docSnap.exists() && docSnap.data().entries) {
+                if (docSnap.exists && docSnap.data().entries) {
                     entries = docSnap.data().entries;
                 }
                 entries.push({ date: today, clockInTime: currentTime, clockOutTime: null });
 
-                await setDoc(clockEntryRef, { entries: entries }, { merge: true });
+                await clockEntryRef.set({ entries: entries }, { merge: true });
                 alert('נכנסת בהצלחה!');
                 await loadClockStatus();
             } catch (error) {
@@ -3035,8 +3069,8 @@
             const today = now.toISOString().split('T')[0];
 
             try {
-                const clockEntryRef = doc(db, "business_clock_ins", currentBusinessId, "employees", currentEmployeeData.id);
-                const docSnap = await getDoc(clockEntryRef);
+                const clockEntryRef = db.collection("business_clock_ins").doc(currentBusinessId).collection("employees").doc(currentEmployeeData.id);
+                const docSnap = await clockEntryRef.get();
                 let entries = docSnap.data().entries || [];
 
                 const currentEntryIndex = entries.findIndex(entry => entry.date === today && !entry.clockOutTime);
@@ -3049,7 +3083,7 @@
                     entries[currentEntryIndex].durationMinutes = Math.round(durationMs / (1000 * 60));
                 }
 
-                await setDoc(clockEntryRef, { entries: entries }, { merge: true });
+                await clockEntryRef.set({ entries: entries }, { merge: true });
                 alert('יצאת בהצלחה!');
                 await loadClockStatus();
                 clockOutTimeDisplay.style.display = 'block';
@@ -3075,14 +3109,13 @@
             const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
 
             try {
-                const qNext = query(
-                    collection(db, "appointments"),
-                    where("businessId", "==", currentBusinessId),
-                    where("teamMemberId", "==", currentEmployeeData.id),
-                    where("status", "==", "pending") // Only show pending/future
+                const qNext = db.collection("appointments")
+                    .where("businessId", "==", currentBusinessId)
+                    .where("teamMemberId", "==", currentEmployeeData.id)
+                    .where("status", "==", "pending"); // Only show pending/future
                     // Add orderBy and limit to get nearest future appointment
-                );
-                const nextAppointmentsSnapshot = await getDocs(qNext);
+                
+                const nextAppointmentsSnapshot = await qNext.get();
                 let upcomingAppts = [];
                 nextAppointmentsSnapshot.forEach(docSnap => {
                     const appt = docSnap.data();
@@ -3110,12 +3143,11 @@
                 myAppointmentsEmployeeTable.innerHTML = '';
                 noEmployeeAppointments.style.display = 'block';
 
-                const qAll = query(
-                    collection(db, "appointments"),
-                    where("businessId", "==", currentBusinessId),
-                    where("teamMemberId", "==", currentEmployeeData.id)
-                );
-                const allApptsSnapshot = await getDocs(qAll);
+                const qAll = db.collection("appointments")
+                    .where("businessId", "==", currentBusinessId)
+                    .where("teamMemberId", "==", currentEmployeeData.id);
+                
+                const allApptsSnapshot = await qAll.get();
                 const allEmployeeAppts = allApptsSnapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
 
                 if (allEmployeeAppts.length === 0) {
@@ -3195,7 +3227,7 @@
              }
 
             try {
-                await addDoc(collection(db, "absence_requests"), {
+                await db.collection("absence_requests").add({
                     businessId: currentBusinessId,
                     employeeId: currentEmployeeData.id,
                     employeeName: currentEmployeeData.name,
@@ -3223,12 +3255,11 @@
             if (!currentEmployeeData || !currentBusinessId) return;
 
             try {
-                const q = query(
-                    collection(db, "absence_requests"),
-                    where("businessId", "==", currentBusinessId),
-                    where("employeeId", "==", currentEmployeeData.id)
-                );
-                const querySnapshot = await getDocs(q);
+                const q = db.collection("absence_requests")
+                    .where("businessId", "==", currentBusinessId)
+                    .where("employeeId", "==", currentEmployeeData.id);
+                
+                const querySnapshot = await q.get();
 
                 if (querySnapshot.empty) {
                     pendingAbsenceRequests.innerHTML = '';
@@ -3287,9 +3318,9 @@
         // Helper to refresh currentBusinessData from Firestore
         async function updateCurrentBusinessData() {
             if (currentBusinessId) {
-                const businessDocRef = doc(db, "businesses", currentBusinessId);
-                const businessDocSnap = await getDoc(businessDocRef);
-                if (businessDocSnap.exists()) {
+                const businessDocRef = db.collection("businesses").doc(currentBusinessId);
+                const businessDocSnap = await businessDocRef.get();
+                if (businessDocSnap.exists) {
                     currentBusinessData = { id: businessDocSnap.id, ...businessDocSnap.data() };
                 } else {
                     console.error("Business data not found after refresh.");
