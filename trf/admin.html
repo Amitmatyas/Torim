@@ -625,6 +625,27 @@
             margin-top: 10px;
         }
 
+        /* Reviews Section */
+        .review-card {
+            background-color: var(--background-grey);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            text-align: right;
+        }
+        .review-card strong {
+            color: var(--primary-dark);
+        }
+        .review-card .rating {
+            color: gold; /* Or use a star icon font */
+            font-size: 1.2em;
+        }
+        .review-card p {
+            margin: 5px 0;
+        }
+
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .admin-dashboard-layout {
@@ -773,6 +794,7 @@
                     <li><a href="#" id="navClients">לקוחות</a></li>
                     <li><a href="#" id="navAbsences">השבתות וחופשות</a></li>
                     <li><a href="#" id="navStats">סטטיסטיקות</a></li>
+                    <li><a href="#" id="navReviews">ביקורות</a></li> <!-- New Reviews Nav Link -->
                     <li><a href="#" id="navClock">שעון נוכחות</a></li>
                 </ul>
             </nav>
@@ -1180,6 +1202,17 @@
                 </div>
             </section>
 
+            <!-- Reviews Section - New Section -->
+            <section id="reviewsSection" class="content-section" style="display: none;">
+                <div class="form-section">
+                    <h2>ביקורות לקוחות</h2>
+                    <div id="reviewsList">
+                        <p id="noReviews" style="text-align: center; color: #888; display: none;">אין ביקורות להצגה.</p>
+                        <!-- Reviews will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
             <!-- Clock-in/Clock-out Section -->
             <section id="clockSection" class="content-section" style="display: none;">
                 <div class="form-section clock-in-section">
@@ -1255,6 +1288,60 @@
         </main>
     </div>
 
+    <!-- Edit Appointment Modal -->
+    <div class="modal-overlay" id="editAppointmentModal">
+        <div class="modal-content">
+            <button class="modal-close-btn close-edit-appointment-modal">&times;</button>
+            <h2>עריכת תור</h2>
+            <form id="editAppointmentForm">
+                <input type="hidden" id="editAppointmentId">
+                <div class="form-group">
+                    <label for="editUserName">שם לקוח:</label>
+                    <input type="text" id="editUserName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserEmail">אימייל לקוח:</label>
+                    <input type="email" id="editUserEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserPhone">טלפון לקוח:</label>
+                    <input type="tel" id="editUserPhone">
+                </div>
+                <div class="form-group">
+                    <label for="editService">שירות:</label>
+                    <select id="editService" required>
+                        <!-- Services will be loaded here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editEmployee">עובד:</label>
+                    <select id="editEmployee" required>
+                        <!-- Employees will be loaded here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editDate">תאריך:</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTime">שעה:</label>
+                    <input type="time" id="editTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="editStatus">סטטוס:</label>
+                    <select id="editStatus">
+                        <option value="pending">ממתין</option>
+                        <option value="confirmed">אושר</option>
+                        <option value="completed">הושלם</option>
+                        <option value="cancelled">בוטל</option>
+                    </select>
+                </div>
+                <button type="submit" class="primary">שמור שינויים</button>
+            </form>
+        </div>
+    </div>
+
+
     <!-- Firebase SDKs - MUST be loaded before your custom script -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
@@ -1314,7 +1401,9 @@
         const navClients = document.getElementById('navClients');
         const navAbsences = document.getElementById('navAbsences');
         const navStats = document.getElementById('navStats');
+        const navReviews = document.getElementById('navReviews'); // New Reviews Nav Link
         const navClock = document.getElementById('navClock');
+
 
         // Content Sections
         const dashboardSection = document.getElementById('dashboardSection');
@@ -1326,6 +1415,7 @@
         const clientsSection = document.getElementById('clientsSection');
         const absencesSection = document.getElementById('absencesSection');
         const statsSection = document.getElementById('statsSection');
+        const reviewsSection = document.getElementById('reviewsSection'); // New Reviews Section
         const clockSection = document.getElementById('clockSection');
 
         // Dashboard elements
@@ -1418,6 +1508,9 @@
         let peakHoursChartInstance = null;
         let reviewsSummaryChartInstance = null;
 
+        // Reviews section elements
+        const reviewsList = document.getElementById('reviewsList');
+        const noReviews = document.getElementById('noReviews');
 
         // Clock-in/Clock-out section
         const employeeClockName = document.getElementById('employeeClockName');
@@ -1437,6 +1530,20 @@
         const urgentExitBtn = document.getElementById('urgentExitBtn');
         const addWalkInAppointmentBtn = document.getElementById('addWalkInAppointmentBtn');
         let clockInterval = null; // To update clock status periodically
+
+        // Edit Appointment Modal Elements
+        const editAppointmentModal = document.getElementById('editAppointmentModal');
+        const editAppointmentForm = document.getElementById('editAppointmentForm');
+        const editAppointmentId = document.getElementById('editAppointmentId');
+        const editUserName = document.getElementById('editUserName');
+        const editUserEmail = document.getElementById('editUserEmail');
+        const editUserPhone = document.getElementById('editUserPhone');
+        const editService = document.getElementById('editService');
+        const editEmployee = document.getElementById('editEmployee');
+        const editDate = document.getElementById('editDate');
+        const editTime = document.getElementById('editTime');
+        const editStatus = document.getElementById('editStatus');
+
 
         // --- Utility Functions ---
         function showLoading() { loadingScreen.style.display = 'flex'; }
@@ -1524,7 +1631,8 @@
 
                                     // Hide all other navigation links for employees
                                     document.querySelectorAll('.side-menu nav ul li').forEach(li => {
-                                        if (li.querySelector('a').id !== 'navClock' && li.querySelector('a').id !== 'navDashboard') { // Optionally allow dashboard for employees
+                                        const linkId = li.querySelector('a').id;
+                                        if (linkId !== 'navClock' && linkId !== 'navDashboard') { // Optionally allow dashboard for employees
                                             li.style.display = 'none';
                                         }
                                     });
@@ -1717,13 +1825,14 @@
         // --- Navigation ---
         navDashboard.addEventListener('click', (e) => { e.preventDefault(); showSection('dashboardSection'); loadDashboardData(); });
         navBusinessProfile.addEventListener('click', (e) => { e.preventDefault(); showSection('businessProfileSection'); loadBusinessProfile(); }); // New nav handler
-        navEmployees.addEventListener('click', (e) => { e.preventDefault(); showSection('employeesSection'); loadEmployees(); /* Removed: loadServicesForEmployeeAssignment(); */ });
+        navEmployees.addEventListener('click', (e) => { e.preventDefault(); showSection('employeesSection'); loadEmployees(); });
         navServices.addEventListener('click', (e) => { e.preventDefault(); showSection('servicesSection'); loadServices(); loadEmployeesForServiceAssignment(); });
         navBusinessHours.addEventListener('click', (e) => { e.preventDefault(); showSection('businessHoursSection'); populateBusinessHoursForm(currentBusinessData.workDays || {}); });
         navAppointments.addEventListener('click', (e) => { e.preventDefault(); showSection('appointmentsSection'); loadAppointmentFilters(); loadAppointments(); });
         navClients.addEventListener('click', (e) => { e.preventDefault(); showSection('clientsSection'); loadClients(); });
         navAbsences.addEventListener('click', (e) => { e.preventDefault(); showSection('absencesSection'); loadBusinessAbsences(); loadEmployeeAbsenceRequests(); generateApprovedAbsencesCalendar(); });
         navStats.addEventListener('click', (e) => { e.preventDefault(); showSection('statsSection'); }); // Stats data will load on button click
+        navReviews.addEventListener('click', (e) => { e.preventDefault(); showSection('reviewsSection'); loadReviews(); }); // New Reviews Nav Handler
         navClock.addEventListener('click', (e) => { e.preventDefault(); showSection('clockSection'); loadEmployeeAppointmentsAndStatus(); });
 
 
@@ -1782,6 +1891,7 @@
                     `;
                     row.querySelector('.cancel-appt').addEventListener('click', () => cancelAppointment(appt.id));
                     row.querySelector('.complete-appt').addEventListener('click', () => completeAppointment(appt.id));
+                    row.querySelector('.edit-appt').addEventListener('click', () => openEditAppointmentModal(appt.id));
                 });
             }
 
@@ -2258,7 +2368,7 @@
                         </td>
                     `;
                     row.querySelector('.delete-service').addEventListener('click', () => deleteService(service.id));
-                    row.querySelector('.edit-service').addEventListener('click', () => editService(service));
+                    row.querySelector('.edit-service').addEventListener('click', () => editServiceFormPopulateAndSubmitHandler(service));
                 });
             }
         }
@@ -2283,7 +2393,7 @@
             }
         }
 
-        function editService(service) {
+        function editServiceFormPopulateAndSubmitHandler(service) {
             // For editing, populate the form with existing service data
             document.getElementById('serviceName').value = service.name;
             document.getElementById('serviceDescription').value = service.description || '';
@@ -2518,7 +2628,7 @@
                         const newStatus = e.target.dataset.status === 'completed' ? 'pending' : 'completed'; // Toggle logic example
                         updateAppointmentStatus(appt.id, newStatus);
                     });
-                    // Edit functionality is more complex, might open a modal with fields
+                    row.querySelector('.edit-appointment').addEventListener('click', () => openEditAppointmentModal(appt.id));
                 });
 
             } catch (error) {
@@ -2556,6 +2666,93 @@
                 alert('שגיאה בעדכון סטטוס תור: ' + (error.message || error));
             }
         }
+
+        async function openEditAppointmentModal(apptId) {
+            if (!currentBusinessId) return;
+            try {
+                const apptDoc = await db.collection("appointments").doc(apptId).get();
+                if (!apptDoc.exists) {
+                    alert("תור לא נמצא.");
+                    return;
+                }
+                const apptData = apptDoc.data();
+
+                editAppointmentId.value = apptId;
+                editUserName.value = apptData.userName || '';
+                editUserEmail.value = apptData.userEmail || '';
+                editUserPhone.value = apptData.userPhone || '';
+                editDate.value = apptData.date || '';
+                editTime.value = apptData.time || '';
+                editStatus.value = apptData.status || 'pending';
+
+                // Populate services dropdown
+                editService.innerHTML = '';
+                if (currentBusinessData && currentBusinessData.services) {
+                    currentBusinessData.services.forEach(service => {
+                        const option = document.createElement('option');
+                        option.value = service.id;
+                        option.textContent = service.name;
+                        editService.appendChild(option);
+                    });
+                }
+                editService.value = apptData.serviceId || '';
+
+                // Populate employees dropdown
+                editEmployee.innerHTML = '';
+                if (currentBusinessData && currentBusinessData.teamMembers) {
+                    currentBusinessData.teamMembers.forEach(employee => {
+                        const option = document.createElement('option');
+                        option.value = employee.id;
+                        option.textContent = employee.name;
+                        editEmployee.appendChild(option);
+                    });
+                }
+                editEmployee.value = apptData.teamMemberId || '';
+
+                showModal(editAppointmentModal);
+            } catch (error) {
+                console.error("Error opening edit appointment modal:", error);
+                alert('שגיאה בפתיחת חלון עריכת תור: ' + (error.message || error));
+            }
+        }
+
+        editAppointmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const apptId = editAppointmentId.value;
+            if (!apptId) return;
+
+            const updatedData = {
+                userName: editUserName.value,
+                userEmail: editUserEmail.value,
+                userPhone: editUserPhone.value,
+                serviceId: editService.value,
+                serviceName: editService.options[editService.selectedIndex].text, // Get service name from selected option
+                teamMemberId: editEmployee.value,
+                teamMemberName: editEmployee.options[editEmployee.selectedIndex].text, // Get employee name
+                date: editDate.value,
+                time: editTime.value,
+                status: editStatus.value,
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                await db.collection("appointments").doc(apptId).update(updatedData);
+                alert('התור עודכן בהצלחה!');
+                hideModal(editAppointmentModal);
+                loadAppointments(); // Refresh list
+                loadDashboardData(); // Refresh dashboard
+            } catch (error) {
+                console.error("Error updating appointment:", error);
+                alert('שגיאה בעדכון התור: ' + (error.message || error));
+            }
+        });
+
+        document.querySelectorAll('.close-edit-appointment-modal').forEach(btn => {
+            btn.addEventListener('click', () => hideModal(editAppointmentModal));
+        });
+        editAppointmentModal.addEventListener('click', (e) => {
+            if (e.target === editAppointmentModal) hideModal(editAppointmentModal);
+        });
 
 
         // --- Clients Section Logic ---
@@ -2783,30 +2980,20 @@
                 // Add to business unavailableDates or update employee workHours based on request type
                 const businessRef = db.collection("businesses").doc(currentBusinessId);
                 const businessDoc = await businessRef.get();
-                const currentTeamMembers = businessDoc.data().teamMembers || [];
+                let currentTeamMembers = businessDoc.data().teamMembers || [];
 
                 if (requestData.type === 'fullDay') {
-                    // Option 1: Add to business's general unavailable dates (affects all)
-                    // await businessRef.update({
-                    //     unavailableDates: firebase.firestore.FieldValue.arrayUnion({
-                    //         startDate: requestData.date,
-                    //         endDate: requestData.date,
-                    //         reason: requestData.reason,
-                    //         type: 'employee_absence',
-                    //         employeeId: requestData.employeeId
-                    //     })
-                    // });
-
                     // Option 2 (Better): Block specific employee's work hours for that day
                     // This requires updating the employee's workHours for that specific date/day
                     // For simplicity, let's just mark the employee's workhours for that day as not working
                     const employeeIndex = currentTeamMembers.findIndex(tm => tm.id === requestData.employeeId);
                     if(employeeIndex !== -1) {
                         const dayName = new Date(requestData.date).toLocaleDateString('he-IL', { weekday: 'long' }); // Get day name
-                        const updatedWorkHours = { ...currentTeamMembers[employeeIndex].workHours,
-                            [dayName]: { isWorking: false, openTime: '', closeTime: '' } // Mark as not working for that specific day
-                        };
-                        currentTeamMembers[employeeIndex].workHours = updatedWorkHours;
+                        // Ensure workHours exists
+                        currentTeamMembers[employeeIndex].workHours = currentTeamMembers[employeeIndex].workHours || {};
+                        currentTeamMembers[employeeIndex].workHours[dayName] = { isWorking: false, openTime: '', closeTime: '' }; // Mark as not working for that specific day
+                        
+                        // Update the entire teamMembers array in Firestore
                         await businessRef.update({ teamMembers: currentTeamMembers });
                     }
 
@@ -2848,13 +3035,29 @@
             }
         }
 
-        function generateApprovedAbsencesCalendar() {
+        async function generateApprovedAbsencesCalendar() {
             approvedAbsencesCalendar.innerHTML = '<h3>יומן חופשות מאושרות (חודש נוכחי + הבא)</h3>';
             const today = new Date();
             const currentYear = today.getFullYear();
             const currentMonth = today.getMonth(); // 0-indexed
 
             const dayNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש']; // Short day names for calendar header
+
+            // Fetch all approved full-day absences for employees
+            let approvedEmployeeFullDayAbsences = [];
+            try {
+                const qApprovedFullDay = db.collection("absence_requests")
+                    .where("businessId", "==", currentBusinessId)
+                    .where("status", "==", "approved")
+                    .where("type", "==", "fullDay");
+                const snapshot = await qApprovedFullDay.get();
+                snapshot.forEach(doc => {
+                    approvedEmployeeFullDayAbsences.push(doc.data());
+                });
+            } catch (error) {
+                console.error("Error fetching approved full-day absences:", error);
+            }
+
 
             for (let monthOffset = 0; monthOffset < 2; monthOffset++) { // Current and next month
                 const displayMonth = new Date(currentYear, currentMonth + monthOffset, 1);
@@ -2893,6 +3096,8 @@
                         cell.classList.add('today');
                     }
 
+                    let absenceReasons = [];
+
                     // Check for business-wide closures
                     const isBusinessClosed = currentBusinessData.unavailableDates.some(range => {
                         const start = new Date(range.startDate);
@@ -2902,29 +3107,34 @@
                     });
                     if (isBusinessClosed) {
                         cell.classList.add('has-absence');
-                        cell.title = "העסק סגור";
+                        absenceReasons.push("העסק סגור");
                     }
 
-                    // Check for approved employee full-day absences (if stored this way)
-                    // This logic would need to align with how you store approved absences:
-                    // Option A: If you update employee's workHours to 'not working' (as in `approveAbsenceRequest` code example)
-                    //    Then you'd need to fetch actual employee availability for this date. Complex for a simple calendar display.
-                    // Option B: Store approved absences in a separate 'approved_absences' collection or as a specific field
-                    //    in the employee's main document that is easy to query/iterate.
-                    // For simplicity, for now, this calendar mainly shows business-wide closures.
-                    // To show *employee* absences: you'd need to query `absence_requests` where status is 'approved'
-                    // and then iterate over them to mark the calendar.
-                    const employeeAbsencesForDay = (currentBusinessData.unavailableHours || []).filter(uh => uh.date === formattedDate && uh.type === 'employee_absence_hours');
-                    if(employeeAbsencesForDay.length > 0) {
-                        if(!cell.classList.contains('has-absence')) { // Don't override business closure
+                    // Check for approved employee full-day absences
+                    const employeeFullDayAbsencesForDay = approvedEmployeeFullDayAbsences.filter(abs => abs.date === formattedDate);
+                    if (employeeFullDayAbsencesForDay.length > 0) {
+                        cell.classList.add('has-absence');
+                        employeeFullDayAbsencesForDay.forEach(abs => {
+                            const employeeName = currentBusinessData.teamMembers.find(tm => tm.id === abs.employeeId)?.name || 'עובד';
+                            absenceReasons.push(`${employeeName} בחופשה`);
+                        });
+                    }
+
+                    // Check for approved employee hourly absences
+                    const employeeHourlyAbsencesForDay = (currentBusinessData.unavailableHours || []).filter(uh => uh.date === formattedDate && uh.type === 'employee_absence_hours');
+                    if(employeeHourlyAbsencesForDay.length > 0) {
+                        if(!cell.classList.contains('has-absence')) { // Don't override if already marked by full day/business closure
                             cell.classList.add('has-absence');
                         }
-                        const employeeNames = employeeAbsencesForDay.map(abs => {
-                            const employee = currentBusinessData.teamMembers.find(tm => tm.id === abs.employeeId);
-                            return employee ? employee.name : 'עובד';
-                        }).join(', ');
-                        cell.innerHTML += `<br><small>${employeeNames}</small>`;
-                        cell.title += ` ${employeeNames} בחופשה`;
+                        employeeHourlyAbsencesForDay.forEach(abs => {
+                            const employeeName = currentBusinessData.teamMembers.find(tm => tm.id === abs.employeeId)?.name || 'עובד';
+                            absenceReasons.push(`${employeeName} בחופשה (${abs.startTime}-${abs.endTime})`);
+                        });
+                    }
+
+                    if (absenceReasons.length > 0) {
+                        cell.title = absenceReasons.join('; ');
+                        cell.innerHTML += `<br><small>${absenceReasons.map(r => r.split(' ')[0]).join(', ')}</small>`; // Show first word of each reason
                     }
 
                     calendarGrid.appendChild(cell);
@@ -3011,12 +3221,11 @@
 
             // 2. Employee Occupancy
             const employeeAppointmentCounts = new Map();
-            const totalWorkingTime = new Map(); // Assuming 8 hours/day for simplicity if not dynamically calculated
+            const totalWorkingTime = new Map(); // Store total potential working minutes for each employee in the date range
             const dayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
 
             currentBusinessData.teamMembers.forEach(member => {
                 employeeAppointmentCounts.set(member.name, 0);
-                // Calculate total potential working hours within date range
                 let memberTotalWorkMinutes = 0;
                 let currentDate = new Date(startDate);
                 const endDt = new Date(endDate);
@@ -3038,7 +3247,7 @@
                         const closeMins = parseInt(close.split(':')[0]) * 60 + parseInt(close.split(':')[1]);
                         memberTotalWorkMinutes += (closeMins - openMins);
                     }
-                    currentDate.setDate(currentDate.getDate() + 1);
+                    currentDate.setDate(currentDate.getDate() + 1); // Move to next day
                 }
                 totalWorkingTime.set(member.name, memberTotalWorkMinutes);
             });
@@ -3053,7 +3262,8 @@
             const appointmentCounts = Array.from(employeeAppointmentCounts.values());
             const occupancyPercentages = employeeNames.map(name => {
                 const totalMinutes = totalWorkingTime.get(name);
-                const totalApptMinutes = appointmentCounts[employeeNames.indexOf(name)] * (currentBusinessData.appointmentDuration + currentBusinessData.breakBetweenAppointments);
+                // Assuming average appointment duration for occupancy calculation
+                const totalApptMinutes = appointmentCounts[employeeNames.indexOf(name)] * (currentBusinessData.appointmentDuration || 30);
                 return totalMinutes > 0 ? (totalApptMinutes / totalMinutes * 100).toFixed(2) : 0;
             });
 
@@ -3204,6 +3414,56 @@
             return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
         }
 
+        // --- Reviews Section Logic ---
+        async function loadReviews() {
+            if (!currentBusinessId) return;
+
+            reviewsList.innerHTML = '';
+            noReviews.style.display = 'block';
+
+            try {
+                const q = db.collection("reviews")
+                    .where("businessId", "==", currentBusinessId);
+                    // Removed orderBy to avoid index requirement
+                
+                const querySnapshot = await q.get();
+                const reviews = [];
+                querySnapshot.forEach(doc => {
+                    reviews.push({ id: doc.id, ...doc.data() });
+                });
+
+                if (reviews.length === 0) {
+                    reviewsList.innerHTML = '';
+                    noReviews.style.display = 'block';
+                    return;
+                }
+
+                noReviews.style.display = 'none';
+                // Sort reviews by creation date in JavaScript
+                reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                reviews.forEach(review => {
+                    const reviewCard = document.createElement('div');
+                    reviewCard.className = 'review-card';
+                    const stars = '⭐'.repeat(review.rating); // Simple star display
+
+                    reviewCard.innerHTML = `
+                        <p><strong>לקוח:</strong> ${review.userName || 'אנונימי'}</p>
+                        <p><strong>שירות:</strong> ${review.serviceName || 'N/A'}</p>
+                        <p><strong>דירוג:</strong> <span class="rating">${stars}</span></p>
+                        <p><strong>תגובה:</strong> ${review.comment || 'אין תגובה'}</p>
+                        <p style="font-size: 0.8em; color: #777;">תאריך: ${new Date(review.createdAt).toLocaleDateString('he-IL')}</p>
+                    `;
+                    reviewsList.appendChild(reviewCard);
+                });
+
+            } catch (error) {
+                console.error("Error loading reviews:", error);
+                reviewsList.innerHTML = `<p style="text-align: center; color: red;">שגיאה בטעינת ביקורות: ${error.message}</p>`;
+                noReviews.style.display = 'none';
+            }
+        }
+
 
         // --- Clock-in/Clock-out Section Logic (for current Employee/Manager) ---
         async function loadClockStatus() {
@@ -3343,23 +3603,28 @@
             const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
 
             try {
+                // Fetch all pending appointments for the employee
                 const qNext = db.collection("appointments")
                     .where("businessId", "==", currentBusinessId)
                     .where("teamMemberId", "==", currentEmployeeData.id)
-                    .where("status", "==", "pending"); // Only show pending/future
-                    // Add orderBy and limit to get nearest future appointment
+                    .where("status", "==", "pending");
                 
                 const nextAppointmentsSnapshot = await qNext.get();
                 let upcomingAppts = [];
                 nextAppointmentsSnapshot.forEach(docSnap => {
                     const appt = docSnap.data();
                     const apptDateTime = new Date(`${appt.date}T${appt.time}`);
-                    if (apptDateTime >= now) {
+                    if (apptDateTime >= now) { // Ensure it's truly in the future
                         upcomingAppts.push({ id: docSnap.id, ...appt });
                     }
                 });
 
-                upcomingAppts.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+                // Sort in JavaScript
+                upcomingAppts.sort((a, b) => {
+                    const dateTimeA = new Date(`${a.date}T${a.time}`);
+                    const dateTimeB = new Date(`${b.date}T${b.time}`);
+                    return dateTimeA - dateTimeB;
+                });
 
                 if (upcomingAppts.length > 0) {
                     const nextAppt = upcomingAppts[0];
@@ -3380,6 +3645,7 @@
                 const qAll = db.collection("appointments")
                     .where("businessId", "==", currentBusinessId)
                     .where("teamMemberId", "==", currentEmployeeData.id);
+                    // Removed orderBy to avoid index requirement
                 
                 const allApptsSnapshot = await qAll.get();
                 const allEmployeeAppts = allApptsSnapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
@@ -3391,7 +3657,12 @@
                 }
 
                 noEmployeeAppointments.style.display = 'none';
-                allEmployeeAppts.sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)); // Newest first
+                // Sort in JavaScript (newest first)
+                allEmployeeAppts.sort((a, b) => {
+                    const dateTimeA = new Date(`${a.date}T${a.time}`);
+                    const dateTimeB = new Date(`${b.date}T${b.time}`);
+                    return dateTimeB - dateTimeA; // Descending order
+                });
 
                 allEmployeeAppts.forEach(appt => {
                     const row = myAppointmentsEmployeeTable.insertRow();
@@ -3492,6 +3763,7 @@
                 const q = db.collection("absence_requests")
                     .where("businessId", "==", currentBusinessId)
                     .where("employeeId", "==", currentEmployeeData.id);
+                    // Removed orderBy to avoid index requirement
                 
                 const querySnapshot = await q.get();
 
@@ -3502,9 +3774,15 @@
                 }
 
                 noPendingAbsences.style.display = 'none';
-                querySnapshot.docs.sort((a, b) => new Date(b.data().requestedAt) - new Date(a.data().requestedAt)) // Newest first
-                    .forEach(docSnap => {
-                        const request = docSnap.data();
+                const requests = [];
+                querySnapshot.docs.forEach(docSnap => {
+                    requests.push(docSnap.data());
+                });
+
+                // Sort in JavaScript (newest first)
+                requests.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+
+                requests.forEach(request => {
                         const div = document.createElement('div');
                         div.className = 'absence-entry';
                         let displayDates = `${request.date}`;
